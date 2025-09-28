@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Route as studentLayoutRoute } from './_layout'
 
 export const Route = createFileRoute('/student/')({
   component: StudentDashboard

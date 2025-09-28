@@ -1,11 +1,10 @@
-import { Outlet, createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
+import { MainLayout } from '@/components/layout/main-layout'
 
 export const Route = createFileRoute('/teacher/_layout')({
-  component: RouteComponent
+  component: TeacherLayoutComponent
 })
 
-function RouteComponent() {
-  return <div className="container py-6">
-    <Outlet />
-  </div>
+function TeacherLayoutComponent() {
+  return <MainLayout />
 }

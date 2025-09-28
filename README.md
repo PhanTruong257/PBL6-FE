@@ -1,3 +1,18 @@
+# How to run project
+
+```
+git clone https://github.com/NguyenPhuc2205/PBL6-FE.git
+```
+
+Cd to project folder, install and run project
+```
+npm install
+```
+
+```
+npm run dev
+```
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

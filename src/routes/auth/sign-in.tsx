@@ -1,5 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { SignInForm } from '@/features/auth/sign-in/components/sign-in-form'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 export const Route = createFileRoute('/auth/sign-in')({
   component: SignInPage
@@ -7,14 +15,36 @@ export const Route = createFileRoute('/auth/sign-in')({
 
 function SignInPage() {
   return (
-    <>
-      <div className="flex flex-col space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Welcome Back</h1>
-        <p className="text-sm text-muted-foreground">
-          Enter your email to sign in to your account
+    <Card className="gap-4">
+      <CardHeader>
+        <CardTitle className="text-lg tracking-tight">Sign in</CardTitle>
+        <CardDescription>
+          Enter your email and password below to <br />
+          log into your account
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <SignInForm />
+      </CardContent>
+      <CardFooter>
+        <p className="text-muted-foreground px-8 text-center text-sm">
+          By clicking sign in, you agree to our{' '}
+          <a
+            href="/terms"
+            className="hover:text-primary underline underline-offset-4"
+          >
+            Terms of Service
+          </a>{' '}
+          and{' '}
+          <a
+            href="/privacy"
+            className="hover:text-primary underline underline-offset-4"
+          >
+            Privacy Policy
+          </a>
+          .
         </p>
-      </div>
-      <SignInForm />
-    </>
+      </CardFooter>
+    </Card>
   )
 }

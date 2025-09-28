@@ -11,7 +11,7 @@ interface SettingsProps {
 const getSettingsItems = (basePath: string) => [
   {
     title: 'Profile',
-    href: `${basePath}/settings`,
+    href: `${basePath}/settings/`,
     icon: <UserCog size={18} />,
   },
   {
