@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Importing custom theme */
+@import "./theme.css";
+
+/* Custom scrollbar for WebKit browsers */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    min-height: 100vh;
+  }
+  
+  /* WebKit browsers custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-muted/50;
+    border-radius: 5px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/40;
+    border-radius: 5px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/60;
+  }
+}
+
+@layer components {
+  /* Form elements */
+  .form-group {
+    @apply space-y-2 mb-4;
+  }
+  
+  /* Layout helpers */
+  .page-container {
+    @apply container mx-auto px-4 py-8 max-w-7xl;
+  }
+  
+  .section-container {
+    @apply py-6;
+  }
+  
+  .card-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+  }
+  
+  /* Animation utilities */
+  .animate-fade-in {
+    @apply transition-opacity duration-300 ease-in-out;
+  }
+  
+  .animate-slide-in {
+    @apply transition-transform duration-300 ease-in-out;
+  }
+  
+  /* Role-specific styles */
+  .admin-accent {
+    @apply border-l-4 border-violet-500;
+  }
+  
+  .teacher-accent {
+    @apply border-l-4 border-blue-500;
+  }
+  
+  .student-accent {
+    @apply border-l-4 border-emerald-500;
+  }
+}
+
+/* Media queries for responsive design */
+@media (max-width: 640px) {
+  .hide-on-mobile {
+    @apply hidden;
+  }
+}
+
+@media (prefers-reduced-motion) {
+  html {
+    scroll-behavior: auto;
+  }
+  
+  .animate-fade-in,
+  .animate-slide-in {
+    @apply transition-none;
+  }
+}

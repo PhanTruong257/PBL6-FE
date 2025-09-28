@@ -1,0 +1,19 @@
+{
+  "Course Name": "Course Name",
+  "Instructor": "Instructor",
+  "Category": "Category",
+  "Status": "Status",
+  "Actions": "Actions",
+  "Active": "Active",
+  "Completed": "Completed",
+  "Upcoming": "Upcoming",
+  "No recent courses found": "No recent courses found",
+  "Exam Title": "Exam Title",
+  "Course": "Course",
+  "Date & Time": "Date & Time",
+  "Duration": "Duration",
+  "min": "min",
+  "Scheduled": "Scheduled",
+  "Missed": "Missed",
+  "No upcoming exams found": "No upcoming exams found"
+}
