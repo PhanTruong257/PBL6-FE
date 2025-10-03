@@ -8,189 +8,96 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as TeacherIndexRouteImport } from './routes/teacher/index'
 import { Route as StudentIndexRouteImport } from './routes/student/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as TeacherClassesRouteImport } from './routes/teacher/classes'
-import { Route as TeacherLayoutRouteImport } from './routes/teacher/_layout'
-import { Route as StudentCoursesRouteImport } from './routes/student/courses'
-import { Route as StudentLayoutRouteImport } from './routes/student/_layout'
-import { Route as AuthSignUpRouteImport } from './routes/auth/sign-up'
-import { Route as AuthSignInRouteImport } from './routes/auth/sign-in'
-import { Route as AuthRecoveryRouteImport } from './routes/auth/recovery'
+import { Route as TeacherSettingsRouteImport } from './routes/teacher/settings'
+import { Route as StudentSettingsRouteImport } from './routes/student/settings'
+import { Route as AuthVerifyCodeRouteImport } from './routes/auth/verify-code'
+import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
+import { Route as AuthRegisterRouteImport } from './routes/auth/register'
+import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
-import { Route as AuthLayoutRouteImport } from './routes/auth/_layout'
-import { Route as AdminUsersRouteImport } from './routes/admin/users'
-import { Route as AdminLayoutRouteImport } from './routes/admin/_layout'
-import { Route as errorsLayoutRouteImport } from './routes/(errors)/_layout'
-import { Route as errors503RouteImport } from './routes/(errors)/503'
-import { Route as errors500RouteImport } from './routes/(errors)/500'
-import { Route as errors404RouteImport } from './routes/(errors)/404'
-import { Route as errors403RouteImport } from './routes/(errors)/403'
-import { Route as errors401RouteImport } from './routes/(errors)/401'
+import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as TeacherSettingsIndexRouteImport } from './routes/teacher/settings/index'
+import { Route as TeacherDashboardIndexRouteImport } from './routes/teacher/dashboard/index'
 import { Route as StudentSettingsIndexRouteImport } from './routes/student/settings/index'
+import { Route as StudentDashboardIndexRouteImport } from './routes/student/dashboard/index'
 import { Route as AdminSettingsIndexRouteImport } from './routes/admin/settings/index'
+import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
 import { Route as TeacherSettingsNotificationsRouteImport } from './routes/teacher/settings/notifications'
 import { Route as TeacherSettingsDisplayRouteImport } from './routes/teacher/settings/display'
 import { Route as TeacherSettingsAppearanceRouteImport } from './routes/teacher/settings/appearance'
 import { Route as TeacherSettingsAccountRouteImport } from './routes/teacher/settings/account'
-import { Route as TeacherSettingsLayoutRouteImport } from './routes/teacher/settings/_layout'
 import { Route as StudentSettingsNotificationsRouteImport } from './routes/student/settings/notifications'
 import { Route as StudentSettingsDisplayRouteImport } from './routes/student/settings/display'
 import { Route as StudentSettingsAppearanceRouteImport } from './routes/student/settings/appearance'
 import { Route as StudentSettingsAccountRouteImport } from './routes/student/settings/account'
-import { Route as StudentSettingsLayoutRouteImport } from './routes/student/settings/_layout'
 import { Route as AdminSettingsNotificationsRouteImport } from './routes/admin/settings/notifications'
 import { Route as AdminSettingsDisplayRouteImport } from './routes/admin/settings/display'
 import { Route as AdminSettingsAppearanceRouteImport } from './routes/admin/settings/appearance'
 import { Route as AdminSettingsAccountRouteImport } from './routes/admin/settings/account'
-import { Route as AdminSettingsLayoutRouteImport } from './routes/admin/settings/_layout'
 
-const TeacherRouteImport = createFileRoute('/teacher')()
-const StudentRouteImport = createFileRoute('/student')()
-const AuthRouteImport = createFileRoute('/auth')()
-const AdminRouteImport = createFileRoute('/admin')()
-const errorsRouteImport = createFileRoute('/(errors)')()
-const TeacherSettingsRouteImport = createFileRoute('/teacher/settings')()
-const StudentSettingsRouteImport = createFileRoute('/student/settings')()
-const AdminSettingsRouteImport = createFileRoute('/admin/settings')()
-
-const TeacherRoute = TeacherRouteImport.update({
-  id: '/teacher',
-  path: '/teacher',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StudentRoute = StudentRouteImport.update({
-  id: '/student',
-  path: '/student',
+const TeacherIndexRoute = TeacherIndexRouteImport.update({
+  id: '/teacher/',
+  path: '/teacher/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const StudentIndexRoute = StudentIndexRouteImport.update({
+  id: '/student/',
+  path: '/student/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const errorsRoute = errorsRouteImport.update({
-  id: '/(errors)',
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeacherSettingsRoute = TeacherSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => TeacherRoute,
+  id: '/teacher/settings',
+  path: '/teacher/settings',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const StudentSettingsRoute = StudentSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => StudentRoute,
+  id: '/student/settings',
+  path: '/student/settings',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminSettingsRoute = AdminSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AdminRoute,
+const AuthVerifyCodeRoute = AuthVerifyCodeRouteImport.update({
+  id: '/auth/verify-code',
+  path: '/auth/verify-code',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const TeacherIndexRoute = TeacherIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => TeacherRoute,
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/auth/reset-password',
+  path: '/auth/reset-password',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const StudentIndexRoute = StudentIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => StudentRoute,
+const AuthRegisterRoute = AuthRegisterRouteImport.update({
+  id: '/auth/register',
+  path: '/auth/register',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const TeacherClassesRoute = TeacherClassesRouteImport.update({
-  id: '/classes',
-  path: '/classes',
-  getParentRoute: () => TeacherRoute,
-} as any)
-const TeacherLayoutRoute = TeacherLayoutRouteImport.update({
-  id: '/_layout',
-  getParentRoute: () => TeacherRoute,
-} as any)
-const StudentCoursesRoute = StudentCoursesRouteImport.update({
-  id: '/courses',
-  path: '/courses',
-  getParentRoute: () => StudentRoute,
-} as any)
-const StudentLayoutRoute = StudentLayoutRouteImport.update({
-  id: '/_layout',
-  getParentRoute: () => StudentRoute,
-} as any)
-const AuthSignUpRoute = AuthSignUpRouteImport.update({
-  id: '/sign-up',
-  path: '/sign-up',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthSignInRoute = AuthSignInRouteImport.update({
-  id: '/sign-in',
-  path: '/sign-in',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthRecoveryRoute = AuthRecoveryRouteImport.update({
-  id: '/recovery',
-  path: '/recovery',
-  getParentRoute: () => AuthRoute,
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthLayoutRoute = AuthLayoutRouteImport.update({
-  id: '/_layout',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminLayoutRoute = AdminLayoutRouteImport.update({
-  id: '/_layout',
-  getParentRoute: () => AdminRoute,
-} as any)
-const errorsLayoutRoute = errorsLayoutRouteImport.update({
-  id: '/_layout',
-  getParentRoute: () => errorsRoute,
-} as any)
-const errors503Route = errors503RouteImport.update({
-  id: '/(errors)/503',
-  path: '/503',
+  id: '/auth/forgot-password',
+  path: '/auth/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const errors500Route = errors500RouteImport.update({
-  id: '/(errors)/500',
-  path: '/500',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const errors404Route = errors404RouteImport.update({
-  id: '/(errors)/404',
-  path: '/404',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const errors403Route = errors403RouteImport.update({
-  id: '/(errors)/403',
-  path: '/403',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const errors401Route = errors401RouteImport.update({
-  id: '/(errors)/401',
-  path: '/401',
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/admin/settings',
+  path: '/admin/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeacherSettingsIndexRoute = TeacherSettingsIndexRouteImport.update({
@@ -198,15 +105,30 @@ const TeacherSettingsIndexRoute = TeacherSettingsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => TeacherSettingsRoute,
 } as any)
+const TeacherDashboardIndexRoute = TeacherDashboardIndexRouteImport.update({
+  id: '/teacher/dashboard/',
+  path: '/teacher/dashboard/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudentSettingsIndexRoute = StudentSettingsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => StudentSettingsRoute,
 } as any)
+const StudentDashboardIndexRoute = StudentDashboardIndexRouteImport.update({
+  id: '/student/dashboard/',
+  path: '/student/dashboard/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminSettingsIndexRoute = AdminSettingsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminSettingsRoute,
+} as any)
+const AdminDashboardIndexRoute = AdminDashboardIndexRouteImport.update({
+  id: '/admin/dashboard/',
+  path: '/admin/dashboard/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const TeacherSettingsNotificationsRoute =
   TeacherSettingsNotificationsRouteImport.update({
@@ -228,10 +150,6 @@ const TeacherSettingsAppearanceRoute =
 const TeacherSettingsAccountRoute = TeacherSettingsAccountRouteImport.update({
   id: '/account',
   path: '/account',
-  getParentRoute: () => TeacherSettingsRoute,
-} as any)
-const TeacherSettingsLayoutRoute = TeacherSettingsLayoutRouteImport.update({
-  id: '/_layout',
   getParentRoute: () => TeacherSettingsRoute,
 } as any)
 const StudentSettingsNotificationsRoute =
@@ -256,10 +174,6 @@ const StudentSettingsAccountRoute = StudentSettingsAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => StudentSettingsRoute,
 } as any)
-const StudentSettingsLayoutRoute = StudentSettingsLayoutRouteImport.update({
-  id: '/_layout',
-  getParentRoute: () => StudentSettingsRoute,
-} as any)
 const AdminSettingsNotificationsRoute =
   AdminSettingsNotificationsRouteImport.update({
     id: '/notifications',
@@ -281,468 +195,299 @@ const AdminSettingsAccountRoute = AdminSettingsAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => AdminSettingsRoute,
 } as any)
-const AdminSettingsLayoutRoute = AdminSettingsLayoutRouteImport.update({
-  id: '/_layout',
-  getParentRoute: () => AdminSettingsRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
-  '/401': typeof errors401Route
-  '/403': typeof errors403Route
-  '/404': typeof errors404Route
-  '/500': typeof errors500Route
-  '/503': typeof errors503Route
-  '/': typeof errorsLayoutRoute
-  '/admin': typeof AdminLayoutRoute
-  '/admin/users': typeof AdminUsersRoute
-  '/auth': typeof AuthLayoutRoute
+  '/': typeof IndexRoute
+  '/admin/settings': typeof AdminSettingsRouteWithChildren
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
-  '/auth/recovery': typeof AuthRecoveryRoute
-  '/auth/sign-in': typeof AuthSignInRoute
-  '/auth/sign-up': typeof AuthSignUpRoute
-  '/student': typeof StudentLayoutRoute
-  '/student/courses': typeof StudentCoursesRoute
-  '/teacher': typeof TeacherLayoutRoute
-  '/teacher/classes': typeof TeacherClassesRoute
-  '/admin/': typeof AdminIndexRoute
-  '/student/': typeof StudentIndexRoute
-  '/teacher/': typeof TeacherIndexRoute
-  '/admin/settings': typeof AdminSettingsLayoutRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/verify-code': typeof AuthVerifyCodeRoute
+  '/student/settings': typeof StudentSettingsRouteWithChildren
+  '/teacher/settings': typeof TeacherSettingsRouteWithChildren
+  '/admin': typeof AdminIndexRoute
+  '/student': typeof StudentIndexRoute
+  '/teacher': typeof TeacherIndexRoute
   '/admin/settings/account': typeof AdminSettingsAccountRoute
   '/admin/settings/appearance': typeof AdminSettingsAppearanceRoute
   '/admin/settings/display': typeof AdminSettingsDisplayRoute
   '/admin/settings/notifications': typeof AdminSettingsNotificationsRoute
-  '/student/settings': typeof StudentSettingsLayoutRoute
   '/student/settings/account': typeof StudentSettingsAccountRoute
   '/student/settings/appearance': typeof StudentSettingsAppearanceRoute
   '/student/settings/display': typeof StudentSettingsDisplayRoute
   '/student/settings/notifications': typeof StudentSettingsNotificationsRoute
-  '/teacher/settings': typeof TeacherSettingsLayoutRoute
   '/teacher/settings/account': typeof TeacherSettingsAccountRoute
   '/teacher/settings/appearance': typeof TeacherSettingsAppearanceRoute
   '/teacher/settings/display': typeof TeacherSettingsDisplayRoute
   '/teacher/settings/notifications': typeof TeacherSettingsNotificationsRoute
+  '/admin/dashboard': typeof AdminDashboardIndexRoute
   '/admin/settings/': typeof AdminSettingsIndexRoute
+  '/student/dashboard': typeof StudentDashboardIndexRoute
   '/student/settings/': typeof StudentSettingsIndexRoute
+  '/teacher/dashboard': typeof TeacherDashboardIndexRoute
   '/teacher/settings/': typeof TeacherSettingsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/401': typeof errors401Route
-  '/403': typeof errors403Route
-  '/404': typeof errors404Route
-  '/500': typeof errors500Route
-  '/503': typeof errors503Route
-  '/': typeof errorsLayoutRoute
-  '/admin': typeof AdminIndexRoute
-  '/admin/users': typeof AdminUsersRoute
-  '/auth': typeof AuthLayoutRoute
+  '/': typeof IndexRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
-  '/auth/recovery': typeof AuthRecoveryRoute
-  '/auth/sign-in': typeof AuthSignInRoute
-  '/auth/sign-up': typeof AuthSignUpRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/verify-code': typeof AuthVerifyCodeRoute
+  '/admin': typeof AdminIndexRoute
   '/student': typeof StudentIndexRoute
-  '/student/courses': typeof StudentCoursesRoute
   '/teacher': typeof TeacherIndexRoute
-  '/teacher/classes': typeof TeacherClassesRoute
-  '/admin/settings': typeof AdminSettingsIndexRoute
   '/admin/settings/account': typeof AdminSettingsAccountRoute
   '/admin/settings/appearance': typeof AdminSettingsAppearanceRoute
   '/admin/settings/display': typeof AdminSettingsDisplayRoute
   '/admin/settings/notifications': typeof AdminSettingsNotificationsRoute
-  '/student/settings': typeof StudentSettingsIndexRoute
   '/student/settings/account': typeof StudentSettingsAccountRoute
   '/student/settings/appearance': typeof StudentSettingsAppearanceRoute
   '/student/settings/display': typeof StudentSettingsDisplayRoute
   '/student/settings/notifications': typeof StudentSettingsNotificationsRoute
-  '/teacher/settings': typeof TeacherSettingsIndexRoute
   '/teacher/settings/account': typeof TeacherSettingsAccountRoute
   '/teacher/settings/appearance': typeof TeacherSettingsAppearanceRoute
   '/teacher/settings/display': typeof TeacherSettingsDisplayRoute
   '/teacher/settings/notifications': typeof TeacherSettingsNotificationsRoute
+  '/admin/dashboard': typeof AdminDashboardIndexRoute
+  '/admin/settings': typeof AdminSettingsIndexRoute
+  '/student/dashboard': typeof StudentDashboardIndexRoute
+  '/student/settings': typeof StudentSettingsIndexRoute
+  '/teacher/dashboard': typeof TeacherDashboardIndexRoute
+  '/teacher/settings': typeof TeacherSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/(errors)/401': typeof errors401Route
-  '/(errors)/403': typeof errors403Route
-  '/(errors)/404': typeof errors404Route
-  '/(errors)/500': typeof errors500Route
-  '/(errors)/503': typeof errors503Route
-  '/(errors)': typeof errorsRouteWithChildren
-  '/(errors)/_layout': typeof errorsLayoutRoute
-  '/admin': typeof AdminRouteWithChildren
-  '/admin/_layout': typeof AdminLayoutRoute
-  '/admin/users': typeof AdminUsersRoute
-  '/auth': typeof AuthRouteWithChildren
-  '/auth/_layout': typeof AuthLayoutRoute
+  '/': typeof IndexRoute
+  '/admin/settings': typeof AdminSettingsRouteWithChildren
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
-  '/auth/recovery': typeof AuthRecoveryRoute
-  '/auth/sign-in': typeof AuthSignInRoute
-  '/auth/sign-up': typeof AuthSignUpRoute
-  '/student': typeof StudentRouteWithChildren
-  '/student/_layout': typeof StudentLayoutRoute
-  '/student/courses': typeof StudentCoursesRoute
-  '/teacher': typeof TeacherRouteWithChildren
-  '/teacher/_layout': typeof TeacherLayoutRoute
-  '/teacher/classes': typeof TeacherClassesRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/verify-code': typeof AuthVerifyCodeRoute
+  '/student/settings': typeof StudentSettingsRouteWithChildren
+  '/teacher/settings': typeof TeacherSettingsRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/student/': typeof StudentIndexRoute
   '/teacher/': typeof TeacherIndexRoute
-  '/admin/settings': typeof AdminSettingsRouteWithChildren
-  '/admin/settings/_layout': typeof AdminSettingsLayoutRoute
   '/admin/settings/account': typeof AdminSettingsAccountRoute
   '/admin/settings/appearance': typeof AdminSettingsAppearanceRoute
   '/admin/settings/display': typeof AdminSettingsDisplayRoute
   '/admin/settings/notifications': typeof AdminSettingsNotificationsRoute
-  '/student/settings': typeof StudentSettingsRouteWithChildren
-  '/student/settings/_layout': typeof StudentSettingsLayoutRoute
   '/student/settings/account': typeof StudentSettingsAccountRoute
   '/student/settings/appearance': typeof StudentSettingsAppearanceRoute
   '/student/settings/display': typeof StudentSettingsDisplayRoute
   '/student/settings/notifications': typeof StudentSettingsNotificationsRoute
-  '/teacher/settings': typeof TeacherSettingsRouteWithChildren
-  '/teacher/settings/_layout': typeof TeacherSettingsLayoutRoute
   '/teacher/settings/account': typeof TeacherSettingsAccountRoute
   '/teacher/settings/appearance': typeof TeacherSettingsAppearanceRoute
   '/teacher/settings/display': typeof TeacherSettingsDisplayRoute
   '/teacher/settings/notifications': typeof TeacherSettingsNotificationsRoute
+  '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/admin/settings/': typeof AdminSettingsIndexRoute
+  '/student/dashboard/': typeof StudentDashboardIndexRoute
   '/student/settings/': typeof StudentSettingsIndexRoute
+  '/teacher/dashboard/': typeof TeacherDashboardIndexRoute
   '/teacher/settings/': typeof TeacherSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/401'
-    | '/403'
-    | '/404'
-    | '/500'
-    | '/503'
     | '/'
-    | '/admin'
-    | '/admin/users'
-    | '/auth'
-    | '/auth/forgot-password'
-    | '/auth/recovery'
-    | '/auth/sign-in'
-    | '/auth/sign-up'
-    | '/student'
-    | '/student/courses'
-    | '/teacher'
-    | '/teacher/classes'
-    | '/admin/'
-    | '/student/'
-    | '/teacher/'
     | '/admin/settings'
+    | '/auth/forgot-password'
+    | '/auth/login'
+    | '/auth/register'
+    | '/auth/reset-password'
+    | '/auth/verify-code'
+    | '/student/settings'
+    | '/teacher/settings'
+    | '/admin'
+    | '/student'
+    | '/teacher'
     | '/admin/settings/account'
     | '/admin/settings/appearance'
     | '/admin/settings/display'
     | '/admin/settings/notifications'
-    | '/student/settings'
     | '/student/settings/account'
     | '/student/settings/appearance'
     | '/student/settings/display'
     | '/student/settings/notifications'
-    | '/teacher/settings'
     | '/teacher/settings/account'
     | '/teacher/settings/appearance'
     | '/teacher/settings/display'
     | '/teacher/settings/notifications'
+    | '/admin/dashboard'
     | '/admin/settings/'
+    | '/student/dashboard'
     | '/student/settings/'
+    | '/teacher/dashboard'
     | '/teacher/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/401'
-    | '/403'
-    | '/404'
-    | '/500'
-    | '/503'
     | '/'
-    | '/admin'
-    | '/admin/users'
-    | '/auth'
     | '/auth/forgot-password'
-    | '/auth/recovery'
-    | '/auth/sign-in'
-    | '/auth/sign-up'
+    | '/auth/login'
+    | '/auth/register'
+    | '/auth/reset-password'
+    | '/auth/verify-code'
+    | '/admin'
     | '/student'
-    | '/student/courses'
     | '/teacher'
-    | '/teacher/classes'
-    | '/admin/settings'
     | '/admin/settings/account'
     | '/admin/settings/appearance'
     | '/admin/settings/display'
     | '/admin/settings/notifications'
-    | '/student/settings'
     | '/student/settings/account'
     | '/student/settings/appearance'
     | '/student/settings/display'
     | '/student/settings/notifications'
-    | '/teacher/settings'
     | '/teacher/settings/account'
     | '/teacher/settings/appearance'
     | '/teacher/settings/display'
     | '/teacher/settings/notifications'
+    | '/admin/dashboard'
+    | '/admin/settings'
+    | '/student/dashboard'
+    | '/student/settings'
+    | '/teacher/dashboard'
+    | '/teacher/settings'
   id:
     | '__root__'
-    | '/(errors)/401'
-    | '/(errors)/403'
-    | '/(errors)/404'
-    | '/(errors)/500'
-    | '/(errors)/503'
-    | '/(errors)'
-    | '/(errors)/_layout'
-    | '/admin'
-    | '/admin/_layout'
-    | '/admin/users'
-    | '/auth'
-    | '/auth/_layout'
+    | '/'
+    | '/admin/settings'
     | '/auth/forgot-password'
-    | '/auth/recovery'
-    | '/auth/sign-in'
-    | '/auth/sign-up'
-    | '/student'
-    | '/student/_layout'
-    | '/student/courses'
-    | '/teacher'
-    | '/teacher/_layout'
-    | '/teacher/classes'
+    | '/auth/login'
+    | '/auth/register'
+    | '/auth/reset-password'
+    | '/auth/verify-code'
+    | '/student/settings'
+    | '/teacher/settings'
     | '/admin/'
     | '/student/'
     | '/teacher/'
-    | '/admin/settings'
-    | '/admin/settings/_layout'
     | '/admin/settings/account'
     | '/admin/settings/appearance'
     | '/admin/settings/display'
     | '/admin/settings/notifications'
-    | '/student/settings'
-    | '/student/settings/_layout'
     | '/student/settings/account'
     | '/student/settings/appearance'
     | '/student/settings/display'
     | '/student/settings/notifications'
-    | '/teacher/settings'
-    | '/teacher/settings/_layout'
     | '/teacher/settings/account'
     | '/teacher/settings/appearance'
     | '/teacher/settings/display'
     | '/teacher/settings/notifications'
+    | '/admin/dashboard/'
     | '/admin/settings/'
+    | '/student/dashboard/'
     | '/student/settings/'
+    | '/teacher/dashboard/'
     | '/teacher/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  errors401Route: typeof errors401Route
-  errors403Route: typeof errors403Route
-  errors404Route: typeof errors404Route
-  errors500Route: typeof errors500Route
-  errors503Route: typeof errors503Route
-  errorsRoute: typeof errorsRouteWithChildren
-  AdminRoute: typeof AdminRouteWithChildren
-  AuthRoute: typeof AuthRouteWithChildren
-  StudentRoute: typeof StudentRouteWithChildren
-  TeacherRoute: typeof TeacherRouteWithChildren
+  IndexRoute: typeof IndexRoute
+  AdminSettingsRoute: typeof AdminSettingsRouteWithChildren
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthRegisterRoute: typeof AuthRegisterRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  AuthVerifyCodeRoute: typeof AuthVerifyCodeRoute
+  StudentSettingsRoute: typeof StudentSettingsRouteWithChildren
+  TeacherSettingsRoute: typeof TeacherSettingsRouteWithChildren
+  AdminIndexRoute: typeof AdminIndexRoute
+  StudentIndexRoute: typeof StudentIndexRoute
+  TeacherIndexRoute: typeof TeacherIndexRoute
+  AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
+  StudentDashboardIndexRoute: typeof StudentDashboardIndexRoute
+  TeacherDashboardIndexRoute: typeof TeacherDashboardIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/teacher': {
-      id: '/teacher'
-      path: '/teacher'
-      fullPath: '/teacher'
-      preLoaderRoute: typeof TeacherRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/student': {
-      id: '/student'
-      path: '/student'
-      fullPath: '/student'
-      preLoaderRoute: typeof StudentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(errors)': {
-      id: '/(errors)'
+    '/': {
+      id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof errorsRouteImport
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/teacher/': {
+      id: '/teacher/'
+      path: '/teacher'
+      fullPath: '/teacher'
+      preLoaderRoute: typeof TeacherIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student/': {
+      id: '/student/'
+      path: '/student'
+      fullPath: '/student'
+      preLoaderRoute: typeof StudentIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teacher/settings': {
       id: '/teacher/settings'
-      path: '/settings'
+      path: '/teacher/settings'
       fullPath: '/teacher/settings'
       preLoaderRoute: typeof TeacherSettingsRouteImport
-      parentRoute: typeof TeacherRoute
+      parentRoute: typeof rootRouteImport
     }
     '/student/settings': {
       id: '/student/settings'
-      path: '/settings'
+      path: '/student/settings'
       fullPath: '/student/settings'
       preLoaderRoute: typeof StudentSettingsRouteImport
-      parentRoute: typeof StudentRoute
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/settings': {
-      id: '/admin/settings'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsRouteImport
-      parentRoute: typeof AdminRoute
+    '/auth/verify-code': {
+      id: '/auth/verify-code'
+      path: '/auth/verify-code'
+      fullPath: '/auth/verify-code'
+      preLoaderRoute: typeof AuthVerifyCodeRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/teacher/': {
-      id: '/teacher/'
-      path: '/'
-      fullPath: '/teacher/'
-      preLoaderRoute: typeof TeacherIndexRouteImport
-      parentRoute: typeof TeacherRoute
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/auth/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/student/': {
-      id: '/student/'
-      path: '/'
-      fullPath: '/student/'
-      preLoaderRoute: typeof StudentIndexRouteImport
-      parentRoute: typeof StudentRoute
+    '/auth/register': {
+      id: '/auth/register'
+      path: '/auth/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/teacher/classes': {
-      id: '/teacher/classes'
-      path: '/classes'
-      fullPath: '/teacher/classes'
-      preLoaderRoute: typeof TeacherClassesRouteImport
-      parentRoute: typeof TeacherRoute
-    }
-    '/teacher/_layout': {
-      id: '/teacher/_layout'
-      path: '/teacher'
-      fullPath: '/teacher'
-      preLoaderRoute: typeof TeacherLayoutRouteImport
-      parentRoute: typeof TeacherRoute
-    }
-    '/student/courses': {
-      id: '/student/courses'
-      path: '/courses'
-      fullPath: '/student/courses'
-      preLoaderRoute: typeof StudentCoursesRouteImport
-      parentRoute: typeof StudentRoute
-    }
-    '/student/_layout': {
-      id: '/student/_layout'
-      path: '/student'
-      fullPath: '/student'
-      preLoaderRoute: typeof StudentLayoutRouteImport
-      parentRoute: typeof StudentRoute
-    }
-    '/auth/sign-up': {
-      id: '/auth/sign-up'
-      path: '/sign-up'
-      fullPath: '/auth/sign-up'
-      preLoaderRoute: typeof AuthSignUpRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/auth/sign-in': {
-      id: '/auth/sign-in'
-      path: '/sign-in'
-      fullPath: '/auth/sign-in'
-      preLoaderRoute: typeof AuthSignInRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/auth/recovery': {
-      id: '/auth/recovery'
-      path: '/recovery'
-      fullPath: '/auth/recovery'
-      preLoaderRoute: typeof AuthRecoveryRouteImport
-      parentRoute: typeof AuthRoute
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/auth/forgot-password': {
       id: '/auth/forgot-password'
-      path: '/forgot-password'
+      path: '/auth/forgot-password'
       fullPath: '/auth/forgot-password'
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/auth/_layout': {
-      id: '/auth/_layout'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthLayoutRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/admin/users': {
-      id: '/admin/users'
-      path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/_layout': {
-      id: '/admin/_layout'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminLayoutRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/(errors)/_layout': {
-      id: '/(errors)/_layout'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof errorsLayoutRouteImport
-      parentRoute: typeof errorsRoute
-    }
-    '/(errors)/503': {
-      id: '/(errors)/503'
-      path: '/503'
-      fullPath: '/503'
-      preLoaderRoute: typeof errors503RouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(errors)/500': {
-      id: '/(errors)/500'
-      path: '/500'
-      fullPath: '/500'
-      preLoaderRoute: typeof errors500RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(errors)/404': {
-      id: '/(errors)/404'
-      path: '/404'
-      fullPath: '/404'
-      preLoaderRoute: typeof errors404RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(errors)/403': {
-      id: '/(errors)/403'
-      path: '/403'
-      fullPath: '/403'
-      preLoaderRoute: typeof errors403RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(errors)/401': {
-      id: '/(errors)/401'
-      path: '/401'
-      fullPath: '/401'
-      preLoaderRoute: typeof errors401RouteImport
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teacher/settings/': {
@@ -752,6 +497,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeacherSettingsIndexRouteImport
       parentRoute: typeof TeacherSettingsRoute
     }
+    '/teacher/dashboard/': {
+      id: '/teacher/dashboard/'
+      path: '/teacher/dashboard'
+      fullPath: '/teacher/dashboard'
+      preLoaderRoute: typeof TeacherDashboardIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/student/settings/': {
       id: '/student/settings/'
       path: '/'
@@ -759,12 +511,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentSettingsIndexRouteImport
       parentRoute: typeof StudentSettingsRoute
     }
+    '/student/dashboard/': {
+      id: '/student/dashboard/'
+      path: '/student/dashboard'
+      fullPath: '/student/dashboard'
+      preLoaderRoute: typeof StudentDashboardIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/settings/': {
       id: '/admin/settings/'
       path: '/'
       fullPath: '/admin/settings/'
       preLoaderRoute: typeof AdminSettingsIndexRouteImport
       parentRoute: typeof AdminSettingsRoute
+    }
+    '/admin/dashboard/': {
+      id: '/admin/dashboard/'
+      path: '/admin/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/teacher/settings/notifications': {
       id: '/teacher/settings/notifications'
@@ -792,13 +558,6 @@ declare module '@tanstack/react-router' {
       path: '/account'
       fullPath: '/teacher/settings/account'
       preLoaderRoute: typeof TeacherSettingsAccountRouteImport
-      parentRoute: typeof TeacherSettingsRoute
-    }
-    '/teacher/settings/_layout': {
-      id: '/teacher/settings/_layout'
-      path: '/settings'
-      fullPath: '/teacher/settings'
-      preLoaderRoute: typeof TeacherSettingsLayoutRouteImport
       parentRoute: typeof TeacherSettingsRoute
     }
     '/student/settings/notifications': {
@@ -829,13 +588,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentSettingsAccountRouteImport
       parentRoute: typeof StudentSettingsRoute
     }
-    '/student/settings/_layout': {
-      id: '/student/settings/_layout'
-      path: '/settings'
-      fullPath: '/student/settings'
-      preLoaderRoute: typeof StudentSettingsLayoutRouteImport
-      parentRoute: typeof StudentSettingsRoute
-    }
     '/admin/settings/notifications': {
       id: '/admin/settings/notifications'
       path: '/notifications'
@@ -864,29 +616,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsAccountRouteImport
       parentRoute: typeof AdminSettingsRoute
     }
-    '/admin/settings/_layout': {
-      id: '/admin/settings/_layout'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsLayoutRouteImport
-      parentRoute: typeof AdminSettingsRoute
-    }
   }
 }
 
-interface errorsRouteChildren {
-  errorsLayoutRoute: typeof errorsLayoutRoute
-}
-
-const errorsRouteChildren: errorsRouteChildren = {
-  errorsLayoutRoute: errorsLayoutRoute,
-}
-
-const errorsRouteWithChildren =
-  errorsRoute._addFileChildren(errorsRouteChildren)
-
 interface AdminSettingsRouteChildren {
-  AdminSettingsLayoutRoute: typeof AdminSettingsLayoutRoute
   AdminSettingsAccountRoute: typeof AdminSettingsAccountRoute
   AdminSettingsAppearanceRoute: typeof AdminSettingsAppearanceRoute
   AdminSettingsDisplayRoute: typeof AdminSettingsDisplayRoute
@@ -895,7 +628,6 @@ interface AdminSettingsRouteChildren {
 }
 
 const AdminSettingsRouteChildren: AdminSettingsRouteChildren = {
-  AdminSettingsLayoutRoute: AdminSettingsLayoutRoute,
   AdminSettingsAccountRoute: AdminSettingsAccountRoute,
   AdminSettingsAppearanceRoute: AdminSettingsAppearanceRoute,
   AdminSettingsDisplayRoute: AdminSettingsDisplayRoute,
@@ -907,42 +639,7 @@ const AdminSettingsRouteWithChildren = AdminSettingsRoute._addFileChildren(
   AdminSettingsRouteChildren,
 )
 
-interface AdminRouteChildren {
-  AdminLayoutRoute: typeof AdminLayoutRoute
-  AdminUsersRoute: typeof AdminUsersRoute
-  AdminIndexRoute: typeof AdminIndexRoute
-  AdminSettingsRoute: typeof AdminSettingsRouteWithChildren
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminLayoutRoute: AdminLayoutRoute,
-  AdminUsersRoute: AdminUsersRoute,
-  AdminIndexRoute: AdminIndexRoute,
-  AdminSettingsRoute: AdminSettingsRouteWithChildren,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
-interface AuthRouteChildren {
-  AuthLayoutRoute: typeof AuthLayoutRoute
-  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
-  AuthRecoveryRoute: typeof AuthRecoveryRoute
-  AuthSignInRoute: typeof AuthSignInRoute
-  AuthSignUpRoute: typeof AuthSignUpRoute
-}
-
-const AuthRouteChildren: AuthRouteChildren = {
-  AuthLayoutRoute: AuthLayoutRoute,
-  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
-  AuthRecoveryRoute: AuthRecoveryRoute,
-  AuthSignInRoute: AuthSignInRoute,
-  AuthSignUpRoute: AuthSignUpRoute,
-}
-
-const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
-
 interface StudentSettingsRouteChildren {
-  StudentSettingsLayoutRoute: typeof StudentSettingsLayoutRoute
   StudentSettingsAccountRoute: typeof StudentSettingsAccountRoute
   StudentSettingsAppearanceRoute: typeof StudentSettingsAppearanceRoute
   StudentSettingsDisplayRoute: typeof StudentSettingsDisplayRoute
@@ -951,7 +648,6 @@ interface StudentSettingsRouteChildren {
 }
 
 const StudentSettingsRouteChildren: StudentSettingsRouteChildren = {
-  StudentSettingsLayoutRoute: StudentSettingsLayoutRoute,
   StudentSettingsAccountRoute: StudentSettingsAccountRoute,
   StudentSettingsAppearanceRoute: StudentSettingsAppearanceRoute,
   StudentSettingsDisplayRoute: StudentSettingsDisplayRoute,
@@ -963,25 +659,7 @@ const StudentSettingsRouteWithChildren = StudentSettingsRoute._addFileChildren(
   StudentSettingsRouteChildren,
 )
 
-interface StudentRouteChildren {
-  StudentLayoutRoute: typeof StudentLayoutRoute
-  StudentCoursesRoute: typeof StudentCoursesRoute
-  StudentIndexRoute: typeof StudentIndexRoute
-  StudentSettingsRoute: typeof StudentSettingsRouteWithChildren
-}
-
-const StudentRouteChildren: StudentRouteChildren = {
-  StudentLayoutRoute: StudentLayoutRoute,
-  StudentCoursesRoute: StudentCoursesRoute,
-  StudentIndexRoute: StudentIndexRoute,
-  StudentSettingsRoute: StudentSettingsRouteWithChildren,
-}
-
-const StudentRouteWithChildren =
-  StudentRoute._addFileChildren(StudentRouteChildren)
-
 interface TeacherSettingsRouteChildren {
-  TeacherSettingsLayoutRoute: typeof TeacherSettingsLayoutRoute
   TeacherSettingsAccountRoute: typeof TeacherSettingsAccountRoute
   TeacherSettingsAppearanceRoute: typeof TeacherSettingsAppearanceRoute
   TeacherSettingsDisplayRoute: typeof TeacherSettingsDisplayRoute
@@ -990,7 +668,6 @@ interface TeacherSettingsRouteChildren {
 }
 
 const TeacherSettingsRouteChildren: TeacherSettingsRouteChildren = {
-  TeacherSettingsLayoutRoute: TeacherSettingsLayoutRoute,
   TeacherSettingsAccountRoute: TeacherSettingsAccountRoute,
   TeacherSettingsAppearanceRoute: TeacherSettingsAppearanceRoute,
   TeacherSettingsDisplayRoute: TeacherSettingsDisplayRoute,
@@ -1002,34 +679,22 @@ const TeacherSettingsRouteWithChildren = TeacherSettingsRoute._addFileChildren(
   TeacherSettingsRouteChildren,
 )
 
-interface TeacherRouteChildren {
-  TeacherLayoutRoute: typeof TeacherLayoutRoute
-  TeacherClassesRoute: typeof TeacherClassesRoute
-  TeacherIndexRoute: typeof TeacherIndexRoute
-  TeacherSettingsRoute: typeof TeacherSettingsRouteWithChildren
-}
-
-const TeacherRouteChildren: TeacherRouteChildren = {
-  TeacherLayoutRoute: TeacherLayoutRoute,
-  TeacherClassesRoute: TeacherClassesRoute,
-  TeacherIndexRoute: TeacherIndexRoute,
-  TeacherSettingsRoute: TeacherSettingsRouteWithChildren,
-}
-
-const TeacherRouteWithChildren =
-  TeacherRoute._addFileChildren(TeacherRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
-  errors401Route: errors401Route,
-  errors403Route: errors403Route,
-  errors404Route: errors404Route,
-  errors500Route: errors500Route,
-  errors503Route: errors503Route,
-  errorsRoute: errorsRouteWithChildren,
-  AdminRoute: AdminRouteWithChildren,
-  AuthRoute: AuthRouteWithChildren,
-  StudentRoute: StudentRouteWithChildren,
-  TeacherRoute: TeacherRouteWithChildren,
+  IndexRoute: IndexRoute,
+  AdminSettingsRoute: AdminSettingsRouteWithChildren,
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthRegisterRoute: AuthRegisterRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
+  AuthVerifyCodeRoute: AuthVerifyCodeRoute,
+  StudentSettingsRoute: StudentSettingsRouteWithChildren,
+  TeacherSettingsRoute: TeacherSettingsRouteWithChildren,
+  AdminIndexRoute: AdminIndexRoute,
+  StudentIndexRoute: StudentIndexRoute,
+  TeacherIndexRoute: TeacherIndexRoute,
+  AdminDashboardIndexRoute: AdminDashboardIndexRoute,
+  StudentDashboardIndexRoute: StudentDashboardIndexRoute,
+  TeacherDashboardIndexRoute: TeacherDashboardIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,10 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { AppearanceForm } from '@/features/settings'
+import { AppearancePage } from '@/features/settings'
 
 export const Route = createFileRoute('/admin/settings/appearance')({
-  component: AdminSettingsAppearance
+  component: AppearancePage,
 })
-
-function AdminSettingsAppearance() {
-  return <AppearanceForm role="admin" />
-}

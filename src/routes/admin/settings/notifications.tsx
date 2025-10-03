@@ -1,10 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { NotificationsForm } from '@/features/settings'
+import { NotificationsPage } from '@/features/settings'
 
 export const Route = createFileRoute('/admin/settings/notifications')({
-  component: AdminSettingsNotifications
+  component: NotificationsPage,
 })
-
-function AdminSettingsNotifications() {
-  return <NotificationsForm role="admin" />
-}

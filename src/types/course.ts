@@ -1,39 +1,58 @@
+/**
+ * Course-related types
+ */
+
+import type { User } from './user'
+
+export type CourseLevel = 'beginner' | 'intermediate' | 'advanced'
+
+export type CourseStatus = 'draft' | 'published' | 'archived'
+
 export interface Course {
   id: string
   title: string
   description: string
-  thumbnail: string
-  price: number
-  duration: number // in minutes
-  level: 'beginner' | 'intermediate' | 'advanced'
+  thumbnail?: string
+  level: CourseLevel
+  status: CourseStatus
   category: string
-  teacherId: string
-  teacherName: string
-  enrollmentCount: number
+  tags: string[]
+  duration: number // in minutes
+  price: number
+  discount?: number
+  instructor: User
+  enrolledCount: number
   rating: number
   reviewCount: number
-  isPublished: boolean
   createdAt: string
   updatedAt: string
 }
 
-export interface Lesson {
+export interface CourseLesson {
   id: string
   courseId: string
   title: string
   description: string
+  duration: number
   videoUrl?: string
-  duration: number // in minutes
   order: number
-  isPreview: boolean
-  createdAt: string
-  updatedAt: string
+  isFree: boolean
+  resources: LessonResource[]
+}
+
+export interface LessonResource {
+  id: string
+  lessonId: string
+  title: string
+  type: 'pdf' | 'video' | 'link' | 'document'
+  url: string
+  size?: number
 }
 
 export interface CourseEnrollment {
   id: string
+  userId: string
   courseId: string
-  studentId: string
   enrolledAt: string
   progress: number // 0-100
   completedLessons: string[]

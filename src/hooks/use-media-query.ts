@@ -1,32 +1,64 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react'
+
+type WindowSize = {
+  width: number
+  height: number
+}
 
 /**
- * Custom hook for responsive design
- * @param query Media query string (e.g. "(min-width: 768px)")
- * @returns Boolean indicating if the media query matches
+ * Hook to track window size
  */
-export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false);
+export function useWindowSize(): WindowSize {
+  const [windowSize, setWindowSize] = useState<WindowSize>({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  })
 
   useEffect(() => {
-    const media = window.matchMedia(query);
-    
-    // Set initial value
-    if (media.matches !== matches) {
-      setMatches(media.matches);
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      })
     }
-    
-    // Create listener for changes
-    const listener = () => setMatches(media.matches);
-    
-    // Add listener
-    media.addEventListener("change", listener);
-    
-    // Clean up
-    return () => {
-      media.removeEventListener("change", listener);
-    };
-  }, [matches, query]);
 
-  return matches;
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  return windowSize
+}
+
+/**
+ * Hook to check if screen matches media query
+ */
+export function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(false)
+
+  useEffect(() => {
+    const media = window.matchMedia(query)
+    setMatches(media.matches)
+
+    const listener = (e: MediaQueryListEvent) => setMatches(e.matches)
+    media.addEventListener('change', listener)
+
+    return () => media.removeEventListener('change', listener)
+  }, [query])
+
+  return matches
+}
+
+/**
+ * Common breakpoint hooks
+ */
+export function useIsMobile() {
+  return useMediaQuery('(max-width: 768px)')
+}
+
+export function useIsTablet() {
+  return useMediaQuery('(min-width: 769px) and (max-width: 1024px)')
+}
+
+export function useIsDesktop() {
+  return useMediaQuery('(min-width: 1025px)')
 }

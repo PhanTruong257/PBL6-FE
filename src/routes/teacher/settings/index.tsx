@@ -1,10 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ProfileForm } from '@/features/settings'
+import { ProfilePage } from '@/features/settings'
 
 export const Route = createFileRoute('/teacher/settings/')({
-  component: TeacherSettingsIndex
+  component: ProfilePage,
 })
-
-function TeacherSettingsIndex() {
-  return <ProfileForm role="teacher" />
-}

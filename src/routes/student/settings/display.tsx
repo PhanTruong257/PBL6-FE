@@ -1,10 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { DisplayForm } from '@/features/settings'
+import { DisplayPage } from '@/features/settings'
 
 export const Route = createFileRoute('/student/settings/display')({
-  component: StudentSettingsDisplay
+  component: DisplayPage,
 })
-
-function StudentSettingsDisplay() {
-  return <DisplayForm role="student" />
-}

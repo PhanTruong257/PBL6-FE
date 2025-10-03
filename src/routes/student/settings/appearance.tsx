@@ -1,10 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { AppearanceForm } from '@/features/settings'
+import { AppearancePage } from '@/features/settings'
 
 export const Route = createFileRoute('/student/settings/appearance')({
-  component: StudentSettingsAppearance
+  component: AppearancePage,
 })
-
-function StudentSettingsAppearance() {
-  return <AppearanceForm role="student" />
-}

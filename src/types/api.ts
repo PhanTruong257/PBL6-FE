@@ -1,8 +1,15 @@
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T> {
   success: boolean
+  message: string
   data: T
+  errors?: Record<string, string[]>
+}
+
+export interface ApiError {
+  success: false
   message: string
   errors?: Record<string, string[]>
+  statusCode: number
 }
 
 export interface PaginatedResponse<T> {
@@ -15,11 +22,10 @@ export interface PaginatedResponse<T> {
   }
 }
 
-export interface QueryParams {
-  page?: number
-  limit?: number
-  search?: string
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
-  filters?: Record<string, any>
+export interface ApiSuccessResponse<T> extends ApiResponse<T> {
+  success: true
+}
+
+export interface ApiErrorResponse extends ApiError {
+  success: false
 }

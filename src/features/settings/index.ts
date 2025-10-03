@@ -1,11 +1,6 @@
-// Settings components
-export { ProfileForm } from './profile'
-export { AccountForm } from './account'
-export { AppearanceForm } from './appearance'  
-export { NotificationsForm } from './notifications'
-export { DisplayForm } from './display'
-
-// Settings layout components
-export { Settings } from './settings-layout'
-export { SettingsTabs } from './components/settings-tabs'
-export { ContentSection } from './components/content-section'
+export { SettingsLayout } from './layout/settings-layout'
+export { ProfilePage } from './pages/profile-page'
+export { AccountPage } from './pages/account-page'
+export { AppearancePage } from './pages/appearance-page'
+export { NotificationsPage } from './pages/notifications-page'
+export { DisplayPage } from './pages/display-page'

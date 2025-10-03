@@ -1,10 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { AccountForm } from '@/features/settings'
+import { AccountPage } from '@/features/settings'
 
 export const Route = createFileRoute('/teacher/settings/account')({
-  component: TeacherSettingsAccount
+  component: AccountPage,
 })
-
-function TeacherSettingsAccount() {
-  return <AccountForm role="teacher" />
-}
