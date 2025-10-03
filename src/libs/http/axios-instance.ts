@@ -33,7 +33,7 @@ httpClient.interceptors.response.use(
     if (error.response?.status === 401) {
       // TODO: Handle unauthorized access (e.g., redirect to login), change auth store
       localStorage.removeItem('auth_token')
-      window.location.href = '/login'
+      window.location.href = '/auth/login'
     }
     return Promise.reject(error)
   }

@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useSearch } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { Eye, EyeOff, Lock } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -10,12 +10,22 @@ import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useResetPassword } from '@/features/auth/hooks/use-auth'
 import { resetPasswordSchema, type ResetPasswordFormData } from '../schemas/reset-password.schema'
+import { tempStorage } from '@/libs/utils'
 
 export function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const search = useSearch({ from: '/auth/reset-password' }) as unknown as { resetToken?: string }
+  const navigate = useNavigate()
+  const email = tempStorage.getResetEmail()
+  const code = tempStorage.getResetCode()
   const resetPasswordMutation = useResetPassword()
+
+  // Redirect if no email or code found
+  useEffect(() => {
+    if (!email || !code) {
+      navigate({ to: '/auth/forgot-password' })
+    }
+  }, [email, code, navigate])
 
   const {
     register,
@@ -26,15 +36,18 @@ export function ResetPasswordForm() {
   })
 
   const onSubmit = (data: ResetPasswordFormData) => {
-    if (!search.resetToken) {
-      return
-    }
+    if (!email || !code) return
 
     resetPasswordMutation.mutate({
-      resetToken: search.resetToken,
-      newPassword: data.newPassword,
+      email,
+      code,
+      password: data.password,
       confirmPassword: data.confirmPassword,
     })
+  }
+
+  if (!email || !code) {
+    return null
   }
 
   return (
@@ -48,15 +61,15 @@ export function ResetPasswordForm() {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="newPassword">Mật khẩu mới</Label>
+        <Label htmlFor="password">Mật khẩu mới</Label>
         <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
-            id="newPassword"
+            id="password"
             type={showPassword ? 'text' : 'password'}
             placeholder="Nhập mật khẩu mới"
             className="pl-9 pr-9"
-            {...register('newPassword')}
+            {...register('password')}
           />
           <Button
             type="button"
@@ -72,8 +85,8 @@ export function ResetPasswordForm() {
             )}
           </Button>
         </div>
-        {errors.newPassword && (
-          <p className="text-sm text-destructive">{errors.newPassword.message}</p>
+        {errors.password && (
+          <p className="text-sm text-destructive">{errors.password.message}</p>
         )}
       </div>
 
@@ -109,7 +122,7 @@ export function ResetPasswordForm() {
 
       <Button
         type="submit"
-        className="w-full"
+        className="w-full cursor-pointer"
         disabled={resetPasswordMutation.isPending}
       >
         {resetPasswordMutation.isPending ? 'Đang đặt lại mật khẩu...' : 'Đặt lại mật khẩu'}

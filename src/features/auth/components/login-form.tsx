@@ -23,9 +23,6 @@ export function LoginForm() {
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      rememberMe: false,
-    },
   })
 
   const onSubmit = (data: LoginFormData) => {
@@ -100,13 +97,13 @@ export function LoginForm() {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Checkbox id="rememberMe" {...register('rememberMe')} />
+          {/* <Checkbox id="rememberMe" {...register('rememberMe')} />
           <Label
             htmlFor="rememberMe"
             className="text-sm font-normal cursor-pointer"
           >
             Ghi nhớ đăng nhập
-          </Label>
+          </Label> */}
         </div>
 
         <Link

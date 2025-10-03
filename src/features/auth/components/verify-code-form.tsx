@@ -1,7 +1,8 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useSearch } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { KeyRound } from 'lucide-react'
+import { useEffect } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,11 +10,20 @@ import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useVerifyCode, useResendCode } from '@/features/auth/hooks/use-auth'
 import { verifyCodeSchema, type VerifyCodeFormData } from '../schemas/verify-code.schema'
+import { tempStorage } from '@/libs/utils'
 
 export function VerifyCodeForm() {
-  const search = useSearch({ from: '/auth/verify-code' }) as { email?: string; requestId?: string }
+  const navigate = useNavigate()
+  const email = tempStorage.getResetEmail()
   const verifyCodeMutation = useVerifyCode()
   const resendCodeMutation = useResendCode()
+
+  // Redirect if no email found
+  useEffect(() => {
+    if (!email) {
+      navigate({ to: '/auth/forgot-password' })
+    }
+  }, [email, navigate])
 
   const {
     register,
@@ -24,26 +34,24 @@ export function VerifyCodeForm() {
   })
 
   const onSubmit = (data: VerifyCodeFormData) => {
-    if (!search.email || !search.requestId) {
-      return
-    }
+    if (!email) return
 
     verifyCodeMutation.mutate({
-      email: search.email,
+      email,
       code: data.code,
-      requestId: search.requestId,
     })
   }
 
   const handleResend = () => {
-    if (!search.email || !search.requestId) {
-      return
-    }
+    if (!email) return
 
     resendCodeMutation.mutate({
-      email: search.email,
-      requestId: search.requestId,
+      email,
     })
+  }
+
+  if (!email) {
+    return null
   }
 
   return (
@@ -68,7 +76,7 @@ export function VerifyCodeForm() {
         <p className="text-sm text-muted-foreground">
           Nhập mã 6 số đã được gửi đến
         </p>
-        <p className="font-medium">{search.email}</p>
+        <p className="font-medium">{email}</p>
       </div>
 
       <div className="space-y-2">

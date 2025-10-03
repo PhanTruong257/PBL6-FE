@@ -15,7 +15,6 @@ export type { User }
 export interface LoginRequest {
   email: string
   password: string
-  rememberMe?: boolean
 }
 
 export interface LoginResponse {
@@ -50,7 +49,7 @@ export interface ForgotPasswordRequest {
 
 export interface ForgotPasswordResponse {
   message: string
-  requestId: string
+  success: boolean
 }
 
 /**
@@ -59,25 +58,27 @@ export interface ForgotPasswordResponse {
 export interface VerifyCodeRequest {
   email: string
   code: string
-  requestId: string
 }
 
 export interface VerifyCodeResponse {
   message: string
-  resetToken: string
+  success: boolean
+  isValid: boolean
 }
 
 /**
  * Reset password request/response
  */
 export interface ResetPasswordRequest {
-  resetToken: string
-  newPassword: string
+  email: string
+  code: string
+  password: string
   confirmPassword: string
 }
 
 export interface ResetPasswordResponse {
   message: string
+  success: boolean
 }
 
 /**

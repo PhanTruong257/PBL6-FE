@@ -27,7 +27,7 @@ export const AuthService = {
     data: LoginRequest,
   ): Promise<AuthApiResponse<LoginResponse>> {
     const response = await httpClient.post<AuthApiResponse<LoginResponse>>(
-      '/auth/login',
+      '/users/login',
       data,
     )
     return response.data
@@ -40,7 +40,7 @@ export const AuthService = {
     data: RegisterRequest,
   ): Promise<AuthApiResponse<RegisterResponse>> {
     const response = await httpClient.post<AuthApiResponse<RegisterResponse>>(
-      '/auth/register',
+      '/users/register',
       data,
     )
     return response.data
@@ -54,7 +54,7 @@ export const AuthService = {
   ): Promise<AuthApiResponse<ForgotPasswordResponse>> {
     const response = await httpClient.post<
       AuthApiResponse<ForgotPasswordResponse>
-    >('/auth/forgot-password', data)
+    >('/users/forgot-password', data)
     return response.data
   },
 
@@ -66,7 +66,7 @@ export const AuthService = {
   ): Promise<AuthApiResponse<VerifyCodeResponse>> {
     const response = await httpClient.post<
       AuthApiResponse<VerifyCodeResponse>
-    >('/auth/verify-code', data)
+    >('/users/verify-code', data)
     return response.data
   },
 
@@ -78,7 +78,7 @@ export const AuthService = {
   ): Promise<AuthApiResponse<ResetPasswordResponse>> {
     const response = await httpClient.post<
       AuthApiResponse<ResetPasswordResponse>
-    >('/auth/reset-password', data)
+    >('/users/reset-password', data)
     return response.data
   },
 
@@ -90,7 +90,7 @@ export const AuthService = {
   ): Promise<AuthApiResponse<ForgotPasswordResponse>> {
     const response = await httpClient.post<
       AuthApiResponse<ForgotPasswordResponse>
-    >('/auth/resend-code', data)
+    >('/users/forgot-password', data)
     return response.data
   },
 

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { AuthService } from '../api/auth-service'
-import { tokenStorage } from '@/libs/utils/storage'
+import { tokenStorage, tempStorage } from '@/libs/utils'
 import { DEFAULT_ROUTES_BY_ROLE } from '@/libs/constants'
 import type {
   LoginRequest,
@@ -74,17 +74,12 @@ export function useForgotPassword() {
   return useMutation({
     mutationFn: (data: ForgotPasswordRequest) =>
       AuthService.forgotPassword(data),
-    onSuccess: (response, variables) => {
-      // Navigate to verify code page with email and requestId
-      setTimeout(() => {
-        navigate({
-          to: '/auth/verify-code',
-          search: {
-            email: variables.email,
-            requestId: response.data.requestId,
-          },
-        })
-      }, 1000)
+    onSuccess: (_response, variables) => {
+      // Save email to sessionStorage for next step
+      tempStorage.setResetEmail(variables.email)
+      
+      // Navigate to verify code page (no search params)
+      navigate({ to: '/auth/verify-code' })
     },
   })
 }
@@ -97,15 +92,12 @@ export function useVerifyCode() {
 
   return useMutation({
     mutationFn: (data: VerifyCodeRequest) => AuthService.verifyCode(data),
-    onSuccess: (response, variables) => {
-      // Navigate to reset password page with token
-      navigate({
-        to: '/auth/reset-password',
-        search: {
-          email: variables.email,
-          token: response.data.resetToken,
-        },
-      })
+    onSuccess: (_response, variables) => {
+      // Save code to sessionStorage for next step
+      tempStorage.setResetCode(variables.code)
+      
+      // Navigate to reset password page (no search params)
+      navigate({ to: '/auth/reset-password' })
     },
   })
 }
@@ -119,6 +111,9 @@ export function useResetPassword() {
   return useMutation({
     mutationFn: (data: ResetPasswordRequest) => AuthService.resetPassword(data),
     onSuccess: () => {
+      // Clear temp data after successful reset
+      tempStorage.clearResetData()
+      
       // Redirect to login page after successful password reset
       setTimeout(() => {
         navigate({ to: '/auth/login' })
