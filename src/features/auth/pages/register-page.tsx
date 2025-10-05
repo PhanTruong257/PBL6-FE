@@ -8,13 +8,10 @@ export function RegisterPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            Đăng ký tài khoản
+            Create Account
           </CardTitle>
-          <CardDescription className="text-center">
-            Tạo tài khoản mới để bắt đầu học tập
-          </CardDescription>
         </CardHeader>
-        
+
         <CardContent>
           <RegisterForm />
         </CardContent>

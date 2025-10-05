@@ -21,18 +21,17 @@ export interface LoginResponse {
   user: User
   accessToken: string
   refreshToken: string
-  expiresIn: number
 }
 
 /**
  * Register request/response
  */
 export interface RegisterRequest {
-  firstName: string
-  lastName: string
+  full_name: string
   email: string
   password: string
   confirmPassword: string
+
 }
 
 export interface RegisterResponse {

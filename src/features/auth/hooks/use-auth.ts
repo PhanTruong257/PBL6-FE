@@ -30,7 +30,8 @@ export function useLogin() {
   return useMutation({
     mutationFn: (data: LoginRequest) => AuthService.login(data),
     onSuccess: (response) => {
-      const { user, accessToken, refreshToken } = response.data
+
+      const { user, accessToken, refreshToken } = response
 
       // Save tokens and user info
       tokenStorage.setTokens(accessToken, refreshToken)
@@ -40,8 +41,9 @@ export function useLogin() {
       queryClient.setQueryData(authKeys.user(), user)
 
       // Redirect based on role
-      const redirectPath =
-        DEFAULT_ROUTES_BY_ROLE[user.role as keyof typeof DEFAULT_ROUTES_BY_ROLE]
+      const redirectPath = '/';
+      // const redirectPath = 
+      //   DEFAULT_ROUTES_BY_ROLE[user.role as keyof typeof DEFAULT_ROUTES_BY_ROLE]
 
       navigate({ to: redirectPath as any })
     },
@@ -77,7 +79,7 @@ export function useForgotPassword() {
     onSuccess: (_response, variables) => {
       // Save email to sessionStorage for next step
       tempStorage.setResetEmail(variables.email)
-      
+
       // Navigate to verify code page (no search params)
       navigate({ to: '/auth/verify-code' })
     },
@@ -95,7 +97,7 @@ export function useVerifyCode() {
     onSuccess: (_response, variables) => {
       // Save code to sessionStorage for next step
       tempStorage.setResetCode(variables.code)
-      
+
       // Navigate to reset password page (no search params)
       navigate({ to: '/auth/reset-password' })
     },
@@ -113,7 +115,7 @@ export function useResetPassword() {
     onSuccess: () => {
       // Clear temp data after successful reset
       tempStorage.clearResetData()
-      
+
       // Redirect to login page after successful password reset
       setTimeout(() => {
         navigate({ to: '/auth/login' })
