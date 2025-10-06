@@ -1,12 +1,10 @@
-export type UserRole = 'admin' | 'teacher' | 'student'
+export type UserRole = 'admin' | 'teacher' | 'user'
 
 export type UserStatus = 'active' | 'inactive' | 'suspended' | 'pending'
 
 export interface User {
-  id: string
+  user_id: string
   email: string
-  firstName: string
-  lastName: string
   fullName: string
   avatar?: string
   role: UserRole

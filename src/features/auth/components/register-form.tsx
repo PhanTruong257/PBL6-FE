@@ -51,42 +51,22 @@ export function RegisterForm() {
         </Alert>
       )}
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="firstName">Tên</Label>
-          <div className="relative">
-            <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="firstName"
-              placeholder="Nguyễn"
-              className="pl-9"
-              {...register('firstName')}
-            />
-          </div>
-          {errors.firstName && (
-            <p className="text-sm text-destructive">
-              {errors.firstName.message}
-            </p>
-          )}
+      <div className="space-y-2">
+        <Label htmlFor="full_name">Full Name</Label>
+        <div className="relative">
+          <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Input
+            id="full_name"
+            placeholder="Nguyễn Văn A"
+            className="pl-9"
+            {...register('full_name')}
+          />
         </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="lastName">Họ</Label>
-          <div className="relative">
-            <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="lastName"
-              placeholder="Văn A"
-              className="pl-9"
-              {...register('lastName')}
-            />
-          </div>
-          {errors.lastName && (
-            <p className="text-sm text-destructive">
-              {errors.lastName.message}
-            </p>
-          )}
-        </div>
+        {errors.full_name && (
+          <p className="text-sm text-destructive">
+            {errors.full_name.message}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -107,13 +87,13 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Mật khẩu</Label>
+        <Label htmlFor="password">Password</Label>
         <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="password"
             type={showPassword ? 'text' : 'password'}
-            placeholder="Tối thiểu 6 ký tự"
+            placeholder="At least 6 characters"
             className="pl-9 pr-9"
             {...register('password')}
           />
@@ -137,13 +117,13 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
+        <Label htmlFor="confirmPassword">Confirm Password</Label>
         <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="confirmPassword"
             type={showConfirmPassword ? 'text' : 'password'}
-            placeholder="Nhập lại mật khẩu"
+            placeholder="Re-enter your password"
             className="pl-9 pr-9"
             {...register('confirmPassword')}
           />
@@ -173,15 +153,16 @@ export function RegisterForm() {
         className="w-full"
         disabled={registerMutation.isPending}
       >
-        {registerMutation.isPending ? 'Đang đăng ký...' : 'Đăng ký'}
+        {registerMutation.isPending ? 'Registering...' : 'Register'}
       </Button>
 
       <div className="text-center text-sm">
-        <span className="text-muted-foreground">Đã có tài khoản? </span>
+        <span className="text-muted-foreground">Already have an account? </span>
         <Link to="/auth/login" className="text-primary hover:underline">
-          Đăng nhập ngay
+          Log in now
         </Link>
       </div>
+
     </form>
   )
 }

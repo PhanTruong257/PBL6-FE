@@ -2,14 +2,10 @@ import { z } from 'zod'
 
 export const registerSchema = z
   .object({
-    firstName: z
+    full_name: z
       .string()
       .min(1, 'Tên là bắt buộc')
       .max(50, 'Tên không được quá 50 ký tự'),
-    lastName: z
-      .string()
-      .min(1, 'Họ là bắt buộc')
-      .max(50, 'Họ không được quá 50 ký tự'),
     email: z.string().min(1, 'Email là bắt buộc').email('Email không hợp lệ'),
     password: z
       .string()
