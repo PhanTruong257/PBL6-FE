@@ -39,6 +39,7 @@ import { Route as AdminSettingsNotificationsRouteImport } from './routes/admin/s
 import { Route as AdminSettingsDisplayRouteImport } from './routes/admin/settings/display'
 import { Route as AdminSettingsAppearanceRouteImport } from './routes/admin/settings/appearance'
 import { Route as AdminSettingsAccountRouteImport } from './routes/admin/settings/account'
+import { Route as TeacherDashboardClassClassIdRouteImport } from './routes/teacher/dashboard/class/$classId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -195,6 +196,12 @@ const AdminSettingsAccountRoute = AdminSettingsAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => AdminSettingsRoute,
 } as any)
+const TeacherDashboardClassClassIdRoute =
+  TeacherDashboardClassClassIdRouteImport.update({
+    id: '/teacher/dashboard/class/$classId',
+    path: '/teacher/dashboard/class/$classId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -227,6 +234,7 @@ export interface FileRoutesByFullPath {
   '/student/settings/': typeof StudentSettingsIndexRoute
   '/teacher/dashboard': typeof TeacherDashboardIndexRoute
   '/teacher/settings/': typeof TeacherSettingsIndexRoute
+  '/teacher/dashboard/class/$classId': typeof TeacherDashboardClassClassIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -256,6 +264,7 @@ export interface FileRoutesByTo {
   '/student/settings': typeof StudentSettingsIndexRoute
   '/teacher/dashboard': typeof TeacherDashboardIndexRoute
   '/teacher/settings': typeof TeacherSettingsIndexRoute
+  '/teacher/dashboard/class/$classId': typeof TeacherDashboardClassClassIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -289,6 +298,7 @@ export interface FileRoutesById {
   '/student/settings/': typeof StudentSettingsIndexRoute
   '/teacher/dashboard/': typeof TeacherDashboardIndexRoute
   '/teacher/settings/': typeof TeacherSettingsIndexRoute
+  '/teacher/dashboard/class/$classId': typeof TeacherDashboardClassClassIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -323,6 +333,7 @@ export interface FileRouteTypes {
     | '/student/settings/'
     | '/teacher/dashboard'
     | '/teacher/settings/'
+    | '/teacher/dashboard/class/$classId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -352,6 +363,7 @@ export interface FileRouteTypes {
     | '/student/settings'
     | '/teacher/dashboard'
     | '/teacher/settings'
+    | '/teacher/dashboard/class/$classId'
   id:
     | '__root__'
     | '/'
@@ -384,6 +396,7 @@ export interface FileRouteTypes {
     | '/student/settings/'
     | '/teacher/dashboard/'
     | '/teacher/settings/'
+    | '/teacher/dashboard/class/$classId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -402,6 +415,7 @@ export interface RootRouteChildren {
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
   StudentDashboardIndexRoute: typeof StudentDashboardIndexRoute
   TeacherDashboardIndexRoute: typeof TeacherDashboardIndexRoute
+  TeacherDashboardClassClassIdRoute: typeof TeacherDashboardClassClassIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -616,6 +630,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsAccountRouteImport
       parentRoute: typeof AdminSettingsRoute
     }
+    '/teacher/dashboard/class/$classId': {
+      id: '/teacher/dashboard/class/$classId'
+      path: '/teacher/dashboard/class/$classId'
+      fullPath: '/teacher/dashboard/class/$classId'
+      preLoaderRoute: typeof TeacherDashboardClassClassIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -695,6 +716,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
   StudentDashboardIndexRoute: StudentDashboardIndexRoute,
   TeacherDashboardIndexRoute: TeacherDashboardIndexRoute,
+  TeacherDashboardClassClassIdRoute: TeacherDashboardClassClassIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
