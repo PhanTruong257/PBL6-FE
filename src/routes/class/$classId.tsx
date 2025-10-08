@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useParams } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -9,27 +9,57 @@ import {
   Settings,
   UserPlus
 } from 'lucide-react'
+import type { Class } from '@/types/class'
+import type { User } from '@/types'
 
-export const Route = createFileRoute('/teacher/dashboard/class/$classId')({
+const user: User={
+  user_id: '1',
+  role: 'teacher',
+  fullName: 'abc',
+  email:"abc@gmail.com",
+  isEmailVerified:true,
+  status:'active',
+  createdAt: '',
+  updatedAt: '',
+}
+
+const fetchClassAllInfo = async (classId: string): Promise<Class> =>{
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/classes/${classId}`);
+  const json = await res.json();
+  return json;
+}
+
+const fetchAllClassOfUser = async (user: User): Promise<Class>=>{
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/classes/of/${user.role}/${user.user_id}`);
+  const json = await res.json();
+  return json;
+}
+
+export const Route = createFileRoute('/class/$classId')({
+  loader:async ({params:{classId} })=> Promise.all([fetchAllClassOfUser(user), fetchClassAllInfo(classId)]),
   component: RouteComponent,
 })
 
 function RouteComponent() {
+
+  const  loaderData = Route.useLoaderData();
+  const  allClassInfoOfUser = loaderData[0];
+  const classAllInfo = loaderData[1];
+  // const classAllInfo = {
+  //   class_name: 'mocktest class',
+  //   class_code: 'abcds',
+  //   class_id:1234,
+  //   teacher_id: 123,
+  //   description:'class for mocktest',
+  //   created_at: new Date(),
+  //   updated_at: new Date()
+  // }
+
   const [activeTab, setActiveTab] = useState('posts')
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   
-  // Settings state
-  const [allowStudentParticipation, setAllowStudentParticipation] = useState(true)
-  const [showAttendanceScore, setShowAttendanceScore] = useState(true)
-  const [allowDiscussion, setAllowDiscussion] = useState(false)
-  const [sendEmailNotifications, setSendEmailNotifications] = useState(true)
 
-  const handleAddMember = (email: string) => {
-    // Handle adding member logic here
-    console.log('Adding member to class:', email)
-    // You can add API call here
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -125,21 +155,16 @@ function RouteComponent() {
         <div className="flex-1 flex flex-col">
           {showSettings ? (
             <ClassSettings
-              allowStudentParticipation={allowStudentParticipation}
-              setAllowStudentParticipation={setAllowStudentParticipation}
-              showAttendanceScore={showAttendanceScore}
-              setShowAttendanceScore={setShowAttendanceScore}
-              allowDiscussion={allowDiscussion}
-              setAllowDiscussion={setAllowDiscussion}
-              sendEmailNotifications={sendEmailNotifications}
-              setSendEmailNotifications={setSendEmailNotifications}
               onBack={() => setShowSettings(false)}
-              changeColor={( (e)=> {
-                var element = e.target;
-                // console.log(element); 
-                element.classList.toggle('text-gray-400', element.value === '');
-                element.classList.toggle('text-gray-900', element.value !== '');
-              } )}
+              classInfo={{
+                class_id: classAllInfo.class_id,
+                class_code: classAllInfo.class_code,
+                class_name: classAllInfo.class_name,
+                teacher_id: classAllInfo.teacher_id,
+                description: classAllInfo.description,
+                created_at: classAllInfo.created_at,
+                updated_at: classAllInfo.updated_at,
+              }}
             />
           ) : (
             <ClassMainContent
@@ -154,8 +179,15 @@ function RouteComponent() {
       <AddMemberModal
         isOpen={isAddMemberModalOpen}
         onOpenChange={setIsAddMemberModalOpen}
-        classTitle="Group KTPM 22NH11"
-        onAddMember={handleAddMember}
+        classInfo={{
+          class_id: classAllInfo.class_id,
+          class_code: classAllInfo.class_code,
+          class_name: classAllInfo.class_name,
+          teacher_id: classAllInfo.teacher_id,
+          description: classAllInfo.description,
+          created_at: classAllInfo.created_at,
+          updated_at: classAllInfo.updated_at,
+        }}
       />
     </div>
   )

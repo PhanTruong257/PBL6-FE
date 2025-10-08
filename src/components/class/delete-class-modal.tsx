@@ -41,7 +41,7 @@ export function DeleteClassModal({
             </DialogHeader>
             <div className="py-4">
             <p className="text-sm text-gray-600 mb-4">
-                Delete {classTitle} ?
+                Are you sure to delete {classTitle} ?
             </p>
             
             </div>

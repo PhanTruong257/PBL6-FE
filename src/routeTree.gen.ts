@@ -15,6 +15,7 @@ import { Route as StudentIndexRouteImport } from './routes/student/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as TeacherSettingsRouteImport } from './routes/teacher/settings'
 import { Route as StudentSettingsRouteImport } from './routes/student/settings'
+import { Route as ClassClassIdRouteImport } from './routes/class/$classId'
 import { Route as AuthVerifyCodeRouteImport } from './routes/auth/verify-code'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
@@ -39,7 +40,6 @@ import { Route as AdminSettingsNotificationsRouteImport } from './routes/admin/s
 import { Route as AdminSettingsDisplayRouteImport } from './routes/admin/settings/display'
 import { Route as AdminSettingsAppearanceRouteImport } from './routes/admin/settings/appearance'
 import { Route as AdminSettingsAccountRouteImport } from './routes/admin/settings/account'
-import { Route as TeacherDashboardClassClassIdRouteImport } from './routes/teacher/dashboard/class/$classId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -69,6 +69,11 @@ const TeacherSettingsRoute = TeacherSettingsRouteImport.update({
 const StudentSettingsRoute = StudentSettingsRouteImport.update({
   id: '/student/settings',
   path: '/student/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClassClassIdRoute = ClassClassIdRouteImport.update({
+  id: '/class/$classId',
+  path: '/class/$classId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthVerifyCodeRoute = AuthVerifyCodeRouteImport.update({
@@ -196,12 +201,6 @@ const AdminSettingsAccountRoute = AdminSettingsAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => AdminSettingsRoute,
 } as any)
-const TeacherDashboardClassClassIdRoute =
-  TeacherDashboardClassClassIdRouteImport.update({
-    id: '/teacher/dashboard/class/$classId',
-    path: '/teacher/dashboard/class/$classId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -211,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/auth/register': typeof AuthRegisterRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-code': typeof AuthVerifyCodeRoute
+  '/class/$classId': typeof ClassClassIdRoute
   '/student/settings': typeof StudentSettingsRouteWithChildren
   '/teacher/settings': typeof TeacherSettingsRouteWithChildren
   '/admin': typeof AdminIndexRoute
@@ -234,7 +234,6 @@ export interface FileRoutesByFullPath {
   '/student/settings/': typeof StudentSettingsIndexRoute
   '/teacher/dashboard': typeof TeacherDashboardIndexRoute
   '/teacher/settings/': typeof TeacherSettingsIndexRoute
-  '/teacher/dashboard/class/$classId': typeof TeacherDashboardClassClassIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -243,6 +242,7 @@ export interface FileRoutesByTo {
   '/auth/register': typeof AuthRegisterRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-code': typeof AuthVerifyCodeRoute
+  '/class/$classId': typeof ClassClassIdRoute
   '/admin': typeof AdminIndexRoute
   '/student': typeof StudentIndexRoute
   '/teacher': typeof TeacherIndexRoute
@@ -264,7 +264,6 @@ export interface FileRoutesByTo {
   '/student/settings': typeof StudentSettingsIndexRoute
   '/teacher/dashboard': typeof TeacherDashboardIndexRoute
   '/teacher/settings': typeof TeacherSettingsIndexRoute
-  '/teacher/dashboard/class/$classId': typeof TeacherDashboardClassClassIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -275,6 +274,7 @@ export interface FileRoutesById {
   '/auth/register': typeof AuthRegisterRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-code': typeof AuthVerifyCodeRoute
+  '/class/$classId': typeof ClassClassIdRoute
   '/student/settings': typeof StudentSettingsRouteWithChildren
   '/teacher/settings': typeof TeacherSettingsRouteWithChildren
   '/admin/': typeof AdminIndexRoute
@@ -298,7 +298,6 @@ export interface FileRoutesById {
   '/student/settings/': typeof StudentSettingsIndexRoute
   '/teacher/dashboard/': typeof TeacherDashboardIndexRoute
   '/teacher/settings/': typeof TeacherSettingsIndexRoute
-  '/teacher/dashboard/class/$classId': typeof TeacherDashboardClassClassIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -310,6 +309,7 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/auth/reset-password'
     | '/auth/verify-code'
+    | '/class/$classId'
     | '/student/settings'
     | '/teacher/settings'
     | '/admin'
@@ -333,7 +333,6 @@ export interface FileRouteTypes {
     | '/student/settings/'
     | '/teacher/dashboard'
     | '/teacher/settings/'
-    | '/teacher/dashboard/class/$classId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -342,6 +341,7 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/auth/reset-password'
     | '/auth/verify-code'
+    | '/class/$classId'
     | '/admin'
     | '/student'
     | '/teacher'
@@ -363,7 +363,6 @@ export interface FileRouteTypes {
     | '/student/settings'
     | '/teacher/dashboard'
     | '/teacher/settings'
-    | '/teacher/dashboard/class/$classId'
   id:
     | '__root__'
     | '/'
@@ -373,6 +372,7 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/auth/reset-password'
     | '/auth/verify-code'
+    | '/class/$classId'
     | '/student/settings'
     | '/teacher/settings'
     | '/admin/'
@@ -396,7 +396,6 @@ export interface FileRouteTypes {
     | '/student/settings/'
     | '/teacher/dashboard/'
     | '/teacher/settings/'
-    | '/teacher/dashboard/class/$classId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -407,6 +406,7 @@ export interface RootRouteChildren {
   AuthRegisterRoute: typeof AuthRegisterRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthVerifyCodeRoute: typeof AuthVerifyCodeRoute
+  ClassClassIdRoute: typeof ClassClassIdRoute
   StudentSettingsRoute: typeof StudentSettingsRouteWithChildren
   TeacherSettingsRoute: typeof TeacherSettingsRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
@@ -415,7 +415,6 @@ export interface RootRouteChildren {
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
   StudentDashboardIndexRoute: typeof StudentDashboardIndexRoute
   TeacherDashboardIndexRoute: typeof TeacherDashboardIndexRoute
-  TeacherDashboardClassClassIdRoute: typeof TeacherDashboardClassClassIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -460,6 +459,13 @@ declare module '@tanstack/react-router' {
       path: '/student/settings'
       fullPath: '/student/settings'
       preLoaderRoute: typeof StudentSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/class/$classId': {
+      id: '/class/$classId'
+      path: '/class/$classId'
+      fullPath: '/class/$classId'
+      preLoaderRoute: typeof ClassClassIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/verify-code': {
@@ -630,13 +636,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsAccountRouteImport
       parentRoute: typeof AdminSettingsRoute
     }
-    '/teacher/dashboard/class/$classId': {
-      id: '/teacher/dashboard/class/$classId'
-      path: '/teacher/dashboard/class/$classId'
-      fullPath: '/teacher/dashboard/class/$classId'
-      preLoaderRoute: typeof TeacherDashboardClassClassIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -708,6 +707,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRegisterRoute: AuthRegisterRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthVerifyCodeRoute: AuthVerifyCodeRoute,
+  ClassClassIdRoute: ClassClassIdRoute,
   StudentSettingsRoute: StudentSettingsRouteWithChildren,
   TeacherSettingsRoute: TeacherSettingsRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
@@ -716,7 +716,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
   StudentDashboardIndexRoute: StudentDashboardIndexRoute,
   TeacherDashboardIndexRoute: TeacherDashboardIndexRoute,
-  TeacherDashboardClassClassIdRoute: TeacherDashboardClassClassIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

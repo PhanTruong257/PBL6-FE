@@ -65,11 +65,11 @@ export function ClassMainContent({ activeTab, setActiveTab }: ClassMainContentPr
       {/* Tabs */}
       <div className="bg-white border-b border-gray-200 px-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-3 w-80">
-            <TabsTrigger value="posts">Posts</TabsTrigger>
-            <TabsTrigger value="materials">Materials</TabsTrigger>
-            <TabsTrigger value="onenote">OneNote</TabsTrigger>
-          </TabsList>
+            <TabsList className="grid grid-cols-3 w-80">
+              <TabsTrigger value="posts">Posts</TabsTrigger>
+              <TabsTrigger value="materials">Materials</TabsTrigger>
+              <TabsTrigger value="onenote">OneNote</TabsTrigger>
+            </TabsList>
         </Tabs>
       </div>
 

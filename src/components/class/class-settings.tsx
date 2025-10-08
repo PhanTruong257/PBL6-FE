@@ -1,35 +1,52 @@
 import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
 import { DeleteClassModal } from './delete-class-modal'
 import { useState } from 'react'
+import type { ClassBasicInfo } from '@/types/class';
 
 interface ClassSettingsProps {
-  allowStudentParticipation: boolean
-  setAllowStudentParticipation: (value: boolean) => void
-  showAttendanceScore: boolean
-  setShowAttendanceScore: (value: boolean) => void
-  allowDiscussion: boolean
-  setAllowDiscussion: (value: boolean) => void
-  sendEmailNotifications: boolean
-  setSendEmailNotifications: (value: boolean) => void
-  onBack: () => void
-  changeColor: (e: React.ChangeEvent<HTMLSelectElement>) => void
+  onBack: () => void,
+  classInfo: ClassBasicInfo
 }
 
 export function ClassSettings({
-  allowStudentParticipation,
-  setAllowStudentParticipation,
-  showAttendanceScore,
-  setShowAttendanceScore,
-  allowDiscussion,
-  setAllowDiscussion,
-  sendEmailNotifications,
-  setSendEmailNotifications,
   onBack,
-  changeColor
+  classInfo,
 }: ClassSettingsProps) {
     const [isDeleteClassModalOpen, setDeleteClassModalOpen] = useState<boolean>(false);
+    const [className, setClassName] = useState<string>(classInfo.class_name)
+    const [classCode, setClassCode] = useState<string>(classInfo.class_code)
+    const [classDescription, setClassDescription] = useState<string>(classInfo.description||'')
+    const handleDeleteClass = async (classId: string)=>{
+                
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/classes/${classId}`,{
+            method:'DELETE',
+            headers:{
+                authorization:'' 
+            }
+        })
+        const json = res.json();
+        console.log('Delete class ' + classId + ' response ' + json);
+    }
 
+    const handleUpdateClass = async (className: string, classCode: string, classDes: string) =>{
+        const updatedClass = {
+            class_name:className,
+            class_code:classCode,
+            description: classDes,
+            teacher_id: classInfo.teacher_id
+        };
+
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/classes/${classInfo.class_id}`,{
+            method:'PUT',
+            headers:{
+                authorization:''
+            },
+            body: JSON.stringify(updatedClass),
+        });
+        const json = res.json();
+
+        console.log('Update class successfully' + ' reponse ' + json);
+    }
 
     return (
         <div className="flex-1 p-6 overflow-y-auto bg-white">
@@ -50,8 +67,10 @@ export function ClassSettings({
                     type="text"
                     placeholder="VD: Lập trình hướng đối tượng"
                     className="w-full px-3 py-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+                    value={className}
+                    onChange={(e)=>setClassName(e.target.value)}
                 />
-                <p className="text-xs mt-1 opacity-80">Tên lớp sẽ hiển thị cho học sinh</p>
+                {className.length <= 0 && <p className="text-xs mt-1 text-red-600 opacity-80">Tên lớp không được bỏ trống</p>}
                 </div>
                 
                 <div>
@@ -61,26 +80,11 @@ export function ClassSettings({
                     maxLength={5}
                     placeholder="VD: CS101"
                     className="w-full px-3 py-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+                    value={classCode}
+                    onChange={(e)=>setClassCode(e.target.value)}
+                    
                 />
-                <p className="text-xs mt-1 opacity-80">Mã lớp duy nhất để học sinh tham gia</p>
-                </div>
-                
-                <div className="md:col-span-1">
-                <label className="block text-sm font-medium mb-2">Môn học</label>
-                <select className="w-full px-3 py-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded text-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" onChange={changeColor}>
-                    <option className="text-gray-400" selected value="">Chọn môn học</option>
-                    <option className="text-gray-900" value="01">OOP</option>
-                    <option className="text-gray-900" value="02">Cấu trúc dữ liệu</option>
-                </select>
-                </div>
-                
-                <div className="md:col-span-1">
-                <label className="block text-sm font-medium mb-2">Khối lớp</label>
-                <select className="w-full px-3 py-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded text-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" onChange={changeColor}>
-                    <option className="text-gray-400" selected value="">Chọn khối</option>
-                    <option className="text-gray-900" value="01">Khối 1</option>
-                    <option className="text-gray-900" value="02">Khối 2</option>
-                </select>
+                {classCode.length!=5 && <p className="text-xs mt-1 text-red-600 opacity-80">Mã lớp học phải có đúng 5 ký tự</p>}
                 </div>
             </div>
             
@@ -90,68 +94,12 @@ export function ClassSettings({
                 placeholder="Mô tả ngắn gọn về nội dung và mục tiêu của lớp học..."
                 rows={3}
                 className="w-full px-3 py-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded text-black placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+                value={classDescription}
+                onChange={(e)=>setClassDescription(e.target.value)}
                 />
             </div>
             </div>
 
-            {/* Class Settings */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <div className="flex items-center space-x-3 mb-6">
-                <div className="w-8 h-8 bg-indigo-100 rounded flex items-center justify-center">
-                <span className="text-indigo-600 text-sm font-semibold">⚙️</span>
-                </div>
-                <h2 className="text-lg font-semibold text-gray-900">Cài đặt lớp học</h2>
-            </div>
-
-            <div className="space-y-6">
-                {/* Setting Items */}
-                <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                <div>
-                    <h3 className="font-medium text-gray-900">Cho phép học sinh tự tham gia</h3>
-                    <p className="text-sm text-gray-500">Học sinh có thể tham gia lớp không cần lời mời</p>
-                </div>
-                <Switch 
-                    checked={allowStudentParticipation} 
-                    onCheckedChange={setAllowStudentParticipation}
-                />
-                </div>
-
-                <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                <div>
-                    <h3 className="font-medium text-gray-900">Hiển thị điểm số học sinh</h3>
-                    <p className="text-sm text-gray-500">Học sinh có thể xem điểm của mình</p>
-                </div>
-                <Switch 
-                    checked={showAttendanceScore} 
-                    onCheckedChange={setShowAttendanceScore}
-                />
-                </div>
-
-                <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                <div>
-                    <h3 className="font-medium text-gray-900">Cho phép thảo luận</h3>
-                    <p className="text-sm text-gray-500">Học sinh có thể đăng bình luận và thảo luận</p>
-                </div>
-                <Switch 
-                    checked={allowDiscussion} 
-                    onCheckedChange={setAllowDiscussion}
-                />
-                </div>
-
-                <div className="flex items-center justify-between py-3">
-                <div>
-                    <h3 className="font-medium text-gray-900">Thông báo email</h3>
-                    <p className="text-sm text-gray-500">Gửi email thông báo về bài tập và kiểm tra mới</p>
-                </div>
-                <Switch 
-                    checked={sendEmailNotifications} 
-                    onCheckedChange={setSendEmailNotifications}
-                />
-                </div>
-            </div>
-            </div>
-
-        
             {/* Action Buttons */}
             <div className="flex justify-between">
             <Button variant="outline" onClick={onBack}>
@@ -161,9 +109,15 @@ export function ClassSettings({
                 <Button variant="outline" onClick={()=>setDeleteClassModalOpen(true)}>
                 Xóa lớp học
                 </Button>
-                <Button>
+                {classCode.length==5 && className.length>0 ?  
+                <Button onClick={()=>handleUpdateClass}>
                 Lưu thay đổi
                 </Button>
+                :
+                <Button disabled>
+                Lưu thay đổi
+                </Button>
+                }
             </div>
             </div>
 
@@ -171,11 +125,9 @@ export function ClassSettings({
             <DeleteClassModal
             classId=''
             isOpen = {isDeleteClassModalOpen}
-            onDeleteClass={((classId: string)=>{
-                console.log(classId)
-            })}
+            onDeleteClass={handleDeleteClass}
             onOpenChange={setDeleteClassModalOpen}
-            classTitle='KTPM'
+            classTitle={classInfo.class_name}
             >
             </DeleteClassModal>
         </div>
