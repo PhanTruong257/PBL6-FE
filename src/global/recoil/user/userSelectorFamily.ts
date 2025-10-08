@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil';
 import { usersState } from './userAtom';
-import type { User } from '../../types/user'
+import type { User } from '../../../types/user'
 
 export const userSelector = selectorFamily<User, string>({
     key: 'userSelector',

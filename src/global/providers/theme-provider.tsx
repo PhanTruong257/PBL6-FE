@@ -3,7 +3,7 @@ import {
   ThemeContext,
   AVAILABLE_THEMES,
   type Theme,
-} from '@/context/theme-context.tsx'
+} from '@/global/context/theme-context'
 
 export type ThemeProviderProps = {
   children: React.ReactNode
