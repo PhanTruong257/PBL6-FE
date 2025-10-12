@@ -14,6 +14,7 @@ import { Route as TeacherIndexRouteImport } from './routes/teacher/index'
 import { Route as StudentIndexRouteImport } from './routes/student/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as TeacherSettingsRouteImport } from './routes/teacher/settings'
+import { Route as TeacherCreateClassRouteImport } from './routes/teacher/create-class'
 import { Route as StudentSettingsRouteImport } from './routes/student/settings'
 import { Route as AuthVerifyCodeRouteImport } from './routes/auth/verify-code'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
@@ -63,6 +64,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const TeacherSettingsRoute = TeacherSettingsRouteImport.update({
   id: '/teacher/settings',
   path: '/teacher/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeacherCreateClassRoute = TeacherCreateClassRouteImport.update({
+  id: '/teacher/create-class',
+  path: '/teacher/create-class',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudentSettingsRoute = StudentSettingsRouteImport.update({
@@ -205,6 +211,7 @@ export interface FileRoutesByFullPath {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-code': typeof AuthVerifyCodeRoute
   '/student/settings': typeof StudentSettingsRouteWithChildren
+  '/teacher/create-class': typeof TeacherCreateClassRoute
   '/teacher/settings': typeof TeacherSettingsRouteWithChildren
   '/admin': typeof AdminIndexRoute
   '/student': typeof StudentIndexRoute
@@ -235,6 +242,7 @@ export interface FileRoutesByTo {
   '/auth/register': typeof AuthRegisterRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-code': typeof AuthVerifyCodeRoute
+  '/teacher/create-class': typeof TeacherCreateClassRoute
   '/admin': typeof AdminIndexRoute
   '/student': typeof StudentIndexRoute
   '/teacher': typeof TeacherIndexRoute
@@ -267,6 +275,7 @@ export interface FileRoutesById {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-code': typeof AuthVerifyCodeRoute
   '/student/settings': typeof StudentSettingsRouteWithChildren
+  '/teacher/create-class': typeof TeacherCreateClassRoute
   '/teacher/settings': typeof TeacherSettingsRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/student/': typeof StudentIndexRoute
@@ -301,6 +310,7 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/verify-code'
     | '/student/settings'
+    | '/teacher/create-class'
     | '/teacher/settings'
     | '/admin'
     | '/student'
@@ -331,6 +341,7 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/auth/reset-password'
     | '/auth/verify-code'
+    | '/teacher/create-class'
     | '/admin'
     | '/student'
     | '/teacher'
@@ -362,6 +373,7 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/verify-code'
     | '/student/settings'
+    | '/teacher/create-class'
     | '/teacher/settings'
     | '/admin/'
     | '/student/'
@@ -395,6 +407,7 @@ export interface RootRouteChildren {
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthVerifyCodeRoute: typeof AuthVerifyCodeRoute
   StudentSettingsRoute: typeof StudentSettingsRouteWithChildren
+  TeacherCreateClassRoute: typeof TeacherCreateClassRoute
   TeacherSettingsRoute: typeof TeacherSettingsRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
   StudentIndexRoute: typeof StudentIndexRoute
@@ -439,6 +452,13 @@ declare module '@tanstack/react-router' {
       path: '/teacher/settings'
       fullPath: '/teacher/settings'
       preLoaderRoute: typeof TeacherSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/teacher/create-class': {
+      id: '/teacher/create-class'
+      path: '/teacher/create-class'
+      fullPath: '/teacher/create-class'
+      preLoaderRoute: typeof TeacherCreateClassRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/student/settings': {
@@ -688,6 +708,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthVerifyCodeRoute: AuthVerifyCodeRoute,
   StudentSettingsRoute: StudentSettingsRouteWithChildren,
+  TeacherCreateClassRoute: TeacherCreateClassRoute,
   TeacherSettingsRoute: TeacherSettingsRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
   StudentIndexRoute: StudentIndexRoute,

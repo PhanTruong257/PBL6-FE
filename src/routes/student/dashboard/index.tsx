@@ -6,7 +6,7 @@ import { RequireRole } from '@/components/auth/require-role'
 export const Route = createFileRoute('/student/dashboard/')({
   component: () => (
     <RequireAuth>
-      <RequireRole allowedRoles={['student']}>
+      <RequireRole allowedRoles={['user']}>
         <StudentDashboardPage />
       </RequireRole>
     </RequireAuth>

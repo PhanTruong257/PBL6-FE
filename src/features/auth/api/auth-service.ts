@@ -25,8 +25,8 @@ export const AuthService = {
    */
   async login(
     data: LoginRequest,
-  ): Promise<AuthApiResponse<LoginResponse>> {
-    const response = await httpClient.post<AuthApiResponse<LoginResponse>>(
+  ): Promise<LoginResponse> {
+    const response = await httpClient.post<LoginResponse>(
       '/users/login',
       data,
     )
@@ -39,9 +39,13 @@ export const AuthService = {
   async register(
     data: RegisterRequest,
   ): Promise<AuthApiResponse<RegisterResponse>> {
+
+
+    const dataSend = { ...data, role: 'user', status: 'active' };
+    console.log(dataSend);
     const response = await httpClient.post<AuthApiResponse<RegisterResponse>>(
-      '/users/register',
-      data,
+      '/users/create',
+      dataSend,
     )
     return response.data
   },

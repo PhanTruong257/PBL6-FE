@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { ThemeContext, type ThemeContextType } from '@/context/theme-context.tsx'
+import { ThemeContext, type ThemeContextType } from '@/global/context/theme-context'
 
 /**
  * Hook to access the ThemeContext provided by ThemeProvider.
