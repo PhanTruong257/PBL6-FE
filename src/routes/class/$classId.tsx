@@ -36,24 +36,24 @@ const fetchAllClassOfUser = async (user: User): Promise<Class>=>{
 }
 
 export const Route = createFileRoute('/class/$classId')({
-  loader:async ({params:{classId} })=> Promise.all([fetchAllClassOfUser(user), fetchClassAllInfo(classId)]),
+  // loader:async ({params:{classId} })=> Promise.all([fetchAllClassOfUser(user), fetchClassAllInfo(classId)]),
   component: RouteComponent,
 })
 
 function RouteComponent() {
 
-  const  loaderData = Route.useLoaderData();
-  const  allClassInfoOfUser = loaderData[0];
-  const classAllInfo = loaderData[1];
-  // const classAllInfo = {
-  //   class_name: 'mocktest class',
-  //   class_code: 'abcds',
-  //   class_id:1234,
-  //   teacher_id: 123,
-  //   description:'class for mocktest',
-  //   created_at: new Date(),
-  //   updated_at: new Date()
-  // }
+  // const  loaderData = Route.useLoaderData();
+  // const  allClassInfoOfUser = loaderData[0];
+  // const classAllInfo = loaderData[1];
+  const classAllInfo = {
+    class_name: 'mocktest class',
+    class_code: 'abcds',
+    class_id:1234,
+    teacher_id: 123,
+    description:'class for mocktest',
+    created_at: new Date(),
+    updated_at: new Date()
+  }
 
   const [activeTab, setActiveTab] = useState('posts')
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false)
@@ -93,64 +93,6 @@ function RouteComponent() {
       </div>
 
       <div className="flex h-full">
-        {/* Sidebar */}
-        <div className="w-64 bg-white border-r border-gray-200 p-4">
-          <div className="space-y-4">
-            {/* Pinned Section */}
-            <div>
-              <div className="flex items-center space-x-2 mb-3">
-                <Pin className="h-4 w-4 text-gray-500" />
-                <span className="text-sm font-medium text-gray-700">Pinned</span>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer">
-                  <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-                    <span className="text-white text-xs font-semibold">G</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">General</p>
-                    <p className="text-xs text-gray-500">Actium Corporation</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Your teams Section */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium text-gray-700">Your teams</span>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-3 p-2 rounded-lg bg-orange-50 cursor-pointer">
-                  <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-                    <span className="text-white text-xs font-semibold">KT</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">KTPM</p>
-                  </div>
-                </div>
-                <div className="ml-11 space-y-1">
-                  <div className="text-sm text-gray-600 hover:text-gray-900 cursor-pointer py-1">General</div>
-                  <div className="text-sm text-gray-600 hover:text-gray-900 cursor-pointer py-1">Material</div>
-                </div>
-                
-                <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer">
-                  <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                    <span className="text-white text-xs font-semibold">SOA</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">SOA</p>
-                  </div>
-                </div>
-                <div className="ml-11 space-y-1">
-                  <div className="text-sm text-gray-600 hover:text-gray-900 cursor-pointer py-1">General</div>
-                  <div className="text-sm text-gray-600 hover:text-gray-900 cursor-pointer py-1">Material</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Main Content */}
         <div className="flex-1 flex flex-col">
           {showSettings ? (
