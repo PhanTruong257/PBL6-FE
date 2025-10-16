@@ -2,12 +2,12 @@ import { cn } from "@/libs/utils/cn"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { 
-  ChevronLeft, 
-  Home, 
-  BookOpen, 
-  Users, 
-  Settings, 
+import {
+  ChevronLeft,
+  Home,
+  BookOpen,
+  Users,
+  Settings,
   Calendar,
   FileText,
   GraduationCap,
@@ -40,37 +40,37 @@ export interface SidebarProps {
 const menuItems = [
   {
     title: "Trang chủ",
-    href: "/",
+    href: "/user/dashboard",
     icon: Home,
   },
   {
     title: "Khóa học",
-    href: "/",
+    href: "/user/courses",
     icon: BookOpen,
   },
   {
     title: "Lịch học",
-    href: "/",
+    href: "/user/schedule",
     icon: Calendar,
   },
   {
     title: "Bài tập",
-    href: "/",
+    href: "/user/assignments",
     icon: FileText,
   },
   {
     title: "Điểm số",
-    href: "/",
+    href: "/user/grades",
     icon: BarChart3,
   },
   {
     title: "Sinh viên",
-    href: "/",
+    href: "/user/students",
     icon: Users,
   },
   {
     title: "Giảng viên",
-    href: "/",
+    href: "/user/teachers",
     icon: GraduationCap,
   },
 ]
@@ -78,12 +78,12 @@ const menuItems = [
 const bottomMenuItems = [
   {
     title: "Trợ giúp",
-    href: "/",
+    href: "/user/help",
     icon: HelpCircle,
   },
   {
     title: "Cài đặt",
-    href: "/",
+    href: "/user/settings",
     icon: Settings,
   },
 ]
@@ -100,9 +100,9 @@ export function Sidebar({ className, isCollapsed = false, onToggleCollapse }: Si
       {!isCollapsed && (
         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
           <Link to="/" className="flex items-center gap-2 font-semibold">
-            <img 
-              src="/logo.png" 
-              alt="Logo" 
+            <img
+              src="/logo.png"
+              alt="Logo"
               className="h-6 w-6"
             />
             <span className="text-sidebar-foreground">PBL6</span>
@@ -113,11 +113,11 @@ export function Sidebar({ className, isCollapsed = false, onToggleCollapse }: Si
       {/* Main navigation */}
       <ScrollArea className="flex-1 px-3 py-4">
         <nav className="grid gap-1">
-          {menuItems.map((item) => {
+          {menuItems.map((item, index) => {
             const Icon = item.icon
             return (
               <Button
-                key={item.href}
+                key={`main-${index}-${item.title}`}
                 variant="ghost"
                 className={cn(
                   "justify-start gap-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
@@ -139,11 +139,11 @@ export function Sidebar({ className, isCollapsed = false, onToggleCollapse }: Si
       <div className="mt-auto">
         <Separator className="my-2" />
         <nav className="grid gap-1 px-3 pb-4">
-          {bottomMenuItems.map((item) => {
+          {bottomMenuItems.map((item, index) => {
             const Icon = item.icon
             return (
               <Button
-                key={item.href}
+                key={`bottom-${index}-${item.title}`}
                 variant="ghost"
                 className={cn(
                   "justify-start gap-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",

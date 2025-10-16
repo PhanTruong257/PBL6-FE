@@ -20,17 +20,34 @@ export function useAuthGuard(options: UseAuthGuardOptions = {}) {
   const { isAuthenticated, isLoading, user } = useIsAuthenticated()
 
   useEffect(() => {
-    // Don't redirect while still loading
-    if (isLoading) return
 
-    // If auth is required and user is not authenticated, redirect to login
-    if (requireAuth && !isAuthenticated) {
-      router.navigate({ to: redirectTo })
+
+
+
+    // Get current path to avoid redirecting from auth pages
+    const currentPath = router.state.location.pathname
+
+    // Don't redirect if already on auth pages
+    if (currentPath.startsWith('/auth/')) {
+      console.log('🚫 On auth page, skipping redirect');
+      return
     }
 
-    // If auth is NOT required (e.g., guest routes) and user IS authenticated, redirect to home
-    if (!requireAuth && isAuthenticated && user) {
-    }
+    // Add small delay to prevent immediate redirect on login failure
+    const timeoutId = setTimeout(() => {
+
+      // If auth is required and user is not authenticated, redirect to login
+      if (requireAuth && !isAuthenticated) {
+        console.log('🚪 Redirecting to:', redirectTo);
+        router.navigate({ to: redirectTo })
+      }
+
+      // If auth is NOT required (e.g., guest routes) and user IS authenticated, redirect to home
+      if (!requireAuth && isAuthenticated && user) {
+      }
+    }, 200) // 200ms delay
+
+    return () => clearTimeout(timeoutId)
   }, [isAuthenticated, isLoading, requireAuth, redirectTo, router, user])
 
   return {
