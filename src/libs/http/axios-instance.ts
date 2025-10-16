@@ -31,9 +31,22 @@ httpClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // TODO: Handle unauthorized access(e.g., redirect to login), change auth store
-      localStorage.removeItem('auth_token')
-      window.location.href = '/auth/login'
+      console.log('🚨 401 Error intercepted:', {
+        url: error.config?.url,
+        currentPath: window.location.pathname
+      });
+
+      // Don't redirect if already on auth pages (login/register/forgot-password)
+      const currentPath = window.location.pathname;
+      if (!currentPath.startsWith('/auth/')) {
+        console.log('🚪 Redirecting to login from 401 error');
+        localStorage.removeItem('auth_token')
+        window.location.href = '/auth/login'
+      } else {
+        console.log('🚫 Already on auth page, skipping redirect');
+        // Just clear token but don't redirect
+        localStorage.removeItem('auth_token')
+      }
     }
     return Promise.reject(error)
   }
