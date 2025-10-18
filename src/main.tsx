@@ -1,7 +1,8 @@
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { RecoilRoot } from 'recoil'
 
-import { AppProviders } from './providers'
+import { AppProviders } from './global/providers/index.ts'
 import * as TanStackQueryProvider from './integrations/tanstack-query/root-provider.tsx'
 
 // Import the generated route tree
@@ -35,9 +36,11 @@ const rootElement = document.getElementById('app')
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
-    <AppProviders>
-      <RouterProvider router={router} />
-    </AppProviders>,
+    <RecoilRoot>
+      <AppProviders>
+        <RouterProvider router={router} />
+      </AppProviders>
+    </RecoilRoot>
   )
 }
 

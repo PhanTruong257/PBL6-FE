@@ -24,14 +24,14 @@ export const ROUTES = {
   TEACHER_DASHBOARD: '/teacher/dashboard',
   TEACHER_MY_COURSES: '/teacher/my-courses',
   TEACHER_CREATE_COURSE: '/teacher/create-course',
-  TEACHER_STUDENTS: '/teacher/students',
+  TEACHER_USERS: '/teacher/users',
   
-  // Student routes
-  STUDENT: '/student',
-  STUDENT_DASHBOARD: '/student/dashboard',
-  STUDENT_COURSES: '/student/courses',
-  STUDENT_LEARNING: '/student/learning',
-  STUDENT_ASSIGNMENTS: '/student/assignments',
+  // user routes
+  USER: '/user',
+  USER_DASHBOARD: '/user/dashboard',
+  USER_COURSES: '/user/courses',
+  USER_LEARNING: '/user/learning',
+  USER_ASSIGNMENTS: '/user/assignments',
   
   // Shared routes
   PROFILE: '/profile',
@@ -52,5 +52,5 @@ export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES]
 export const DEFAULT_ROUTES_BY_ROLE = {
   admin: ROUTES.ADMIN_DASHBOARD,
   teacher: ROUTES.TEACHER_DASHBOARD,
-  student: ROUTES.STUDENT_DASHBOARD,
+  user: ROUTES.USER_DASHBOARD,
 } as const

@@ -1,8 +1,11 @@
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
+import { useSetRecoilState } from 'recoil'
+
 import { AuthService } from '../api/auth-service'
 import { tokenStorage, tempStorage } from '@/libs/utils'
-import { DEFAULT_ROUTES_BY_ROLE } from '@/libs/constants'
+import { usersState } from '../../../global/recoil/user'
+
 import type {
   LoginRequest,
   RegisterRequest,
@@ -26,26 +29,32 @@ export const authKeys = {
 export function useLogin() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const setUser = useSetRecoilState(usersState)
 
   return useMutation({
-    mutationFn: (data: LoginRequest) => AuthService.login(data),
-    onSuccess: (response) => {
+    mutationFn: (data: LoginRequest) => {
+      // Clear any existing tokens before attempting login
+      tokenStorage.clearTokens()
+      queryClient.removeQueries({ queryKey: authKeys.user() })
 
+      return AuthService.login(data)
+    },
+    onSuccess: (response) => {
       const { user, accessToken, refreshToken } = response
 
       // Save tokens and user info
       tokenStorage.setTokens(accessToken, refreshToken)
       tokenStorage.setUser(user)
+      setUser(user)
 
       // Update cache
       queryClient.setQueryData(authKeys.user(), user)
 
-      // Redirect based on role
-      const redirectPath = '/';
-      // const redirectPath = 
-      //   DEFAULT_ROUTES_BY_ROLE[user.role as keyof typeof DEFAULT_ROUTES_BY_ROLE]
-
+      const redirectPath = '/user/dashboard'
       navigate({ to: redirectPath as any })
+    },
+    onError: (error) => {
+      console.log('🚨 Login failed:', error)
     },
   })
 }
@@ -74,13 +83,12 @@ export function useForgotPassword() {
   const navigate = useNavigate()
 
   return useMutation({
-    mutationFn: (data: ForgotPasswordRequest) =>
-      AuthService.forgotPassword(data),
+    mutationFn: (data: ForgotPasswordRequest) => AuthService.forgotPassword(data),
     onSuccess: (_response, variables) => {
       // Save email to sessionStorage for next step
       tempStorage.setResetEmail(variables.email)
 
-      // Navigate to verify code page (no search params)
+      // Navigate to verify code page
       navigate({ to: '/auth/verify-code' })
     },
   })
@@ -98,7 +106,7 @@ export function useVerifyCode() {
       // Save code to sessionStorage for next step
       tempStorage.setResetCode(variables.code)
 
-      // Navigate to reset password page (no search params)
+      // Navigate to reset password page
       navigate({ to: '/auth/reset-password' })
     },
   })
@@ -116,7 +124,7 @@ export function useResetPassword() {
       // Clear temp data after successful reset
       tempStorage.clearResetData()
 
-      // Redirect to login page after successful password reset
+      // Redirect to login page
       setTimeout(() => {
         navigate({ to: '/auth/login' })
       }, 2000)
@@ -169,6 +177,8 @@ export function useCurrentUser() {
       }
       return failureCount < 2
     },
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 }
 
@@ -176,12 +186,13 @@ export function useCurrentUser() {
  * Hook to check authentication status
  */
 export function useIsAuthenticated() {
-  const { data: user, isLoading } = useCurrentUser()
+  const { data: user, isLoading, isFetching } = useCurrentUser()
   const token = tokenStorage.getAccessToken()
+  const isAuthenticated = !!(user && token)
 
   return {
-    isAuthenticated: !!(user && token),
-    isLoading,
+    isAuthenticated,
+    isLoading: isLoading || isFetching,
     user,
   }
 }

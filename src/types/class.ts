@@ -19,4 +19,11 @@ export interface ClassBasicInfo{
     teacher_id?: number;
     created_at: Date;
     updated_at?: Date;
+}export interface CreateClassRequest {
+    class_name: string;
+    class_code: string;
+    description?: string;
+    teacher_id: number;
 }
+
+
