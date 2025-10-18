@@ -11,14 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
-<<<<<<< HEAD
-import { Route as TeacherSettingsRouteImport } from './routes/teacher/settings'
-import { Route as StudentSettingsRouteImport } from './routes/student/settings'
-import { Route as ClassClassIdRouteImport } from './routes/class/$classId'
-=======
 import { Route as UserSettingsRouteImport } from './routes/user/settings'
 import { Route as UserCreateClassRouteImport } from './routes/user/create-class'
->>>>>>> master
+import { Route as ClassClassIdRouteImport } from './routes/class/$classId'
 import { Route as AuthVerifyCodeRouteImport } from './routes/auth/verify-code'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
@@ -164,14 +159,9 @@ export interface FileRoutesByFullPath {
   '/auth/register': typeof AuthRegisterRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-code': typeof AuthVerifyCodeRoute
-<<<<<<< HEAD
   '/class/$classId': typeof ClassClassIdRoute
-  '/student/settings': typeof StudentSettingsRouteWithChildren
-  '/teacher/settings': typeof TeacherSettingsRouteWithChildren
-=======
   '/user/create-class': typeof UserCreateClassRoute
   '/user/settings': typeof UserSettingsRouteWithChildren
->>>>>>> master
   '/admin': typeof AdminIndexRoute
   '/admin/settings/account': typeof AdminSettingsAccountRoute
   '/admin/settings/appearance': typeof AdminSettingsAppearanceRoute
@@ -193,11 +183,8 @@ export interface FileRoutesByTo {
   '/auth/register': typeof AuthRegisterRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-code': typeof AuthVerifyCodeRoute
-<<<<<<< HEAD
   '/class/$classId': typeof ClassClassIdRoute
-=======
   '/user/create-class': typeof UserCreateClassRoute
->>>>>>> master
   '/admin': typeof AdminIndexRoute
   '/admin/settings/account': typeof AdminSettingsAccountRoute
   '/admin/settings/appearance': typeof AdminSettingsAppearanceRoute
@@ -221,14 +208,9 @@ export interface FileRoutesById {
   '/auth/register': typeof AuthRegisterRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-code': typeof AuthVerifyCodeRoute
-<<<<<<< HEAD
   '/class/$classId': typeof ClassClassIdRoute
-  '/student/settings': typeof StudentSettingsRouteWithChildren
-  '/teacher/settings': typeof TeacherSettingsRouteWithChildren
-=======
   '/user/create-class': typeof UserCreateClassRoute
   '/user/settings': typeof UserSettingsRouteWithChildren
->>>>>>> master
   '/admin/': typeof AdminIndexRoute
   '/admin/settings/account': typeof AdminSettingsAccountRoute
   '/admin/settings/appearance': typeof AdminSettingsAppearanceRoute
@@ -253,14 +235,9 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/auth/reset-password'
     | '/auth/verify-code'
-<<<<<<< HEAD
     | '/class/$classId'
-    | '/student/settings'
-    | '/teacher/settings'
-=======
     | '/user/create-class'
     | '/user/settings'
->>>>>>> master
     | '/admin'
     | '/admin/settings/account'
     | '/admin/settings/appearance'
@@ -282,11 +259,8 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/auth/reset-password'
     | '/auth/verify-code'
-<<<<<<< HEAD
     | '/class/$classId'
-=======
     | '/user/create-class'
->>>>>>> master
     | '/admin'
     | '/admin/settings/account'
     | '/admin/settings/appearance'
@@ -309,14 +283,9 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/auth/reset-password'
     | '/auth/verify-code'
-<<<<<<< HEAD
     | '/class/$classId'
-    | '/student/settings'
-    | '/teacher/settings'
-=======
     | '/user/create-class'
     | '/user/settings'
->>>>>>> master
     | '/admin/'
     | '/admin/settings/account'
     | '/admin/settings/appearance'
@@ -340,14 +309,9 @@ export interface RootRouteChildren {
   AuthRegisterRoute: typeof AuthRegisterRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthVerifyCodeRoute: typeof AuthVerifyCodeRoute
-<<<<<<< HEAD
   ClassClassIdRoute: typeof ClassClassIdRoute
-  StudentSettingsRoute: typeof StudentSettingsRouteWithChildren
-  TeacherSettingsRoute: typeof TeacherSettingsRouteWithChildren
-=======
   UserCreateClassRoute: typeof UserCreateClassRoute
   UserSettingsRoute: typeof UserSettingsRouteWithChildren
->>>>>>> master
   AdminIndexRoute: typeof AdminIndexRoute
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
   UserDashboardIndexRoute: typeof UserDashboardIndexRoute
@@ -567,14 +531,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRegisterRoute: AuthRegisterRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthVerifyCodeRoute: AuthVerifyCodeRoute,
-<<<<<<< HEAD
   ClassClassIdRoute: ClassClassIdRoute,
-  StudentSettingsRoute: StudentSettingsRouteWithChildren,
-  TeacherSettingsRoute: TeacherSettingsRouteWithChildren,
-=======
   UserCreateClassRoute: UserCreateClassRoute,
   UserSettingsRoute: UserSettingsRouteWithChildren,
->>>>>>> master
   AdminIndexRoute: AdminIndexRoute,
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
   UserDashboardIndexRoute: UserDashboardIndexRoute,
