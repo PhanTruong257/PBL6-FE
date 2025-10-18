@@ -1,4 +1,4 @@
-import type { Material } from "./material";
+import type { Post } from "./post";
 
 export interface Class{
     class_id: number;
@@ -8,7 +8,7 @@ export interface Class{
     teacher_id?: number;
     created_at: Date;
     updated_at?: Date;
-    posts:Material[];
+    posts:Post[];
 }
 
 export interface ClassBasicInfo{
