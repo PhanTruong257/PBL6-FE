@@ -1,10 +1,11 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import type { User } from '@/types'
-import { MessageCircle} from 'lucide-react'
+import { MessageCircle } from 'lucide-react'
 import { useState } from 'react'
 import { replyInput } from './reply-input'
+import { AvatarHoverCard } from './avatar-hover-card'
 
 
 
@@ -29,10 +30,7 @@ export function PostCard({
     <Card className="shadow-sm">
       <CardContent className="p-6">
         <div className="flex items-start space-x-4">
-          <Avatar className="w-10 h-10">
-            <AvatarImage src="/placeholder-avatar.jpg" />
-            <AvatarFallback className={`${sender.avatar} text-white`}>{sender.fullName.charAt(0)}</AvatarFallback>
-          </Avatar>
+          <AvatarHoverCard user={sender} placeHolder="/placeholder-avatar.jpg" />
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-2">
               <span className="font-semibold text-gray-900">{sender.fullName}</span>
@@ -51,11 +49,7 @@ export function PostCard({
               replies.map((reply, index) => (
               <div key={index} className="ml-4 border-l-2 border-gray-200 pl-4 mb-4">
                 <div className="flex items-start space-x-3">
-                  <Avatar className="w-8 h-8">
-                    <AvatarFallback className={`${reply.sender.avatar} text-white text-xs`}>
-                      {reply.sender.fullName.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <AvatarHoverCard user={reply.sender} placeHolder='/placeholder-avatar.jpg' />
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">
                       <span className="font-medium text-gray-900 text-sm">{reply.sender.fullName}</span>
