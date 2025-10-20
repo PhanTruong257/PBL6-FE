@@ -20,7 +20,7 @@ export interface Role {
 export interface User {
   user_id: number
   email: string
-  fullName: string
+  gender?: string
   avatar?: string
   role: UserRole
   status: UserStatus
