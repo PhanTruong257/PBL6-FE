@@ -1,7 +1,7 @@
 import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanstackDevtools } from '@tanstack/react-devtools'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useSetRecoilState } from 'recoil'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
@@ -21,14 +21,21 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootComponent() {
   const setUser = useSetRecoilState(currentUserState)
+  const hasLoadedUser = useRef(false)
 
-  // Auto-load user data on app initialization/reload
+  // Auto-load user data ONCE on app initialization/reload
   useEffect(() => {
+    // Prevent duplicate calls
+    if (hasLoadedUser.current) {
+      return
+    }
+
     const loadUserData = async () => {
       const accessToken = cookieStorage.getAccessToken()
       
       if (!accessToken) {
         console.log('⚠️ No access token found, skipping user data load')
+        hasLoadedUser.current = true
         return
       }
 
@@ -42,6 +49,8 @@ function RootComponent() {
         
         console.log(`✅ User data loaded: ${userData.email}`)
         console.log(`✅ Loaded ${userData.roles?.length || 0} roles and ${userData.permissions?.length || 0} permissions`)
+        
+        hasLoadedUser.current = true
       } catch (error: any) {
         console.error('❌ Failed to load user data:', error)
         
@@ -51,6 +60,8 @@ function RootComponent() {
           cookieStorage.clearTokens()
           setUser(null)
         }
+        
+        hasLoadedUser.current = true
       }
     }
 

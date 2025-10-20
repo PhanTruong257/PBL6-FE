@@ -17,12 +17,6 @@ export interface IApiResponse<T = any> {
 }
 
 /**
- * Legacy alias for backward compatibility
- * @deprecated Use IApiResponse instead
- */
-export type ApiResponse<T> = IApiResponse<T>
-
-/**
  * Paginated response wrapper
  */
 export interface PaginatedResponse<T> {

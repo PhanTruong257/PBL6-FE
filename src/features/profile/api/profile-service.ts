@@ -1,5 +1,5 @@
-import { apiClient } from '@/libs/http'
-import type { ApiResponse } from '@/types/api'
+import { httpClient } from '@/libs/http'
+import type { IApiResponse } from '@/types/api'
 
 export interface UpdateProfileRequest {
   full_name?: string
@@ -23,7 +23,6 @@ export interface ProfileApiResponse {
   status: string
   created_at: string
   updated_at: string
-  success: boolean
 }
 
 export const profileApi = {
@@ -31,7 +30,7 @@ export const profileApi = {
    * Get current user profile
    */
   getProfile: async (): Promise<ProfileApiResponse> => {
-    const response = await apiClient.get<ApiResponse<ProfileApiResponse>>('/users/profile')
+    const response = await httpClient.get<IApiResponse<ProfileApiResponse>>('/users/me')
     return response.data.data
   },
 
@@ -39,7 +38,7 @@ export const profileApi = {
    * Update current user profile
    */
   updateProfile: async (data: UpdateProfileRequest): Promise<ProfileApiResponse> => {
-    const response = await apiClient.patch<ApiResponse<ProfileApiResponse>>('/users/profile', data)
+    const response = await httpClient.put<IApiResponse<ProfileApiResponse>>('/users/me', data)
     return response.data.data
   },
 
@@ -51,7 +50,7 @@ export const profileApi = {
     newPassword: string
     confirmPassword: string
   }): Promise<{ message: string }> => {
-    const response = await apiClient.put<ApiResponse<{ message: string }>>('/users/change-password', data)
+    const response = await httpClient.put<IApiResponse<{ message: string }>>('/users/change-password', data)
     return response.data.data
   },
 
@@ -62,7 +61,7 @@ export const profileApi = {
     const formData = new FormData()
     formData.append('avatar', file)
     
-    const response = await apiClient.post<ApiResponse<{ avatarUrl: string }>>('/users/upload-avatar', formData, {
+    const response = await httpClient.post<IApiResponse<{ avatarUrl: string }>>('/users/upload-avatar', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

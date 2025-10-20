@@ -19,7 +19,6 @@ import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-passw
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
-import { Route as UserSettingsProfileRouteImport } from './routes/user/settings/profile'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -71,11 +70,6 @@ const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   path: '/auth/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UserSettingsProfileRoute = UserSettingsProfileRouteImport.update({
-  id: '/user/settings/profile',
-  path: '/user/settings/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -88,7 +82,6 @@ export interface FileRoutesByFullPath {
   '/classes': typeof ClassesIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/profile': typeof ProfileIndexRoute
-  '/user/settings/profile': typeof UserSettingsProfileRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -101,7 +94,6 @@ export interface FileRoutesByTo {
   '/classes': typeof ClassesIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/profile': typeof ProfileIndexRoute
-  '/user/settings/profile': typeof UserSettingsProfileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -115,7 +107,6 @@ export interface FileRoutesById {
   '/classes/': typeof ClassesIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/profile/': typeof ProfileIndexRoute
-  '/user/settings/profile': typeof UserSettingsProfileRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -130,7 +121,6 @@ export interface FileRouteTypes {
     | '/classes'
     | '/dashboard'
     | '/profile'
-    | '/user/settings/profile'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -143,7 +133,6 @@ export interface FileRouteTypes {
     | '/classes'
     | '/dashboard'
     | '/profile'
-    | '/user/settings/profile'
   id:
     | '__root__'
     | '/'
@@ -156,7 +145,6 @@ export interface FileRouteTypes {
     | '/classes/'
     | '/dashboard/'
     | '/profile/'
-    | '/user/settings/profile'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -170,7 +158,6 @@ export interface RootRouteChildren {
   ClassesIndexRoute: typeof ClassesIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
-  UserSettingsProfileRoute: typeof UserSettingsProfileRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -245,13 +232,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/user/settings/profile': {
-      id: '/user/settings/profile'
-      path: '/user/settings/profile'
-      fullPath: '/user/settings/profile'
-      preLoaderRoute: typeof UserSettingsProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -266,7 +246,6 @@ const rootRouteChildren: RootRouteChildren = {
   ClassesIndexRoute: ClassesIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   ProfileIndexRoute: ProfileIndexRoute,
-  UserSettingsProfileRoute: UserSettingsProfileRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,7 +1,26 @@
 import { z } from 'zod'
 
 /**
- * Profile update schema
+ * Profile form schema - for display and editing
+ */
+export const profileSchema = z.object({
+  fullName: z.string().min(1, 'Full name is required'),
+  dateOfBirth: z.date().optional(),
+  gender: z.string().optional(),
+  email: z.string().email('Invalid email'),
+  phone: z
+    .string()
+    .regex(/^[0-9+\-\s()]*$/, 'Invalid phone number')
+    .optional()
+    .or(z.literal('')),
+  address: z.string().optional(),
+  bio: z.string().optional(),
+})
+
+export type ProfileFormData = z.infer<typeof profileSchema>
+
+/**
+ * Update profile schema - for API submission
  */
 export const updateProfileSchema = z.object({
   full_name: z

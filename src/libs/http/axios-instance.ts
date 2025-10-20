@@ -12,13 +12,20 @@ export const httpClient = axios.create({
 
 /**
  * Request interceptor
- * Automatically adds Authorization header from cookie storage
+ * Automatically adds Authorization and x-refresh-token headers from cookie storage
  */
 httpClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = cookieStorage.getAccessToken()
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+    const accessToken = cookieStorage.getAccessToken()
+    const refreshToken = cookieStorage.getRefreshToken()
+    
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`
+    }
+    
+    // Add refresh token header for backend
+    if (refreshToken) {
+      config.headers['x-refresh-token'] = refreshToken
     }
 
     return config
