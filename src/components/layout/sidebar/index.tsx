@@ -73,6 +73,11 @@ const menuItems = [
     href: "/user/teachers",
     icon: GraduationCap,
   },
+  {
+    title: "Hồ sơ",
+    href: "/user/settings/profile",
+    icon: Users,
+  },
 ]
 
 const bottomMenuItems = [

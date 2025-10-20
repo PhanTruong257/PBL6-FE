@@ -7,7 +7,7 @@ export const Route = createFileRoute('/user/settings')({
   component: () => (
     <RequireAuth>
       <RequireRole allowedRoles={['teacher']}>
-        <SettingsLayout role="teacher" basePath="/teacher" />
+        <SettingsLayout role="teacher" basePath="/user" />
       </RequireRole>
     </RequireAuth>
   ),

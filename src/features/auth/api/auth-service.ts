@@ -124,7 +124,7 @@ export const AuthService = {
    * Get current user info
    */
   async getCurrentUser(): Promise<AuthApiResponse<User>> {
-    const response = await httpClient.get<AuthApiResponse<User>>('/auth/me')
+    const response = await httpClient.get<AuthApiResponse<User>>('/users/profile')
     return response.data
   },
 }
