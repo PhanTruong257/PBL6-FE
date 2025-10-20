@@ -1,10 +1,24 @@
-import { selector } from 'recoil';
-import { usersState } from './userAtom';
+import { selector } from 'recoil'
+import { currentUserState } from './userAtom'
 
-export const totalUserSelector = selector<number>({
-    key: 'totalUserSelector',
-    get: ({ get }) => {
-        const users = get(usersState);
-        return users.length;
-    }
+/**
+ * Selector to check if user is authenticated
+ */
+export const isAuthenticatedSelector = selector<boolean>({
+  key: 'isAuthenticatedSelector',
+  get: ({ get }) => {
+    const user = get(currentUserState)
+    return user !== null
+  },
+})
+
+/**
+ * Selector to get user role
+ */
+export const userRoleSelector = selector<string | null>({
+  key: 'userRoleSelector',
+  get: ({ get }) => {
+    const user = get(currentUserState)
+    return user?.role || null
+  },
 })
