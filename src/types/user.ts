@@ -1,40 +1,36 @@
 export type UserRole = 'admin' | 'teacher' | 'user'
 
-export type UserStatus = 'active' | 'inactive' | 'suspended' | 'pending'
+export type UserStatus = 'active' | 'block'
+
+export interface Permission {
+  permission_id: number
+  key: string
+  name: string
+  resource: string
+  action: string
+  description?: string
+}
+
+export interface Role {
+  role_id: number
+  name: string
+  description?: string
+}
 
 export interface User {
   user_id: number
-  full_name: string
   email: string
-  phone?: string
-  address?: string
-  dateOfBirth?: string
   gender?: string
   avatar?: string
   role: UserRole
   status: UserStatus
-  created_at: string
-  updated_at?: string
-}
-
-export interface UserProfile extends User {
-  // Additional profile fields
-  enrolledCourses?: number
-  completedCourses?: number
-  points?: number
-}
-
-export interface CreateUserRequest {
-  firstName: string
-  lastName: string
-  email: string
-  password: string
-  role: UserRole
-}
-
-export interface UpdateUserRequest {
+  isEmailVerified: boolean
   phone?: string
   dateOfBirth?: string
   address?: string
-  avatar?: string
+  bio?: string
+  createdAt: string
+  updatedAt: string
+  roles?: Role[]
+  permissions?: Permission[]
 }

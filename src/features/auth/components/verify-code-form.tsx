@@ -10,11 +10,11 @@ import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useVerifyCode, useResendCode } from '@/features/auth/hooks/use-auth'
 import { verifyCodeSchema, type VerifyCodeFormData } from '../schemas/verify-code.schema'
-import { tempStorage } from '@/libs/utils'
+import { sessionStorage } from '@/libs/utils/session-storage'
 
 export function VerifyCodeForm() {
   const navigate = useNavigate()
-  const email = tempStorage.getResetEmail()
+  const email = sessionStorage.get('temp_reset_email')
   const verifyCodeMutation = useVerifyCode()
   const resendCodeMutation = useResendCode()
 

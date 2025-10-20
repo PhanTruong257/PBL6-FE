@@ -96,16 +96,6 @@ export function LoginForm() {
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          {/* <Checkbox id="rememberMe" {...register('rememberMe')} />
-          <Label
-            htmlFor="rememberMe"
-            className="text-sm font-normal cursor-pointer"
-          >
-            Ghi nhớ đăng nhập
-          </Label> */}
-        </div>
-
         <Link
           to="/auth/forgot-password"
           className="text-sm text-primary hover:underline"
