@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import { ClassSettings, ClassMainContent, AddMemberModal } from '@/components/class'
 import { 
   MoreHorizontal, 
-  Pin, 
   Settings,
   UserPlus
 } from 'lucide-react'
@@ -14,6 +13,17 @@ import type { Post } from '@/types/post'
 import type { PostCardProps } from '@/components/class/post-card'
 
 // ---------------------------------------------------------------------------------------------------
+const defaultUser: User={
+  user_id: '1',
+  role: 'teacher',
+  fullName: 'abc',
+  email:"abc@gmail.com",
+  isEmailVerified:true,
+  status:'active',
+  createdAt: '',
+  updatedAt: '',
+}
+// login user
 const user: User={
   user_id: '1',
   role: 'teacher',
@@ -24,75 +34,75 @@ const user: User={
   createdAt: '',
   updatedAt: '',
 }
-const POSTS_DATA = [
-  {
-    id: 1,
-    sender: user,
-    create_at: new Date(),
-    message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
-    replies: [
-      {
-        id: 2,
-        sender: user,
-        create_at: new Date(),
-        message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
-        replies: []
-      },
-      {
-        id: 3,
-        sender: user,
-        create_at: new Date(),
-        message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
-        replies: []
-      },
-      {
-        id: 4,
-        sender: user,
-        create_at: new Date(),
-        message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
-        replies: []
-      }
-    ]
-  },
-  {
-    id: 5,
-    sender: user,
-    create_at: new Date(),
-    message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
-    replies: [
-      {
-        id: 6,
-        sender: user,
-        create_at: new Date(),
-        message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
-        replies: []
-      },
-      {
-        id: 7,
-        sender: user,
-        create_at: new Date(),
-        message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
-        replies: []
-      },
-      {
-        id: 8,
-        sender: user,
-        create_at: new Date(),
-        message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
-        replies: []
-      }
-    ]
-  }
-]
-const CLASS_ALL_INFO = {
-    class_name: 'mocktest class',
-    class_code: 'abcds',
-    class_id:1234,
-    teacher_id: 123,
-    description:'class for mocktest',
-    created_at: new Date(),
-    updated_at: new Date()
-  }
+// const POSTS_DATA = [
+//   {
+//     id: 1,
+//     sender: defaultUser,
+//     create_at: new Date(),
+//     message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
+//     replies: [
+//       {
+//         id: 2,
+//         sender: defaultUser,
+//         create_at: new Date(),
+//         message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
+//         replies: []
+//       },
+//       {
+//         id: 3,
+//         sender: defaultUser,
+//         create_at: new Date(),
+//         message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
+//         replies: []
+//       },
+//       {
+//         id: 4,
+//         sender: defaultUser,
+//         create_at: new Date(),
+//         message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
+//         replies: []
+//       }
+//     ]
+//   },
+//   {
+//     id: 5,
+//     sender: defaultUser,
+//     create_at: new Date(),
+//     message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
+//     replies: [
+//       {
+//         id: 6,
+//         sender: defaultUser,
+//         create_at: new Date(),
+//         message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
+//         replies: []
+//       },
+//       {
+//         id: 7,
+//         sender: defaultUser,
+//         create_at: new Date(),
+//         message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
+//         replies: []
+//       },
+//       {
+//         id: 8,
+//         sender: defaultUser,
+//         create_at: new Date(),
+//         message: 'Thầy gửi các em mẫu SRS như sau, với các yêu cầu...',
+//         replies: []
+//       }
+//     ]
+//   }
+// ]
+// const CLASS_ALL_INFO = {
+//     class_name: 'mocktest class',
+//     class_code: 'abcds',
+//     class_id:1234,
+//     teacher_id: 123,
+//     description:'class for mocktest',
+//     created_at: new Date(),
+//     updated_at: new Date()
+//   }
 // ---------------------------------------------------------------------------------------------------
 const fetchClassAllInfo = async (classId: string): Promise<Class> =>{
   const res = await fetch(`${import.meta.env.VITE_API_URL}/classes/${classId}`);
@@ -103,9 +113,6 @@ const fetchClassAllInfo = async (classId: string): Promise<Class> =>{
 const fetchUserProfileFromIds = async (userIds:number[]): Promise<User[]> =>{
   const res = await fetch(`${import.meta.env.VITE_API_URL}/users/get-list-profile-by-ids`,{
     method: 'POST',
-    headers: {
-      authorization: '',
-    },
     body:JSON.stringify({
       userIds
     })
@@ -116,65 +123,65 @@ const fetchUserProfileFromIds = async (userIds:number[]): Promise<User[]> =>{
 
 
 export const Route = createFileRoute('/class/$classId')({
-  // loader:async ({params:{classId} })=> {
-  //   const classAllInfo = await fetchClassAllInfo(classId);
-  //   const classInfo:ClassBasicInfo = {
-  //     class_id:classAllInfo.class_id,
-  //     class_name:classAllInfo.class_name,
-  //     class_code:classAllInfo.class_code,
-  //     teacher_id:classAllInfo.teacher_id,
-  //     description:classAllInfo.description,
-  //     created_at:classAllInfo.created_at,
-  //     updated_at:classAllInfo.updated_at
-  //   }
-  //   const userIds = new Set<number>()
-  //   const postDict = new Map<number, Post>();
-  //   const replyDict = new Map<number,Post[]>();
-  //   for (let post of classAllInfo.posts){
-  //     if (post.parent_id){
-  //       if (!replyDict.has(post.id)) replyDict.set(post.id, [])
-  //       replyDict.get(post.id)?.push(post)
-  //     } else {
-  //       postDict.set(post.id, post)
-  //     }
-  //     userIds.add(post.sender_id)
-  //   }
-  //   const userIdsList = [...userIds];
-  //   const userInfoList = await fetchUserProfileFromIds(userIdsList)
-  //   const userDict = new Map<number, User>()
-  //   for (let i = 0; i<userIdsList.length; i++){
-  //     userDict.set(userIdsList[i], userInfoList[i])
-  //   }
-  //   const formattedPostData:PostCardProps[] = []
-  //   for (let [postId, post] of postDict){
-  //     let replies = replyDict.has(postId)?replyDict.get(postId):[]
-  //     let formattedReplies:PostCardProps[]= replies?replies.map((reply)=>({
-  //       id: reply.id,
-  //       sender: userDict.get(reply.sender_id)||user,
-  //       message: reply.message,
-  //       create_at: reply.created_at,
-  //       replies: [],
-  //     })):[];
-  //     formattedPostData.push({
-  //       id: post.id,
-  //       sender: userDict.get(post.sender_id)||user,
-  //       message: post.message,
-  //       create_at: post.created_at,
-  //       replies: formattedReplies,
-  //     })
-  //   }
-  //   return {classInfo, formattedPostData}
-  // },
+  loader:async ({params:{classId} })=> {
+    const classAllInfo = await fetchClassAllInfo(classId);
+    const classInfo:ClassBasicInfo = {
+      class_id:classAllInfo.class_id,
+      class_name:classAllInfo.class_name,
+      class_code:classAllInfo.class_code,
+      teacher_id:classAllInfo.teacher_id,
+      description:classAllInfo.description,
+      created_at:classAllInfo.created_at,
+      updated_at:classAllInfo.updated_at
+    }
+    const userIds = new Set<number>()
+    const postDict = new Map<number, Post>();
+    const replyDict = new Map<number,Post[]>();
+    for (let post of classAllInfo.posts){
+      if (post.parent_id){
+        if (!replyDict.has(post.id)) replyDict.set(post.id, [])
+        replyDict.get(post.id)?.push(post)
+      } else {
+        postDict.set(post.id, post)
+      }
+      userIds.add(post.sender_id)
+    }
+    const userIdsList = [...userIds];
+    const userInfoList = await fetchUserProfileFromIds(userIdsList)
+    const userDict = new Map<number, User>()
+    for (let i = 0; i<userIdsList.length; i++){
+      userDict.set(userIdsList[i], userInfoList[i])
+    }
+    const formattedPostData:PostCardProps[] = []
+    for (let [postId, post] of postDict){
+      let replies = replyDict.has(postId)?replyDict.get(postId):[]
+      let formattedReplies:PostCardProps[]= replies?replies.map((reply)=>({
+        id: reply.id,
+        sender: userDict.get(reply.sender_id)||defaultUser,
+        message: reply.message,
+        create_at: reply.created_at,
+        replies: [],
+      })):[];
+      formattedPostData.push({
+        id: post.id,
+        sender: userDict.get(post.sender_id)||defaultUser,
+        message: post.message,
+        create_at: post.created_at,
+        replies: formattedReplies,
+      })
+    }
+    return {classInfo, formattedPostData}
+  },
   component: RouteComponent,
 })
 
 function RouteComponent() {
 
-  // const  loaderData = Route.useLoaderData();
-  // const classAllInfo = loaderData.classInfo;
-  // const postData = loaderData.formattedPostData;
-  const classAllInfo = CLASS_ALL_INFO;
-  const postData = POSTS_DATA;
+  const  loaderData = Route.useLoaderData();
+  const classAllInfo = loaderData.classInfo;
+  const postData = loaderData.formattedPostData;
+  // const classAllInfo = CLASS_ALL_INFO;
+  // const postData = POSTS_DATA;
   
 
   const [activeTab, setActiveTab] = useState('posts')

@@ -20,9 +20,6 @@ export function ClassSettings({
                 
         const res = await fetch(`${import.meta.env.VITE_API_URL}/classes/${classId}`,{
             method:'DELETE',
-            headers:{
-                authorization:'' 
-            }
         })
         const json = res.json();
         console.log('Delete class ' + classId + ' response ' + json);
@@ -38,9 +35,6 @@ export function ClassSettings({
 
         const res = await fetch(`${import.meta.env.VITE_API_URL}/classes/${classInfo.class_id}`,{
             method:'PUT',
-            headers:{
-                authorization:''
-            },
             body: JSON.stringify(updatedClass),
         });
         const json = res.json();
