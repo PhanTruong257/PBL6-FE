@@ -24,6 +24,7 @@ export interface MenuItem {
   href: string
   icon: LucideIcon
   badge?: string | number
+  permission?: string
 }
 
 export interface SidebarNavigation {

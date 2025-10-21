@@ -10,14 +10,14 @@ import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useResetPassword } from '@/features/auth/hooks/use-auth'
 import { resetPasswordSchema, type ResetPasswordFormData } from '../schemas/reset-password.schema'
-import { tempStorage } from '@/libs/utils'
+import { sessionStorage } from '@/libs/utils/session-storage'
 
 export function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const navigate = useNavigate()
-  const email = tempStorage.getResetEmail()
-  const code = tempStorage.getResetCode()
+  const email = sessionStorage.get('temp_reset_email')
+  const code = sessionStorage.get('temp_reset_code')
   const resetPasswordMutation = useResetPassword()
 
   // Redirect if no email or code found

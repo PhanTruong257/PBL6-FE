@@ -1,11 +1,14 @@
-import { selectorFamily } from 'recoil';
-import { usersState } from './userAtom';
-import type { User } from '../../../types/user'
+import { selector } from 'recoil'
+import { currentUserState } from './userAtom'
+import type { Permission } from '../../../types/user'
 
-export const userSelector = selectorFamily<User, string>({
-    key: 'userSelector',
-    get: (id: string) => ({ get }) => {
-        const users = get(usersState);
-        return users.find((u) => u.user_id === id)!;
-    },
-});
+/**
+ * Selector to get user permissions
+ */
+export const userPermissionsSelector = selector<Permission[]>({
+  key: 'userPermissionsSelector',
+  get: ({ get }) => {
+    const user = get(currentUserState)
+    return user?.permissions || []
+  },
+})

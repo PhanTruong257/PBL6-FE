@@ -4,7 +4,7 @@
  */
 
 import type { User } from '@/types/user'
-import type { ApiResponse } from '@/types/api'
+import type { IApiResponse } from '@/types/api'
 
 // Re-export User type
 export type { User }
@@ -18,9 +18,11 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  user: User
-  accessToken: string
-  refreshToken: string
+  data: {
+    user: User
+    accessToken: string
+    refreshToken: string
+  }
 }
 
 /**
@@ -94,5 +96,6 @@ export interface RefreshTokenResponse {
 
 /**
  * Auth API response wrappers
+ * Uses IApiResponse format from backend
  */
-export type AuthApiResponse<T> = ApiResponse<T>
+export type AuthApiResponse<T> = IApiResponse<T>

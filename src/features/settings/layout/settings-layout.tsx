@@ -12,7 +12,7 @@ interface SettingsLayoutProps {
 const getSettingsItems = (basePath: string) => [
   {
     title: 'Hồ sơ',
-    href: `${basePath}/settings`,
+    href: `${basePath}/settings/profile`,
     icon: <UserCog size={18} />,
   },
   {

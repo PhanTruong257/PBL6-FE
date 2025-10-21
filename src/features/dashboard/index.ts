@@ -1,2 +1,5 @@
-export { AdminDashboardPage } from './pages/admin-dashboard-page'
-export { UserDashboardPage } from './pages/user-dashboard-page'
+export * from './components/recent-courses'
+
+export * from './components/stats-card'
+
+export * from './components/upcoming-exams'

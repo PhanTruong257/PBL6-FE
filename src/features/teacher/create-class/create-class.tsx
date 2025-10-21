@@ -9,7 +9,9 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createClassSchema, type CreateClassForm } from '../schemas/create-class.schema';
-import { tokenStorage } from '@/libs/utils';
+import { cookieStorage } from '@/libs/utils/cookie';
+
+
 import { useClass } from './hook'
 
 export function CreateClassPage() {
@@ -34,12 +36,12 @@ export function CreateClassPage() {
     }
 
     useEffect(() => {
-        const storedUser = tokenStorage.getUser()
+        const storedUser = cookieStorage.getUser()
         console.log(storedUser);
         if (storedUser && typeof storedUser === 'object' && 'user_id' in storedUser) {
             setValue('teacher_id', storedUser.user_id as number);
         } else {
-            console.log('Không tìm thấy user trong localStorage')
+            console.log('User not found in cookies')
         }
     }, [setValue])
 
