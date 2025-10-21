@@ -14,9 +14,8 @@ import type { PostCardProps } from '@/components/class/post-card'
 
 // ---------------------------------------------------------------------------------------------------
 const defaultUser: User={
-  user_id: '1',
+  user_id: 1,
   role: 'teacher',
-  fullName: 'abc',
   email:"abc@gmail.com",
   isEmailVerified:true,
   status:'active',
@@ -25,9 +24,8 @@ const defaultUser: User={
 }
 // login user
 const user: User={
-  user_id: '1',
+  user_id: 1,
   role: 'teacher',
-  fullName: 'abc',
   email:"abc@gmail.com",
   isEmailVerified:true,
   status:'active',

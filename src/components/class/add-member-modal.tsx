@@ -188,9 +188,9 @@ export function AddMemberModal({
                   >
                     <Avatar className="w-6 h-6">
                       <AvatarImage src={user.avatar ?? '/placeholder-avatar.jpg'} />
-                      <AvatarFallback className="bg-gray-400 text-white text-xs">{user.fullName.charAt(0)}</AvatarFallback>
+                      <AvatarFallback className="bg-gray-400 text-white text-xs">{user.email.charAt(0)}</AvatarFallback>
                     </Avatar>
-                    <span className="font-medium text-gray-900 text-sm">{user.fullName}</span>
+                    <span className="font-medium text-gray-900 text-sm">{user.email}</span>
                     <span className="text-xs text-gray-500 ml-2">{user.email}</span>
                   </button>
                 ))}

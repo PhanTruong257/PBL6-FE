@@ -32,7 +32,7 @@ export function PostCard({
           <AvatarHoverCard user={sender} placeHolder="/placeholder-avatar.jpg" />
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-2">
-              <span className="font-semibold text-gray-900">{sender.fullName}</span>
+              <span className="font-semibold text-gray-900">{sender.email}</span>
               <span className="text-sm text-gray-500">{create_at.toLocaleDateString()+' '+create_at.toLocaleTimeString()}</span>
             </div>
             <h3 className="font-semibold text-gray-900 mb-2">Thông báo</h3>
@@ -51,7 +51,7 @@ export function PostCard({
                   <AvatarHoverCard user={reply.sender} placeHolder='/placeholder-avatar.jpg' />
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">
-                      <span className="font-medium text-gray-900 text-sm">{reply.sender.fullName}</span>
+                      <span className="font-medium text-gray-900 text-sm">{reply.sender.email}</span>
                       <span className="text-xs text-gray-500">{create_at.toLocaleDateString()+' '+create_at.toLocaleTimeString()}</span>
                     </div>
                     <p className="text-sm text-gray-800 mb-2">{reply.message}</p>  

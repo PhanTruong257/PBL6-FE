@@ -16,7 +16,7 @@ export function AvatarHoverCard({ user , placeHolder}: AvatarHoverCardProps) {
         <div>
           <Avatar className="w-10 h-10 cursor-pointer">
             <AvatarImage src={user.avatar ?? placeHolder} />
-            <AvatarFallback className={`${user.avatar} text-white`}>{user.fullName.charAt(0)}</AvatarFallback>
+            <AvatarFallback className={`${user.avatar} text-white`}>{user.email.charAt(0)}</AvatarFallback>
           </Avatar>
         </div>
       </HoverCardTrigger>
@@ -25,10 +25,10 @@ export function AvatarHoverCard({ user , placeHolder}: AvatarHoverCardProps) {
         <div className="flex items-center space-x-3">
           <Avatar className="w-12 h-12">
             <AvatarImage src={user.avatar ?? placeHolder} />
-            <AvatarFallback className={`${user.avatar} text-white`}>{user.fullName.charAt(0)}</AvatarFallback>
+            <AvatarFallback className={`${user.avatar} text-white`}>{user.email.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <div className="font-medium text-gray-900">{user.fullName}</div>
+            <div className="font-medium text-gray-900">{user.email}</div>
             <div className="text-xs text-gray-500">{user.role ?? 'user'}</div>
           </div>
         </div>
