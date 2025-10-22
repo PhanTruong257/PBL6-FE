@@ -10,10 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+<<<<<<< HEAD
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as UserSettingsRouteImport } from './routes/user/settings'
+import { Route as UserCreateClassRouteImport } from './routes/user/create-class'
+import { Route as ClassClassIdRouteImport } from './routes/class/$classId'
+=======
 import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as ClassesIndexRouteImport } from './routes/classes/index'
 import { Route as ClassesCreateClassRouteImport } from './routes/classes/create-class'
+>>>>>>> master
 import { Route as AuthVerifyCodeRouteImport } from './routes/auth/verify-code'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
@@ -43,6 +50,11 @@ const ClassesIndexRoute = ClassesIndexRouteImport.update({
 const ClassesCreateClassRoute = ClassesCreateClassRouteImport.update({
   id: '/classes/create-class',
   path: '/classes/create-class',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClassClassIdRoute = ClassClassIdRouteImport.update({
+  id: '/class/$classId',
+  path: '/class/$classId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthVerifyCodeRoute = AuthVerifyCodeRouteImport.update({
@@ -78,10 +90,29 @@ export interface FileRoutesByFullPath {
   '/auth/register': typeof AuthRegisterRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-code': typeof AuthVerifyCodeRoute
+<<<<<<< HEAD
+  '/class/$classId': typeof ClassClassIdRoute
+  '/user/create-class': typeof UserCreateClassRoute
+  '/user/settings': typeof UserSettingsRouteWithChildren
+  '/admin': typeof AdminIndexRoute
+  '/admin/settings/account': typeof AdminSettingsAccountRoute
+  '/admin/settings/appearance': typeof AdminSettingsAppearanceRoute
+  '/admin/settings/display': typeof AdminSettingsDisplayRoute
+  '/admin/settings/notifications': typeof AdminSettingsNotificationsRoute
+  '/user/settings/account': typeof UserSettingsAccountRoute
+  '/user/settings/appearance': typeof UserSettingsAppearanceRoute
+  '/user/settings/display': typeof UserSettingsDisplayRoute
+  '/user/settings/notifications': typeof UserSettingsNotificationsRoute
+  '/admin/dashboard': typeof AdminDashboardIndexRoute
+  '/admin/settings/': typeof AdminSettingsIndexRoute
+  '/user/dashboard': typeof UserDashboardIndexRoute
+  '/user/settings/': typeof UserSettingsIndexRoute
+=======
   '/classes/create-class': typeof ClassesCreateClassRoute
   '/classes': typeof ClassesIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/profile': typeof ProfileIndexRoute
+>>>>>>> master
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -90,10 +121,28 @@ export interface FileRoutesByTo {
   '/auth/register': typeof AuthRegisterRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-code': typeof AuthVerifyCodeRoute
+<<<<<<< HEAD
+  '/class/$classId': typeof ClassClassIdRoute
+  '/user/create-class': typeof UserCreateClassRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/settings/account': typeof AdminSettingsAccountRoute
+  '/admin/settings/appearance': typeof AdminSettingsAppearanceRoute
+  '/admin/settings/display': typeof AdminSettingsDisplayRoute
+  '/admin/settings/notifications': typeof AdminSettingsNotificationsRoute
+  '/user/settings/account': typeof UserSettingsAccountRoute
+  '/user/settings/appearance': typeof UserSettingsAppearanceRoute
+  '/user/settings/display': typeof UserSettingsDisplayRoute
+  '/user/settings/notifications': typeof UserSettingsNotificationsRoute
+  '/admin/dashboard': typeof AdminDashboardIndexRoute
+  '/admin/settings': typeof AdminSettingsIndexRoute
+  '/user/dashboard': typeof UserDashboardIndexRoute
+  '/user/settings': typeof UserSettingsIndexRoute
+=======
   '/classes/create-class': typeof ClassesCreateClassRoute
   '/classes': typeof ClassesIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/profile': typeof ProfileIndexRoute
+>>>>>>> master
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -103,10 +152,29 @@ export interface FileRoutesById {
   '/auth/register': typeof AuthRegisterRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-code': typeof AuthVerifyCodeRoute
+<<<<<<< HEAD
+  '/class/$classId': typeof ClassClassIdRoute
+  '/user/create-class': typeof UserCreateClassRoute
+  '/user/settings': typeof UserSettingsRouteWithChildren
+  '/admin/': typeof AdminIndexRoute
+  '/admin/settings/account': typeof AdminSettingsAccountRoute
+  '/admin/settings/appearance': typeof AdminSettingsAppearanceRoute
+  '/admin/settings/display': typeof AdminSettingsDisplayRoute
+  '/admin/settings/notifications': typeof AdminSettingsNotificationsRoute
+  '/user/settings/account': typeof UserSettingsAccountRoute
+  '/user/settings/appearance': typeof UserSettingsAppearanceRoute
+  '/user/settings/display': typeof UserSettingsDisplayRoute
+  '/user/settings/notifications': typeof UserSettingsNotificationsRoute
+  '/admin/dashboard/': typeof AdminDashboardIndexRoute
+  '/admin/settings/': typeof AdminSettingsIndexRoute
+  '/user/dashboard/': typeof UserDashboardIndexRoute
+  '/user/settings/': typeof UserSettingsIndexRoute
+=======
   '/classes/create-class': typeof ClassesCreateClassRoute
   '/classes/': typeof ClassesIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/profile/': typeof ProfileIndexRoute
+>>>>>>> master
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -117,10 +185,29 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/auth/reset-password'
     | '/auth/verify-code'
+<<<<<<< HEAD
+    | '/class/$classId'
+    | '/user/create-class'
+    | '/user/settings'
+    | '/admin'
+    | '/admin/settings/account'
+    | '/admin/settings/appearance'
+    | '/admin/settings/display'
+    | '/admin/settings/notifications'
+    | '/user/settings/account'
+    | '/user/settings/appearance'
+    | '/user/settings/display'
+    | '/user/settings/notifications'
+    | '/admin/dashboard'
+    | '/admin/settings/'
+    | '/user/dashboard'
+    | '/user/settings/'
+=======
     | '/classes/create-class'
     | '/classes'
     | '/dashboard'
     | '/profile'
+>>>>>>> master
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -129,10 +216,28 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/auth/reset-password'
     | '/auth/verify-code'
+<<<<<<< HEAD
+    | '/class/$classId'
+    | '/user/create-class'
+    | '/admin'
+    | '/admin/settings/account'
+    | '/admin/settings/appearance'
+    | '/admin/settings/display'
+    | '/admin/settings/notifications'
+    | '/user/settings/account'
+    | '/user/settings/appearance'
+    | '/user/settings/display'
+    | '/user/settings/notifications'
+    | '/admin/dashboard'
+    | '/admin/settings'
+    | '/user/dashboard'
+    | '/user/settings'
+=======
     | '/classes/create-class'
     | '/classes'
     | '/dashboard'
     | '/profile'
+>>>>>>> master
   id:
     | '__root__'
     | '/'
@@ -141,10 +246,29 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/auth/reset-password'
     | '/auth/verify-code'
+<<<<<<< HEAD
+    | '/class/$classId'
+    | '/user/create-class'
+    | '/user/settings'
+    | '/admin/'
+    | '/admin/settings/account'
+    | '/admin/settings/appearance'
+    | '/admin/settings/display'
+    | '/admin/settings/notifications'
+    | '/user/settings/account'
+    | '/user/settings/appearance'
+    | '/user/settings/display'
+    | '/user/settings/notifications'
+    | '/admin/dashboard/'
+    | '/admin/settings/'
+    | '/user/dashboard/'
+    | '/user/settings/'
+=======
     | '/classes/create-class'
     | '/classes/'
     | '/dashboard/'
     | '/profile/'
+>>>>>>> master
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -154,10 +278,19 @@ export interface RootRouteChildren {
   AuthRegisterRoute: typeof AuthRegisterRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthVerifyCodeRoute: typeof AuthVerifyCodeRoute
+<<<<<<< HEAD
+  ClassClassIdRoute: typeof ClassClassIdRoute
+  UserCreateClassRoute: typeof UserCreateClassRoute
+  UserSettingsRoute: typeof UserSettingsRouteWithChildren
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
+  UserDashboardIndexRoute: typeof UserDashboardIndexRoute
+=======
   ClassesCreateClassRoute: typeof ClassesCreateClassRoute
   ClassesIndexRoute: typeof ClassesIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
+>>>>>>> master
 }
 
 declare module '@tanstack/react-router' {
@@ -195,6 +328,13 @@ declare module '@tanstack/react-router' {
       path: '/classes/create-class'
       fullPath: '/classes/create-class'
       preLoaderRoute: typeof ClassesCreateClassRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/class/$classId': {
+      id: '/class/$classId'
+      path: '/class/$classId'
+      fullPath: '/class/$classId'
+      preLoaderRoute: typeof ClassClassIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/verify-code': {
@@ -242,10 +382,19 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRegisterRoute: AuthRegisterRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthVerifyCodeRoute: AuthVerifyCodeRoute,
+<<<<<<< HEAD
+  ClassClassIdRoute: ClassClassIdRoute,
+  UserCreateClassRoute: UserCreateClassRoute,
+  UserSettingsRoute: UserSettingsRouteWithChildren,
+  AdminIndexRoute: AdminIndexRoute,
+  AdminDashboardIndexRoute: AdminDashboardIndexRoute,
+  UserDashboardIndexRoute: UserDashboardIndexRoute,
+=======
   ClassesCreateClassRoute: ClassesCreateClassRoute,
   ClassesIndexRoute: ClassesIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   ProfileIndexRoute: ProfileIndexRoute,
+>>>>>>> master
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
