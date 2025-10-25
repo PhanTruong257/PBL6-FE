@@ -40,7 +40,12 @@ export function useLogin() {
       return AuthService.login(data)
     },
     onSuccess: (response) => {
-      const { user, accessToken, refreshToken } = response
+      console.log('🚀 Login response received:', response)
+      const { user, accessToken, refreshToken } = response.data;
+
+      console.log('🚀 Login successful:', user)
+      console.log('Access Token:', accessToken)
+      console.log('Refresh Token:', refreshToken)
 
       // Save tokens and user info
       tokenStorage.setTokens(accessToken, refreshToken)

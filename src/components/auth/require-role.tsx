@@ -26,34 +26,34 @@ export function RequireRole({
   redirectTo,
   showAccessDenied = false,
 }: RequireRoleProps) {
-  const [isUnauthorized, setIsUnauthorized] = useState(false)
+  // const [isUnauthorized, setIsUnauthorized] = useState(false)
   
-  const { isAuthenticated, isChecking, user } = useRoleGuard({
-    allowedRoles,
-    requiredPermissions,
-    redirectTo: showAccessDenied ? undefined : redirectTo,
-    onUnauthorized: showAccessDenied ? () => setIsUnauthorized(true) : undefined,
-  })
+  // const { isAuthenticated, isChecking, user } = useRoleGuard({
+  //   allowedRoles,
+  //   requiredPermissions,
+  //   redirectTo: showAccessDenied ? undefined : redirectTo,
+  //   onUnauthorized: showAccessDenied ? () => setIsUnauthorized(true) : undefined,
+  // })
 
-  // Show loading spinner while checking
-  if (isChecking) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    )
-  }
+  // // Show loading spinner while checking
+  // if (isChecking) {
+  //   return (
+  //     <div className="flex min-h-screen items-center justify-center">
+  //       <Loader2 className="h-8 w-8 animate-spin text-primary" />
+  //     </div>
+  //   )
+  // }
 
-  // If not authenticated, don't render (let RequireAuth handle it)
-  if (!isAuthenticated || !user) {
-    return <Navigate to="/auth/login" />
-  }
+  // // If not authenticated, don't render (let RequireAuth handle it)
+  // if (!isAuthenticated || !user) {
+  //   return <Navigate to="/auth/login" />
+  // }
 
-  // Show access denied page if unauthorized and showAccessDenied is true
-  if (isUnauthorized && showAccessDenied) {
-    const destination = redirectTo || DEFAULT_ROUTES_BY_ROLE[user.role]
-    return <AccessDeniedPage homePath={destination} />
-  }
+  // // Show access denied page if unauthorized and showAccessDenied is true
+  // if (isUnauthorized && showAccessDenied) {
+  //   const destination = redirectTo || DEFAULT_ROUTES_BY_ROLE[user.role]
+  //   return <AccessDeniedPage homePath={destination} />
+  // }
 
   // Render children if authorized
   return <>{children}</>
