@@ -1,6 +1,6 @@
 import { httpClient } from '@/libs/http'
+import type { IApiResponse } from '@/types/api'
 import type { User } from '@/types/user'
-import type { ApiResponse } from '@/types/api'
 
 export interface UpdateProfileRequest {
   phone?: string
@@ -25,59 +25,45 @@ export interface ChangePasswordResponse {
 
 /**
  * Profile Service - API calls for user profile management
+ * Updated to use httpClient with IApiResponse format
  */
 export const ProfileService = {
   /**
    * Get current user profile
    */
-  async getCurrentProfile(): Promise<ApiResponse<User>> {
-    const response = await httpClient.get<ApiResponse<User>>('/users/profile')
-    console.log('Get Current Profile response:', response.data);
-    return response.data
+  async getCurrentProfile(): Promise<User> {
+    const response = await httpClient.get<IApiResponse<User>>('/users/me')
+    console.log('Get Current Profile result:', response.data)
+    return response.data.data
   },
 
   /**
    * Update user profile
    */
-  async updateProfile(
-    data: UpdateProfileRequest,
-  ): Promise<ApiResponse<UpdateProfileResponse>> {
-    const response = await httpClient.patch<ApiResponse<UpdateProfileResponse>>(
-      '/users/profile',
-      data,
-    )
-    return response.data
+  async updateProfile(data: UpdateProfileRequest): Promise<UpdateProfileResponse> {
+    const response = await httpClient.patch<IApiResponse<UpdateProfileResponse>>('/users/me', data)
+    return response.data.data
   },
 
   /**
    * Upload profile avatar
    */
-  async uploadAvatar(file: File): Promise<ApiResponse<{ avatarUrl: string }>> {
+  async uploadAvatar(file: File): Promise<{ avatarUrl: string }> {
     const formData = new FormData()
     formData.append('avatar', file)
-
-    const response = await httpClient.post<ApiResponse<{ avatarUrl: string }>>(
-      '/users/profile/avatar',
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+    const response = await httpClient.post<IApiResponse<{ avatarUrl: string }>>('/users/upload-avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
       },
-    )
-    return response.data
+    })
+    return response.data.data
   },
 
   /**
    * Change password
    */
-  async changePassword(
-    data: ChangePasswordRequest,
-  ): Promise<ApiResponse<ChangePasswordResponse>> {
-    const response = await httpClient.put<ApiResponse<ChangePasswordResponse>>(
-      '/users/change-password',
-      data,
-    )
-    return response.data
+  async changePassword(data: ChangePasswordRequest): Promise<ChangePasswordResponse> {
+    const response = await httpClient.put<IApiResponse<ChangePasswordResponse>>('/users/change-password', data)
+    return response.data.data
   },
 }

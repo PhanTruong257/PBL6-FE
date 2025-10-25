@@ -20,10 +20,6 @@ export function useAuthGuard(options: UseAuthGuardOptions = {}) {
   const { isAuthenticated, isLoading, user } = useIsAuthenticated()
 
   useEffect(() => {
-
-
-
-
     // Get current path to avoid redirecting from auth pages
     const currentPath = router.state.location.pathname
 

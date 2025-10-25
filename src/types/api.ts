@@ -1,17 +1,24 @@
-export interface ApiResponse<T> {
+/**
+ * Standard API Response Interface format.
+ * Matches backend IApiResponse interface from api-gateway.
+ */
+export interface IApiResponse<T = any> {
+  /** Response status indicator */
   success: boolean
+
+  /** Human-readable message */
   message: string
+
+  /** Response payload - actual data or null on error */
   data: T
-  errors?: Record<string, string[]>
+
+  /** Error information - flexible structure for any error details */
+  error?: unknown
 }
 
-export interface ApiError {
-  success: false
-  message: string
-  errors?: Record<string, string[]>
-  statusCode: number
-}
-
+/**
+ * Paginated response wrapper
+ */
 export interface PaginatedResponse<T> {
   data: T[]
   pagination: {
@@ -22,10 +29,20 @@ export interface PaginatedResponse<T> {
   }
 }
 
-export interface ApiSuccessResponse<T> extends ApiResponse<T> {
-  success: true
+/**
+ * Type guard to check if response is successful
+ */
+export function isSuccessResponse<T>(
+  response: IApiResponse<T>
+): response is IApiResponse<T> & { success: true } {
+  return response.success === true
 }
 
-export interface ApiErrorResponse extends ApiError {
-  success: false
+/**
+ * Type guard to check if response has error
+ */
+export function isErrorResponse<T>(
+  response: IApiResponse<T>
+): response is IApiResponse<T> & { success: false; error: unknown } {
+  return response.success === false
 }

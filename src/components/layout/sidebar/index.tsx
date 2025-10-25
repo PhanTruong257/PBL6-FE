@@ -2,98 +2,51 @@ import { cn } from "@/libs/utils/cn"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import {
-  ChevronLeft,
-  Home,
-  BookOpen,
-  Users,
-  Settings,
-  Calendar,
-  FileText,
-  GraduationCap,
-  BarChart3,
-  HelpCircle
-} from "lucide-react"
+import { ChevronLeft } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import type React from "react"
+import { useRecoilValue } from 'recoil'
+import { currentUserState } from '@/global/recoil/user'
+import { getNavigationByRole } from '@/libs/constants/sidebar-navigation.const'
+import type { MenuItem } from '@/libs/constants/sidebar-navigation.const'
 
 export interface BaseMenuItem {
   title: string
   href?: string
 }
 
-export interface MenuItem extends BaseMenuItem {
-  icon: React.ComponentType<{ className?: string }>
-  submenu?: BaseMenuItem[]
-}
-
 export interface SidebarProps {
   className?: string
   isCollapsed?: boolean
   onToggleCollapse?: () => void
-  menuItems: MenuItem[]
+  menuItems?: MenuItem[]
   bottomMenuItems?: MenuItem[]
   logoUrl?: string
   appName?: string
 }
 
-const menuItems = [
-  {
-    title: "Trang chủ",
-    href: "/user/dashboard",
-    icon: Home,
-  },
-  {
-    title: "Khóa học",
-    href: "/user/courses",
-    icon: BookOpen,
-  },
-  {
-    title: "Lịch học",
-    href: "/user/schedule",
-    icon: Calendar,
-  },
-  {
-    title: "Bài tập",
-    href: "/user/assignments",
-    icon: FileText,
-  },
-  {
-    title: "Điểm số",
-    href: "/user/grades",
-    icon: BarChart3,
-  },
-  {
-    title: "Sinh viên",
-    href: "/user/students",
-    icon: Users,
-  },
-  {
-    title: "Giảng viên",
-    href: "/user/teachers",
-    icon: GraduationCap,
-  },
-  {
-    title: "Hồ sơ",
-    href: "/user/settings/profile",
-    icon: Users,
-  },
-]
-
-const bottomMenuItems = [
-  {
-    title: "Trợ giúp",
-    href: "/user/help",
-    icon: HelpCircle,
-  },
-  {
-    title: "Cài đặt",
-    href: "/user/settings",
-    icon: Settings,
-  },
-]
-
 export function Sidebar({ className, isCollapsed = false, onToggleCollapse }: SidebarProps) {
+  const user = useRecoilValue(currentUserState)
+
+  // Map 'user' role to 'student' for navigation
+  const userRole: 'admin' | 'teacher' | 'student' = 
+    user?.role === 'user' ? 'student' : 
+    user?.role === 'admin' ? 'admin' : 
+    user?.role === 'teacher' ? 'teacher' : 
+    'student'
+  
+  const navigation = getNavigationByRole(userRole)
+
+  const filterByPermission = (items: MenuItem[]) => {
+    if (!user?.permissions?.length) return items
+    return items.filter((item) => {
+      if (!item.permission) return true
+      return user.permissions!.some((p) => p.key === item.permission)
+    })
+  }
+
+  const mainMenuItems = filterByPermission(navigation.main)
+  const bottomItems = filterByPermission(navigation.bottom)
+
   return (
     <div className={cn(
       "flex h-full flex-col border-r bg-sidebar",
@@ -101,7 +54,6 @@ export function Sidebar({ className, isCollapsed = false, onToggleCollapse }: Si
       "transition-all duration-300 ease-in-out",
       className
     )}>
-      {/* Logo area - in header now, keeping minimal branding */}
       {!isCollapsed && (
         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
           <Link to="/" className="flex items-center gap-2 font-semibold">
@@ -115,10 +67,9 @@ export function Sidebar({ className, isCollapsed = false, onToggleCollapse }: Si
         </div>
       )}
 
-      {/* Main navigation */}
       <ScrollArea className="flex-1 px-3 py-4">
         <nav className="grid gap-1">
-          {menuItems.map((item, index) => {
+          {mainMenuItems.map((item, index) => {
             const Icon = item.icon
             return (
               <Button
@@ -140,11 +91,10 @@ export function Sidebar({ className, isCollapsed = false, onToggleCollapse }: Si
         </nav>
       </ScrollArea>
 
-      {/* Bottom section */}
       <div className="mt-auto">
         <Separator className="my-2" />
         <nav className="grid gap-1 px-3 pb-4">
-          {bottomMenuItems.map((item, index) => {
+          {bottomItems.map((item, index) => {
             const Icon = item.icon
             return (
               <Button
@@ -165,7 +115,6 @@ export function Sidebar({ className, isCollapsed = false, onToggleCollapse }: Si
           })}
         </nav>
 
-        {/* Collapse toggle */}
         <div className="border-t p-3">
           <Button
             variant="ghost"

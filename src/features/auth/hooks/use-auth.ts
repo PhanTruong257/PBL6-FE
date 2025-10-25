@@ -3,8 +3,9 @@ import { useNavigate } from '@tanstack/react-router'
 import { useSetRecoilState } from 'recoil'
 
 import { AuthService } from '../api/auth-service'
-import { tokenStorage, tempStorage } from '@/libs/utils'
-import { usersState } from '../../../global/recoil/user'
+import { cookieStorage } from '@/libs/utils/cookie'
+import { sessionStorage } from '@/libs/utils/session-storage'
+import { currentUserState } from '@/global/recoil/user'
 
 import type {
   LoginRequest,
@@ -29,33 +30,45 @@ export const authKeys = {
 export function useLogin() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const setUser = useSetRecoilState(usersState)
+  const setUser = useSetRecoilState(currentUserState)
 
   return useMutation({
     mutationFn: (data: LoginRequest) => {
       // Clear any existing tokens before attempting login
-      tokenStorage.clearTokens()
+      cookieStorage.clearTokens()
       queryClient.removeQueries({ queryKey: authKeys.user() })
 
       return AuthService.login(data)
     },
     onSuccess: (response) => {
-      console.log('🚀 Login response received:', response)
       const { user, accessToken, refreshToken } = response.data;
 
-      console.log('🚀 Login successful:', user)
-      console.log('Access Token:', accessToken)
-      console.log('Refresh Token:', refreshToken)
 
-      // Save tokens and user info
-      tokenStorage.setTokens(accessToken, refreshToken)
-      tokenStorage.setUser(user)
-      setUser(user)
+      // Step 1: Save tokens to cookies
+      cookieStorage.setTokens(accessToken, refreshToken)
 
-      // Update cache
-      queryClient.setQueryData(authKeys.user(), user)
+      // Step 2: Fetch complete user data from /users/me (includes roles & permissions)
+      try {
+        const userDataResponse = await AuthService.getCurrentUser()
+        const userData = userDataResponse.data
+        
+        // Step 3: Update Recoil state with complete user data
+        setUser(userData)
+        
+        // Step 4: Update React Query cache
+        queryClient.setQueryData(authKeys.user(), userData)
+        
+        console.log(`✅ Login successful: ${userData.email}`)
+        console.log(`✅ Loaded ${userData.roles?.length || 0} roles and ${userData.permissions?.length || 0} permissions`)
+      } catch (error) {
+        console.error('❌ Failed to fetch user data from /users/me:', error)
+        // Fallback: Set basic user info from login response
+        setUser(user)
+        queryClient.setQueryData(authKeys.user(), user)
+      }
 
-      const redirectPath = '/user/dashboard'
+      // Step 5: Navigate to unified dashboard
+      const redirectPath = '/dashboard'
       navigate({ to: redirectPath as any })
     },
     onError: (error) => {
@@ -91,7 +104,7 @@ export function useForgotPassword() {
     mutationFn: (data: ForgotPasswordRequest) => AuthService.forgotPassword(data),
     onSuccess: (_response, variables) => {
       // Save email to sessionStorage for next step
-      tempStorage.setResetEmail(variables.email)
+      sessionStorage.set('temp_reset_email', variables.email)
 
       // Navigate to verify code page
       navigate({ to: '/auth/verify-code' })
@@ -109,7 +122,7 @@ export function useVerifyCode() {
     mutationFn: (data: VerifyCodeRequest) => AuthService.verifyCode(data),
     onSuccess: (_response, variables) => {
       // Save code to sessionStorage for next step
-      tempStorage.setResetCode(variables.code)
+      sessionStorage.set('temp_reset_code', variables.code)
 
       // Navigate to reset password page
       navigate({ to: '/auth/reset-password' })
@@ -127,7 +140,8 @@ export function useResetPassword() {
     mutationFn: (data: ResetPasswordRequest) => AuthService.resetPassword(data),
     onSuccess: () => {
       // Clear temp data after successful reset
-      tempStorage.clearResetData()
+      sessionStorage.remove('temp_reset_email')
+      sessionStorage.remove('temp_reset_code')
 
       // Redirect to login page
       setTimeout(() => {
@@ -158,7 +172,7 @@ export function useLogout() {
     onSettled: () => {
       // Always clear local data, even if API call fails
       queryClient.clear()
-      tokenStorage.clearTokens()
+      cookieStorage.clearTokens()
       navigate({ to: '/auth/login' })
     },
   })
@@ -168,7 +182,7 @@ export function useLogout() {
  * Hook to get current user from API
  */
 export function useCurrentUser() {
-  const hasToken = !!tokenStorage.getAccessToken()
+  const hasToken = !!cookieStorage.getAccessToken()
 
   return useQuery({
     queryKey: authKeys.user(),
@@ -192,7 +206,7 @@ export function useCurrentUser() {
  */
 export function useIsAuthenticated() {
   const { data: user, isLoading, isFetching } = useCurrentUser()
-  const token = tokenStorage.getAccessToken()
+  const token = cookieStorage.getAccessToken()
   const isAuthenticated = !!(user && token)
 
   return {
@@ -203,8 +217,8 @@ export function useIsAuthenticated() {
 }
 
 /**
- * Hook to get user from localStorage (without API call)
+ * Hook to get user from cookie storage (without API call)
  */
 export function useUserFromStorage() {
-  return tokenStorage.getUser<User>()
+  return cookieStorage.getUser<User>()
 }
