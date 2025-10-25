@@ -28,9 +28,4 @@ export interface User {
   phone?: string
   dateOfBirth?: string
   address?: string
-  bio?: string
-  createdAt: string
-  updatedAt: string
-  roles?: Role[]
-  permissions?: Permission[]
 }

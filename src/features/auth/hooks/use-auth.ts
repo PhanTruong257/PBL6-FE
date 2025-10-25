@@ -40,8 +40,9 @@ export function useLogin() {
 
       return AuthService.login(data)
     },
-    onSuccess: async (response) => {
-      const { user, accessToken, refreshToken } = response
+    onSuccess: (response) => {
+      const { user, accessToken, refreshToken } = response.data;
+
 
       // Step 1: Save tokens to cookies
       cookieStorage.setTokens(accessToken, refreshToken)
