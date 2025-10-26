@@ -38,7 +38,7 @@ export const profileApi = {
    * Update current user profile
    */
   updateProfile: async (data: UpdateProfileRequest): Promise<ProfileApiResponse> => {
-    const response = await httpClient.put<IApiResponse<ProfileApiResponse>>('/users/me', data)
+    const response = await httpClient.patch<IApiResponse<ProfileApiResponse>>('/users/profile', data)
     return response.data.data
   },
 
