@@ -18,11 +18,9 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  data: {
     user: User
     accessToken: string
     refreshToken: string
-  }
 }
 
 /**

@@ -4,11 +4,6 @@ export type {
   UserFilters, 
   CreateUserRequest, 
   UpdateUserRequest,
-  // Legacy types for backward compatibility
-  Teacher, 
-  TeacherFilters, 
-  CreateTeacherRequest, 
-  UpdateTeacherRequest 
 } from './types'
 
 // Export API services

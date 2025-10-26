@@ -32,10 +32,6 @@ export const userFiltersSchema = z.object({
   sortOrder: z.enum(['asc', 'desc']).optional(),
 })
 
-// Keep old schemas for backward compatibility if needed
-export const createTeacherSchema = createUserSchema
-export const updateTeacherSchema = updateUserSchema
-export const teacherFiltersSchema = userFiltersSchema
 
 export type CreateUserFormData = z.infer<typeof createUserSchema>
 export type UpdateUserFormData = z.infer<typeof updateUserSchema>

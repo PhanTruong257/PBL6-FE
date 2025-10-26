@@ -48,16 +48,7 @@ export interface UpdateUserRequest {
   status?: string
 }
 
-// Legacy types for backward compatibility
-export interface Teacher extends ExtendedUser {
-  teacher_id: string
-}
 
-export interface TeacherFilters extends UserFilters {}
-
-export interface CreateTeacherRequest extends CreateUserRequest {}
-
-export interface UpdateTeacherRequest extends UpdateUserRequest {}
 
 export interface UserResponse {
   data: {

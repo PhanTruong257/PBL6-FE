@@ -1,25 +1,10 @@
 import { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { getTeachers, getTeacher, deleteUser } from '../api'
-import type { TeacherFilters, UserFilters } from '../types'
+import { deleteUser } from '../api'
+import type { UserFilters } from '../types'
 import { UserService } from '../api/use-service'
 
-export const useTeachers = (filters?: TeacherFilters) => {
-  return useQuery({
-    queryKey: ['teachers', filters],
-    queryFn: () => getTeachers(filters),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  })
-}
-
-export const useTeacher = (id: string) => {
-  return useQuery({
-    queryKey: ['teacher', id],
-    queryFn: () => getTeacher(id),
-    enabled: !!id,
-  })
-}
 
 export const useCreateUser = () => {
   const queryClient = useQueryClient()
@@ -51,9 +36,6 @@ export const useUpdateUser = () => {
   
   return useMutation({
     mutationFn: (params: { id: string; data: any }) => {
-      console.log('Updating user with id:', params.id)
-      console.log('Update data:', params.data);
-      
       // Convert object to FormData if needed
       const formData = new FormData()
       Object.keys(params.data).forEach(key => {
@@ -76,8 +58,6 @@ export const useUpdateUser = () => {
   })
 }
 
-// Legacy export for backward compatibility
-export const useUpdateTeacher = useUpdateUser
 
 export const useDeleteUser = () => {
   const queryClient = useQueryClient()
@@ -95,8 +75,7 @@ export const useDeleteUser = () => {
   })
 }
 
-// Legacy export for backward compatibility
-export const useDeleteTeacher = useDeleteUser
+
 
 export const useUserFilters = () => {
   const [filters, setFilters] = useState<UserFilters>({
