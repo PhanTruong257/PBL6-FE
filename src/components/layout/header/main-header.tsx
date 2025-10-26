@@ -98,8 +98,10 @@ export function MainHeader({ onToggleSidebar, sidebarContent }: MainHeaderProps)
             <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              <span>Hồ sơ</span>
+              <Link className="flex items-center gap-2" to="/student/settings/profile">
+                <User className="mr-2 h-4 w-4" />
+                <span>Hồ sơ</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Settings className="mr-2 h-4 w-4" />
