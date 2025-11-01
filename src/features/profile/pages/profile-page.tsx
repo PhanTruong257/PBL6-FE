@@ -71,7 +71,7 @@ export function ProfilePage() {
         address: profile.address || '',
         gender: profile.gender || 'male',
       })
-      
+
       if (profile.dateOfBirth) {
         const birthDate = new Date(profile.dateOfBirth)
         setDate(birthDate)
@@ -82,7 +82,7 @@ export function ProfilePage() {
 
   const onSubmit = (data: ProfileFormData) => {
     const updateData = {
-      fullName: data.fullName,
+      full_name: data.fullName,
       phone: data.phone,
       address: data.address,
       bio: data.bio,
@@ -121,100 +121,100 @@ export function ProfilePage() {
     <div className="w-full max-w-7xl mx-auto">
       <Card>
         <CardContent className="flex flex-col lg:flex-row gap-6">
-        <div className="lg:w-1/3">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex flex-col items-center space-y-4">
-                <div className="relative">
-                  <Avatar className="h-24 w-24">
-                    <AvatarImage src="/placeholder-avatar.jpg" />
-                    <AvatarFallback className="bg-blue-500 text-white text-xl">
-                      D
-                    </AvatarFallback>
-                  </Avatar>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0"
-                    onClick={handleAvatarClick}
-                    disabled={uploadAvatarMutation.isPending}
-                  >
-                    <Upload className="h-3 w-3" />
+          <div className="lg:w-1/3">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="relative">
+                    <Avatar className="h-24 w-24">
+                      <AvatarImage src="/placeholder-avatar.jpg" />
+                      <AvatarFallback className="bg-blue-500 text-white text-xl">
+                        D
+                      </AvatarFallback>
+                    </Avatar>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0"
+                      onClick={handleAvatarClick}
+                      disabled={uploadAvatarMutation.isPending}
+                    >
+                      <Upload className="h-3 w-3" />
+                    </Button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      className="hidden"
+                    />
+                  </div>
+
+                  <div className="text-center">
+                    <h3 className="font-semibold text-lg">
+                      {profile ? `${profile.full_name}` : 'Ngô Văn Danh'}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Sinh viên • Công nghệ thông tin
+                    </p>
+                  </div>
+
+                  <Button variant="outline" size="sm" className="w-full">
+                    Thông tin cơ bản
                   </Button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                    className="hidden"
-                  />
-                </div>
-                
-                <div className="text-center">
-                  <h3 className="font-semibold text-lg">
-                    {profile ? `${profile.full_name}` : 'Ngô Văn Danh'}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Sinh viên • Công nghệ thông tin
-                  </p>
                 </div>
 
-                <Button variant="outline" size="sm" className="w-full">
-                  Thông tin cơ bản
-                </Button>
-              </div>
+                <Separator className="my-4" />
 
-              <Separator className="my-4" />
-
-              <div className="space-y-3">
-                <div>
-                  <Label className="text-xs text-muted-foreground">Mã sinh viên</Label>
-                  <p className="font-medium">2021601234</p>
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">Lớp</Label>
-                  <p className="font-medium">CNTT-K15A</p>
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">Khóa học</Label>
-                  <p className="font-medium">2021-2025</p>
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">Chuyên ngành</Label>
-                  <p className="font-medium">Công nghệ phần mềm</p>
-                </div>
-              </div>
-
-              <Separator className="my-4" />
-
-              <div>
-                <Label className="text-xs text-muted-foreground">Liên hệ</Label>
-                <div className="space-y-2 mt-2">
+                <div className="space-y-3">
                   <div>
-                    <Label className="text-xs">Email</Label>
-                    <p className="text-sm">{profile?.email || 'duy.danh@student.edu.vn'}</p>
+                    <Label className="text-xs text-muted-foreground">Mã sinh viên</Label>
+                    <p className="font-medium">2021601234</p>
                   </div>
                   <div>
-                    <Label className="text-xs">Điện thoại</Label>
-                    <p className="text-sm">{profile?.phone || '0987 654 321'}</p>
+                    <Label className="text-xs text-muted-foreground">Lớp</Label>
+                    <p className="font-medium">CNTT-K15A</p>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Khóa học</Label>
+                    <p className="font-medium">2021-2025</p>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Chuyên ngành</Label>
+                    <p className="font-medium">Công nghệ phần mềm</p>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
-        <div className="lg:w-2/3">
-          <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-6">
-              <TabsTrigger value="personal-info">Thông tin cá nhân</TabsTrigger>
-              <TabsTrigger value="security">Bảo mật</TabsTrigger>
-              <TabsTrigger value="notifications">Thông báo</TabsTrigger>
-            </TabsList>
+                <Separator className="my-4" />
 
-            <TabsContent value="personal-info" className="min-h-[600px] space-y-6 mt-0">
-              <div>
-                {/* Left Column - Avatar and Basic Info */}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Liên hệ</Label>
+                  <div className="space-y-2 mt-2">
+                    <div>
+                      <Label className="text-xs">Email</Label>
+                      <p className="text-sm">{profile?.email || 'duy.danh@student.edu.vn'}</p>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Điện thoại</Label>
+                      <p className="text-sm">{profile?.phone || '0987 654 321'}</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="lg:w-2/3">
+            <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-3 mb-6">
+                <TabsTrigger value="personal-info">Thông tin cá nhân</TabsTrigger>
+                <TabsTrigger value="security">Bảo mật</TabsTrigger>
+                <TabsTrigger value="notifications">Thông báo</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="personal-info" className="min-h-[600px] space-y-6 mt-0">
+                <div>
+                  {/* Left Column - Avatar and Basic Info */}
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
@@ -327,132 +327,132 @@ export function ProfilePage() {
                       </div>
                     </CardContent>
                   </Card>
-              </div>
-            </TabsContent>
+                </div>
+              </TabsContent>
 
-            <TabsContent value="security" className="min-h-[600px] space-y-6 mt-0">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Bảo mật tài khoản</CardTitle>
-                  <CardDescription>
-                    Quản lý mật khẩu và các thiết lập bảo mật khác
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handlePasswordSubmit(onPasswordSubmit)} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="currentPassword">Mật khẩu hiện tại</Label>
-                      <Input 
-                        id="currentPassword" 
-                        type="password" 
-                        placeholder="••••••••" 
-                        {...registerPassword('currentPassword')}
-                      />
-                      {passwordErrors.currentPassword && (
-                        <p className="text-sm text-red-500">{passwordErrors.currentPassword.message}</p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="newPassword">Mật khẩu mới</Label>
-                      <Input 
-                        id="newPassword" 
-                        type="password" 
-                        placeholder="••••••••" 
-                        {...registerPassword('newPassword')}
-                      />
-                      {passwordErrors.newPassword && (
-                        <p className="text-sm text-red-500">{passwordErrors.newPassword.message}</p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="confirmPassword">Xác nhận mật khẩu mới</Label>
-                      <Input 
-                        id="confirmPassword" 
-                        type="password" 
-                        placeholder="••••••••" 
-                        {...registerPassword('confirmPassword')}
-                      />
-                      {passwordErrors.confirmPassword && (
-                        <p className="text-sm text-red-500">{passwordErrors.confirmPassword.message}</p>
-                      )}
-                    </div>
-                    
-                    <div className="flex justify-end gap-2 mt-6">
-                      <Button 
-                        type="button" 
-                        variant="outline"
-                        onClick={() => resetPasswordForm()}
-                      >
-                        Hủy bỏ
-                      </Button>
-                      <Button 
-                        type="submit"
-                        disabled={changePasswordMutation.isPending}
-                      >
-                        {changePasswordMutation.isPending ? 'Đang cập nhật...' : 'Đổi mật khẩu'}
-                      </Button>
-                    </div>
-                  </form>
-                </CardContent>
-              </Card>
-            </TabsContent>
+              <TabsContent value="security" className="min-h-[600px] space-y-6 mt-0">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Bảo mật tài khoản</CardTitle>
+                    <CardDescription>
+                      Quản lý mật khẩu và các thiết lập bảo mật khác
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handlePasswordSubmit(onPasswordSubmit)} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="currentPassword">Mật khẩu hiện tại</Label>
+                        <Input
+                          id="currentPassword"
+                          type="password"
+                          placeholder="••••••••"
+                          {...registerPassword('currentPassword')}
+                        />
+                        {passwordErrors.currentPassword && (
+                          <p className="text-sm text-red-500">{passwordErrors.currentPassword.message}</p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="newPassword">Mật khẩu mới</Label>
+                        <Input
+                          id="newPassword"
+                          type="password"
+                          placeholder="••••••••"
+                          {...registerPassword('newPassword')}
+                        />
+                        {passwordErrors.newPassword && (
+                          <p className="text-sm text-red-500">{passwordErrors.newPassword.message}</p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword">Xác nhận mật khẩu mới</Label>
+                        <Input
+                          id="confirmPassword"
+                          type="password"
+                          placeholder="••••••••"
+                          {...registerPassword('confirmPassword')}
+                        />
+                        {passwordErrors.confirmPassword && (
+                          <p className="text-sm text-red-500">{passwordErrors.confirmPassword.message}</p>
+                        )}
+                      </div>
 
-            <TabsContent value="notifications" className="min-h-[600px] space-y-6 mt-0">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Cài đặt thông báo</CardTitle>
-                  <CardDescription>
-                    Quản lý các loại thông báo bạn muốn nhận
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h4 className="font-medium">Thông báo email</h4>
-                        <p className="text-sm text-muted-foreground">Nhận thông báo qua email về các cập nhật quan trọng</p>
-                      </div>
-                      <Button variant="outline" size="sm">Đang phát triển</Button>
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h4 className="font-medium">Thông báo khóa học</h4>
-                        <p className="text-sm text-muted-foreground">Nhận thông báo về các khóa học mới và cập nhật</p>
-                      </div>
-                      <Button variant="outline" size="sm">Đang phát triển</Button>
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h4 className="font-medium">Thông báo điểm số</h4>
-                        <p className="text-sm text-muted-foreground">Nhận thông báo khi có điểm mới</p>
-                      </div>
-                      <Button variant="outline" size="sm">Đang phát triển</Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            { (selectedTab === 'personal-info') && (
                       <div className="flex justify-end gap-2 mt-6">
-            <Button 
-              type="button" 
-              variant="outline"
-              onClick={() => reset()}
-            >
-              Hủy bỏ
-            </Button>
-            <Button 
-              onClick={handleSubmit(onSubmit)}
-              disabled={updateProfileMutation.isPending}
-            >
-              {updateProfileMutation.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
-            </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => resetPasswordForm()}
+                        >
+                          Hủy bỏ
+                        </Button>
+                        <Button
+                          type="submit"
+                          disabled={changePasswordMutation.isPending}
+                        >
+                          {changePasswordMutation.isPending ? 'Đang cập nhật...' : 'Đổi mật khẩu'}
+                        </Button>
+                      </div>
+                    </form>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="notifications" className="min-h-[600px] space-y-6 mt-0">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Cài đặt thông báo</CardTitle>
+                    <CardDescription>
+                      Quản lý các loại thông báo bạn muốn nhận
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-4 border rounded-lg">
+                        <div>
+                          <h4 className="font-medium">Thông báo email</h4>
+                          <p className="text-sm text-muted-foreground">Nhận thông báo qua email về các cập nhật quan trọng</p>
+                        </div>
+                        <Button variant="outline" size="sm">Đang phát triển</Button>
+                      </div>
+
+                      <div className="flex items-center justify-between p-4 border rounded-lg">
+                        <div>
+                          <h4 className="font-medium">Thông báo khóa học</h4>
+                          <p className="text-sm text-muted-foreground">Nhận thông báo về các khóa học mới và cập nhật</p>
+                        </div>
+                        <Button variant="outline" size="sm">Đang phát triển</Button>
+                      </div>
+
+                      <div className="flex items-center justify-between p-4 border rounded-lg">
+                        <div>
+                          <h4 className="font-medium">Thông báo điểm số</h4>
+                          <p className="text-sm text-muted-foreground">Nhận thông báo khi có điểm mới</p>
+                        </div>
+                        <Button variant="outline" size="sm">Đang phát triển</Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              {(selectedTab === 'personal-info') && (
+                <div className="flex justify-end gap-2 mt-6">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => reset()}
+                  >
+                    Hủy bỏ
+                  </Button>
+                  <Button
+                    onClick={handleSubmit(onSubmit)}
+                    disabled={updateProfileMutation.isPending}
+                  >
+                    {updateProfileMutation.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
+                  </Button>
+                </div>
+              )}
+            </Tabs>
           </div>
-            )}
-          </Tabs>
-        </div>    
 
         </CardContent>
       </Card>

@@ -1,8 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { RequireAuth } from '@/components/auth/require-auth'
 import { MainLayout } from '@/components/layout/main-layout'
- import { ConversationPage } from '@/features/conversation'
-
+import { ConversationPage } from '@/features/conversation'
 
 export const Route = createFileRoute('/conversation/')({
   component: () => (
@@ -10,7 +9,6 @@ export const Route = createFileRoute('/conversation/')({
       <MainLayout>
         <ConversationPage />
       </MainLayout>
-   </RequireAuth>
+    </RequireAuth>
   ),
 })
- 

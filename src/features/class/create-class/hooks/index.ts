@@ -1,0 +1,1 @@
+export { useCreateClass } from './use-create-class'
