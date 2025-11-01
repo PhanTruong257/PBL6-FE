@@ -1,7 +1,8 @@
 import type { UserRole } from '@/types/user'
 
 /**
- * User roles in the system
+ * User roles in the system.
+ * @Match UserRole type: PBL6\apps\exams-service\prisma\schema.prisma
  */
 export const USER_ROLES = {
   ADMIN: 'admin',
@@ -10,39 +11,11 @@ export const USER_ROLES = {
 } as const
 
 /**
- * Permissions for each role
+ * Keys of USER_ROLES.
  */
-export const ROLE_PERMISSIONS = {
-  admin: [
-    'users.view',
-    'users.create',
-    'users.edit',
-    'users.delete',
-    'courses.view',
-    'courses.create',
-    'courses.edit',
-    'courses.delete',
-    'settings.manage',
-    'reports.view',
-  ],
-  teacher: [
-    'courses.view',
-    'courses.create',
-    'courses.edit',
-    'my-courses.manage',
-    'students.view',
-    'assignments.create',
-    'assignments.grade',
-    'attendance.manage',
-  ],
-  student: [
-    'courses.view',
-    'courses.enroll',
-    'assignments.view',
-    'assignments.submit',
-    'grades.view',
-    'profile.edit',
-  ],
-} as const
+export type UserRolesKey = keyof typeof USER_ROLES
 
-export type Permission = (typeof ROLE_PERMISSIONS)[UserRole][number]
+/**
+ * User roles type.
+ */
+export type UserRoles = (typeof USER_ROLES)[UserRolesKey]
