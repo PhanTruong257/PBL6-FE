@@ -1,0 +1,1 @@
+export { CreateClassPage } from './create-class-page'

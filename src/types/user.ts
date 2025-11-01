@@ -19,7 +19,7 @@ export interface Role {
 
 export interface User {
   user_id: number
-  fullName?: string
+  full_name?: string
   email: string
   gender?: string
   avatar?: string

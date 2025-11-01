@@ -3,7 +3,7 @@ import { toast } from 'sonner'
 import { ProfileService } from '../api'
 import type { UpdateProfileRequest, ChangePasswordRequest } from '../api'
 import { authKeys } from '@/features/auth/hooks/use-auth'
-import { tokenStorage } from '@/libs/utils'
+// import { tokenStorage } from '@/libs/utils'
 
 /**
  * Query keys for React Query
@@ -36,12 +36,12 @@ export function useUpdateProfile() {
     onSuccess: (response) => {
       // Update both profile and auth user cache
       queryClient.setQueryData(profileKeys.profile(), response)
-      queryClient.setQueryData(authKeys.user(), response.data.user)
-      
+      queryClient.setQueryData(authKeys.user(), response.user)
+
       // Invalidate to refetch
       queryClient.invalidateQueries({ queryKey: profileKeys.profile() })
       queryClient.invalidateQueries({ queryKey: authKeys.user() })
-      
+
       toast.success('Cập nhật thông tin thành công!')
     },
     onError: (error: any) => {
@@ -64,7 +64,7 @@ export function useUploadAvatar() {
       // Invalidate profile queries to refetch updated avatar
       queryClient.invalidateQueries({ queryKey: profileKeys.profile() })
       queryClient.invalidateQueries({ queryKey: authKeys.user() })
-      
+
       toast.success('Cập nhật ảnh đại diện thành công!')
     },
     onError: (error: any) => {

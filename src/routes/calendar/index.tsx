@@ -9,6 +9,6 @@ export const Route = createFileRoute('/calendar/')({
       <MainLayout>
         <CalendarPage />
       </MainLayout>
-   </RequireAuth>
+    </RequireAuth>
   ),
 })

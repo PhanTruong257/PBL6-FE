@@ -1,0 +1,1 @@
+export { ClassDetailPage } from './class-detail-page'
