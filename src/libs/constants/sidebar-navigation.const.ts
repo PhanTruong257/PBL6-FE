@@ -72,6 +72,11 @@ export const ADMIN_SIDEBAR_NAV: SidebarNavigation = {
       href: '/admin/notifications',
       icon: Bell,
     },
+    {
+      title: 'Tin nhắn',
+      href: '/conversation',
+      icon: MessageSquare,
+    },
   ],
   bottom: [
     {
@@ -129,7 +134,7 @@ export const TEACHER_SIDEBAR_NAV: SidebarNavigation = {
     },
     {
       title: 'Tin nhắn',
-      href: '/teacher/messages',
+      href: '/conversation',
       icon: MessageSquare,
     },
   ],
@@ -184,7 +189,7 @@ export const STUDENT_SIDEBAR_NAV: SidebarNavigation = {
     },
     {
       title: 'Tin nhắn',
-      href: '/student/messages',
+      href: '/conversation',
       icon: MessageSquare,
     },
     {
