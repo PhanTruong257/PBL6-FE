@@ -1,5 +1,5 @@
 import { AtSign, Hash, MoreHorizontal, Paperclip, Send, Smile } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "../../../../components/ui/button";
 
 export function replyInput(setHideReplyInput:React.Dispatch<React.SetStateAction<boolean>>){
     return  <div className="flex items-center w-full">

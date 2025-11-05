@@ -1,1 +1,6 @@
 export { ClassDetailHeader } from './class-detail-header'
+export { PostCard } from './post-card'
+export { ClassSettings } from './class-settings'
+export { ClassMainContent } from './class-main-content'
+export { AddMemberModal } from './add-member-modal'
+export { AvatarHoverCard } from './avatar-hover-card'
