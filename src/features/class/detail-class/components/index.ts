@@ -1,0 +1,1 @@
+export { ClassDetailHeader } from './class-detail-header'

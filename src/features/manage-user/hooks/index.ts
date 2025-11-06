@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { deleteUser } from '../api'
 import type { UserFilters } from '../types'
@@ -108,4 +108,15 @@ export const useUserFilters = () => {
   }
 
   return { filters, updateFilters, resetFilters }
+}
+
+export const useUsers = (
+  filters: Partial<UserFilters>,
+  enabled = true
+) => {
+  return useQuery({
+    queryKey: ['users', filters],
+    queryFn: () => UserService.getUsers(filters as UserFilters),
+    enabled,
+  })
 }
