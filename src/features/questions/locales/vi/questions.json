@@ -1,0 +1,106 @@
+{
+  "title": "Ngân hàng câu hỏi",
+  "subtitle": "Quản lý câu hỏi và danh mục của bạn",
+  "createQuestion": "Tạo câu hỏi",
+  "editQuestion": "Chỉnh sửa câu hỏi",
+  "deleteQuestion": "Xóa câu hỏi",
+  "viewQuestion": "Xem câu hỏi",
+  "questionDetails": "Chi tiết câu hỏi",
+  "noQuestionsFound": "Không tìm thấy câu hỏi",
+  "tryChangingFilters": "Thử thay đổi bộ lọc hoặc tạo câu hỏi mới",
+  "createFirstQuestion": "Tạo câu hỏi đầu tiên",
+  "loading": "Đang tải danh sách câu hỏi...",
+  
+  "stats": {
+    "title": "Thống kê",
+    "total": "Tổng câu hỏi",
+    "multipleChoice": "Trắc nghiệm",
+    "essay": "Tự luận",
+    "public": "Công khai",
+    "difficulty": "Độ khó",
+    "easy": "Dễ",
+    "medium": "Trung bình",
+    "hard": "Khó"
+  },
+  
+  "types": {
+    "multipleChoice": "Trắc nghiệm",
+    "essay": "Tự luận"
+  },
+  
+  "difficulty": {
+    "easy": "Dễ",
+    "medium": "Trung bình",
+    "hard": "Khó"
+  },
+  
+  "form": {
+    "content": "Nội dung câu hỏi",
+    "contentPlaceholder": "Nhập nội dung câu hỏi...",
+    "type": "Loại câu hỏi",
+    "difficulty": "Độ khó",
+    "category": "Danh mục",
+    "selectCategory": "Chọn danh mục",
+    "noCategory": "Không có danh mục",
+    "isPublic": "Trạng thái hiển thị",
+    "isMultipleAnswer": "Cho phép chọn nhiều đáp án",
+    "options": "Các lựa chọn trả lời",
+    "addOption": "Thêm lựa chọn",
+    "removeOption": "Xóa",
+    "markCorrectAnswer": "Đánh dấu đáp án đúng"
+  },
+  
+  "category": {
+    "title": "Danh mục",
+    "manage": "Quản lý danh mục",
+    "create": "Tạo danh mục",
+    "edit": "Chỉnh sửa danh mục",
+    "delete": "Xóa danh mục",
+    "name": "Tên danh mục",
+    "namePlaceholder": "Nhập tên danh mục...",
+    "description": "Mô tả",
+    "descriptionPlaceholder": "Nhập mô tả...",
+    "questionCount": "{{count}} câu hỏi",
+    "deleteConfirm": "Bạn có chắc chắn muốn xóa \"{{name}}\"?",
+    "addNew": "Thêm mới..."
+  },
+  
+  "search": {
+    "placeholder": "Tìm kiếm câu hỏi, nội dung, danh mục...",
+    "filters": "Bộ lọc",
+    "activeFilters": "{{count}} bộ lọc",
+    "clearFilters": "Xóa tất cả bộ lọc"
+  },
+  
+  "view": {
+    "grid": "Lưới",
+    "list": "Danh sách",
+    "showing": "Hiển thị {{from}} đến {{to}} trong tổng số {{total}} câu hỏi",
+    "page": "Trang {{current}} / {{total}}"
+  },
+  
+  "messages": {
+    "deleteConfirm": "Bạn có chắc chắn muốn xóa câu hỏi này?\n\n\"{{content}}\"",
+    "createSuccess": "Tạo câu hỏi thành công!",
+    "updateSuccess": "Cập nhật câu hỏi thành công!",
+    "deleteSuccess": "Xóa câu hỏi thành công!",
+    "createError": "Tạo câu hỏi thất bại",
+    "updateError": "Cập nhật câu hỏi thất bại",
+    "deleteError": "Xóa câu hỏi thất bại",
+    "noAccess": "Không có quyền truy cập",
+    "noAccessMessage": "Chỉ admin và giáo viên mới có thể quản lý câu hỏi."
+  },
+  
+  "validation": {
+    "contentRequired": "Nội dung câu hỏi là bắt buộc",
+    "contentMin": "Nội dung câu hỏi phải có ít nhất {{count}} ký tự",
+    "contentMax": "Nội dung câu hỏi không được vượt quá {{count}} ký tự",
+    "typeRequired": "Loại câu hỏi là bắt buộc",
+    "difficultyRequired": "Độ khó là bắt buộc",
+    "minOptions": "Câu hỏi trắc nghiệm phải có ít nhất 2 lựa chọn",
+    "optionContentRequired": "Nội dung lựa chọn là bắt buộc",
+    "atLeastOneCorrect": "Phải có ít nhất 1 đáp án đúng",
+    "onlyOneCorrect": "Câu hỏi một đáp án chỉ có thể có 1 đáp án đúng",
+    "allOptionsMustHaveContent": "Tất cả lựa chọn phải có nội dung"
+  }
+}

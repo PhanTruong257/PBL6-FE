@@ -16,6 +16,7 @@ import {
   UserCog,
   FolderKanban,
   MessageSquare,
+  Library,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -99,22 +100,22 @@ export const TEACHER_SIDEBAR_NAV: SidebarNavigation = {
   main: [
     {
       title: 'Dashboard',
-      href: '/teacher/dashboard',
+      href: '/dashboard',
       icon: LayoutDashboard,
     },
     {
-      title: 'Khóa học của tôi',
-      href: '/teacher/my-courses',
+      title: 'Lớp học của tôi',
+      href: '/classes',
       icon: BookMarked,
     },
     {
-      title: 'Tạo khóa học',
-      href: '/teacher/create-course',
-      icon: FolderKanban,
+      title: 'Ngân hàng câu hỏi',
+      href: '/questions',
+      icon: Library,
     },
     {
-      title: 'Quản lý bài tập',
-      href: '/teacher/assignments',
+      title: 'Quản lý bài kiểm tra',
+      href: '/teacher/exams',
       icon: ClipboardList,
     },
     {
@@ -141,7 +142,7 @@ export const TEACHER_SIDEBAR_NAV: SidebarNavigation = {
   bottom: [
     {
       title: 'Cài đặt',
-      href: '/teacher/settings',
+      href: '/settings',
       icon: Settings,
     },
     {

@@ -1,0 +1,50 @@
+{
+  "app": {
+    "name": "Education Platform",
+    "welcome": "Welcome"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "create": "Create",
+    "update": "Update",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "close": "Close",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "reset": "Reset",
+    "import": "Import",
+    "export": "Export",
+    "duplicate": "Duplicate",
+    "public": "Public",
+    "private": "Private"
+  },
+  "validation": {
+    "required": "This field is required",
+    "minLength": "Minimum length is {{count}} characters",
+    "maxLength": "Maximum length is {{count}} characters",
+    "email": "Invalid email address",
+    "number": "Must be a number"
+  },
+  "actions": {
+    "createSuccess": "Created successfully",
+    "updateSuccess": "Updated successfully",
+    "deleteSuccess": "Deleted successfully",
+    "createError": "Failed to create",
+    "updateError": "Failed to update",
+    "deleteError": "Failed to delete"
+  }
+}
