@@ -18,20 +18,19 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-    user: User
-    accessToken: string
-    refreshToken: string
+  user: User
+  accessToken: string
+  refreshToken: string
 }
 
 /**
  * Register request/response
  */
 export interface RegisterRequest {
-  full_name: string
+  fullName: string
   email: string
   password: string
   confirmPassword: string
-
 }
 
 export interface RegisterResponse {
