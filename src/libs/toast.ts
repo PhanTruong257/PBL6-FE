@@ -4,7 +4,6 @@ import { toast as sonnerToast } from 'sonner'
  * Custom toast utility wrapper for consistent toast notifications
  * Uses sonner under the hood with predefined styles
  */
-
 export const toast = {
   /**
    * Show a success toast notification
@@ -22,7 +21,7 @@ export const toast = {
   error: (message: string, description?: string) => {
     sonnerToast.error(message, {
       description,
-      duration: 5000,
+      duration: 4000,
     })
   },
 
