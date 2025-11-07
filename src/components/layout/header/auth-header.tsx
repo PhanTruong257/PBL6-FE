@@ -5,62 +5,74 @@ import { Link, useRouter } from '@tanstack/react-router'
 export function AuthHeader() {
   const router = useRouter()
   const currentPath = router.state.location.pathname
+  console.log('Current Path:', currentPath)
 
-  // Kiểm tra trang hiện tại
-  const isLoginPage = currentPath === '/auth/login'
-  const isRegisterPage = currentPath === '/auth/register'
+  // Check current path to conditionally render buttons
+  const isLoginPage = currentPath === '/auth/login' // Render Register button
+  const isRegisterPage = currentPath === '/auth/register' // Render Login button
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4">
-        {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2">
-          <img 
-            src="/logo.png" 
-            alt="PBL6 Logo" 
-            className="h-10 w-10 object-contain"
-          />
-          <span className="hidden font-bold text-lg sm:inline-block">
-            PBL6 Learning
-          </span>
-        </Link>
+      <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-0 sm:px-4">
+        {/* Grid layout for left part */}
+        <div className='grid grid-cols-3 items-center w-full'>
+          {/* Logo - Left Part */}
+          <Link to="/" className="flex items-center space-x-2">
+            {/* Logo Image */}
+            <img 
+              src="/logo.png" 
+              alt="PBL6 Logo" 
+              className="h-10 w-10 object-contain"
+            />
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-2">
-          {/* Theme Toggle */}
-          <ThemeToggle />
-          
-          {/* Show buttons based on current page */}
-          {!isLoginPage && !isRegisterPage && (
-            <>
-              <Button variant="ghost" asChild>
-                <Link to="/auth/login">
-                  Đăng nhập
-                </Link>
-              </Button>
+            {/* Brand Name */}
+            <span className="hidden font-bold text-lg sm:inline-block">
+              PBL6 Learning
+            </span>
+          </Link>
+
+          {/* Empty Space - Center Part */}
+          <div className="flex items-center justify-center"></div>
+
+          {/* Actions - Right Part */}
+          <div className="flex items-center gap-2 justify-self-end">
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
+            {/* Show buttons if not on login or register page */}
+            {!isLoginPage && !isRegisterPage && (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link to="/auth/login">
+                    Đăng nhập
+                  </Link>
+                </Button>
+                <Button asChild>
+                  <Link to="/auth/register">
+                    Đăng ký
+                  </Link>
+                </Button>
+              </>
+            )}
+
+            {/* Login Page => Show Register Button */}
+            {isLoginPage && (
               <Button asChild>
                 <Link to="/auth/register">
                   Đăng ký
                 </Link>
               </Button>
-            </>
-          )}
+            )}
 
-          {isLoginPage && (
-            <Button asChild>
-              <Link to="/auth/register">
-                Đăng ký
-              </Link>
-            </Button>
-          )}
-
-          {isRegisterPage && (
-            <Button variant="ghost" asChild>
-              <Link to="/auth/login">
-                Đăng nhập
-              </Link>
-            </Button>
-          )}
+            {/* Register Page => Show Login Button */}
+            {isRegisterPage && (
+              <Button variant="ghost" asChild>
+                <Link to="/auth/login">
+                  Đăng nhập
+                </Link>
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </header>
