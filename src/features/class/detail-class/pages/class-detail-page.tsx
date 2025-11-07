@@ -1,4 +1,4 @@
-import { ClassSettings, ClassMainContent, AddMemberModal } from '@/components/class'
+import { ClassSettings, ClassMainContent, AddMemberModal, StickyPostButton } from '../components'
 import { ClassDetailHeader } from '../components'
 import { useClassDetailPage } from '../hooks'
 
@@ -70,6 +70,9 @@ export function ClassDetailPage() {
                 onOpenChange={setIsAddMemberModalOpen}
                 classInfo={classInfo}
             />
+
+            {/* Sticky Post Button - Only show when not in settings and in posts tab */}
+            {!showSettings && activeTab === 'posts' && <StickyPostButton />}
         </div>
     )
 }

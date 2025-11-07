@@ -38,21 +38,24 @@ export const mockPostData: PostCardProps[] = [
     {
         id: 1,
         sender: mockUser,
+        title: 'Thông báo',
         message: 'Chào các em! Hôm nay chúng ta sẽ học về khái niệm Class và Object trong lập trình hướng đối tượng. Các em hãy đọc trước tài liệu tôi đã gửi.',
-        create_at: new Date('2024-11-01T08:00:00'),
+        created_at: new Date('2024-11-01T08:00:00'),
         replies: [
             {
                 id: 2,
                 sender: mockStudent,
+                title: '',
                 message: 'Thầy ơi, em có thể tìm tài liệu ở đâu ạ?',
-                create_at: new Date('2024-11-01T08:30:00'),
+                created_at: new Date('2024-11-01T08:30:00'),
                 replies: []
             },
             {
                 id: 3,
                 sender: mockUser,
+                title: '',
                 message: 'Em vào phần tài liệu của lớp học, thầy đã upload file PDF.',
-                create_at: new Date('2024-11-01T08:35:00'),
+                created_at: new Date('2024-11-01T08:35:00'),
                 replies: []
             }
         ]
@@ -60,14 +63,16 @@ export const mockPostData: PostCardProps[] = [
     {
         id: 4,
         sender: mockUser,
+        title: 'Thông báo',
         message: 'Bài tập về nhà: Thiết kế class Student với các thuộc tính: name, studentId, email và các method: study(), takeExam(). Deadline: 05/11/2024',
-        create_at: new Date('2024-11-01T10:00:00'),
+        created_at: new Date('2024-11-01T10:00:00'),
         replies: [
             {
                 id: 5,
                 sender: mockStudent,
+                title: '',
                 message: 'Thầy ơi, em nộp bài ở đâu ạ?',
-                create_at: new Date('2024-11-01T11:00:00'),
+                created_at: new Date('2024-11-01T11:00:00'),
                 replies: []
             }
         ]
@@ -75,21 +80,24 @@ export const mockPostData: PostCardProps[] = [
     {
         id: 6,
         sender: mockStudent,
+        title: 'Thông báo',
         message: 'Thầy ơi, em có câu hỏi về inheritance. Khi nào thì nên sử dụng ạ?',
-        create_at: new Date('2024-11-01T14:00:00'),
+        created_at: new Date('2024-11-01T14:00:00'),
         replies: [
             {
                 id: 7,
                 sender: mockUser,
+                title: '',
                 message: 'Câu hỏi hay! Inheritance được sử dụng khi có mối quan hệ "is-a" giữa các class. Ví dụ: Dog is-a Animal.',
-                create_at: new Date('2024-11-01T14:15:00'),
+                created_at: new Date('2024-11-01T14:15:00'),
                 replies: []
             },
             {
                 id: 8,
                 sender: mockStudent,
+                title: '',
                 message: 'Em hiểu rồi ạ! Cảm ơn thầy.',
-                create_at: new Date('2024-11-01T14:20:00'),
+                created_at: new Date('2024-11-01T14:20:00'),
                 replies: []
             }
         ]

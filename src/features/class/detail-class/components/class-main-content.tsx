@@ -1,5 +1,10 @@
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { PostCard, type PostCardProps } from './post-card'
+import { PostCard} from './post-card'
+import { MaterialsView } from './materials-view'
+import type { PostCardProps } from '../types'
+import { useMaterialsDetail } from '../hooks/use-class-detail'
+import { mockClassInfo } from '../mock-data'
+import type { Material_full_info } from '@/types/material'
 
 interface ClassMainContentProps {
   activeTab: string
@@ -9,6 +14,8 @@ interface ClassMainContentProps {
 
 
 export function ClassMainContent({ activeTab, setActiveTab, postData }: ClassMainContentProps) {
+  const classInfo = mockClassInfo;
+  const {data: materials} = useMaterialsDetail(classInfo.class_id)
   return (
     <>
       {/* Tabs */}
@@ -21,20 +28,27 @@ export function ClassMainContent({ activeTab, setActiveTab, postData }: ClassMai
         </Tabs>
       </div>
 
-      {/* Posts Content */}
-      <div className="flex-1 p-6 overflow-y-auto">
-        <div className="max-w-4xl mx-auto space-y-6">
-          {postData.map((post) => (
-            <PostCard
-              id={post.id}
-              sender={post.sender}
-              message={post.message}
-              create_at={post.create_at}
-              replies={post.replies}
-            />
-          ))}
+      {/* Tab Content */}
+      {activeTab === 'posts' ? (
+        <div className="flex-1 p-6 overflow-y-auto">
+          <div className="max-w-4xl mx-auto space-y-6">
+            {postData.map((post) => (
+              <PostCard
+                key={post.id}
+                id={post.id}
+                sender={post.sender}
+                title={post.title}
+                message={post.message}
+                created_at={post.created_at}
+                replies={post.replies}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <MaterialsView 
+        materials={materials||([] as Material_full_info[])}/>
+      )}
 
       
     </>
