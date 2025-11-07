@@ -3,31 +3,34 @@ import { Plus, Search, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { cn } from '@/libs/utils/cn'
 import { useConversations } from '../hooks'
 import type { ConversationWithUser } from '../types'
 
 interface ConversationListProps {
+    currentUserId: number
     selectedConversationId?: number
     onSelectConversation: (conversation: ConversationWithUser) => void
     onCreateConversation: () => void
 }
 
 export function ConversationList({
+    currentUserId,
     selectedConversationId,
     onSelectConversation,
     onCreateConversation,
 }: ConversationListProps) {
     const [searchQuery, setSearchQuery] = useState('')
 
-    const { data: conversationsData, isLoading } = useConversations()
-    const conversations = conversationsData?.conversations || []
+    const { data: conversationsData, isLoading } = useConversations({ userId: currentUserId })
 
-    const filteredConversations = (conversations as ConversationWithUser[]).filter((conversation) =>
-        conversation.receiver_name?.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    // Backend returns nested structure: { success, data: { conversations } }
+    const conversations = conversationsData?.data?.conversations
+        || conversationsData?.conversations
+        || (Array.isArray(conversationsData) ? conversationsData : [])
+
+    const filteredConversations = conversations.filter(() => true)
 
     const formatTime = (timestamp: string) => {
         const date = new Date(timestamp)
@@ -90,9 +93,12 @@ export function ConversationList({
                     </div>
                 ) : (
                     <div className="space-y-1 p-2">
-                        {filteredConversations.map((conversation) => {
+                        {filteredConversations.map((conversation: any) => {
                             const isSelected = conversation.id === selectedConversationId
-                            const hasUnread = (conversation.unread_count || 0) > 0
+                            // Use last_message from backend (snake_case)
+                            const lastMessage = conversation.last_message
+                            // Get receiver info from backend
+                            const receiverName = conversation.receiver_name || `User #${conversation.receiver_id}`
 
                             return (
                                 <div
@@ -104,39 +110,27 @@ export function ConversationList({
                                     onClick={() => onSelectConversation(conversation)}
                                 >
                                     <Avatar className="h-10 w-10">
-                                        <AvatarImage src={conversation.receiver_avatar} />
                                         <AvatarFallback>
-                                            {conversation.receiver_name?.charAt(0).toUpperCase()}
+                                            {receiverName.charAt(0).toUpperCase()}
                                         </AvatarFallback>
                                     </Avatar>
 
                                     <div className="flex-1 overflow-hidden">
                                         <div className="flex items-center justify-between">
-                                            <div className={cn(
-                                                "truncate text-sm",
-                                                hasUnread && "font-semibold"
-                                            )}>
-                                                {conversation.receiver_name || 'Người dùng'}
+                                            <div className="truncate text-sm">
+                                                {receiverName}
                                             </div>
-                                            {conversation.last_message && (
+                                            {lastMessage && (
                                                 <div className="text-xs text-muted-foreground">
-                                                    {formatTime(conversation.last_message.timestamp)}
+                                                    {formatTime(lastMessage.timestamp)}
                                                 </div>
                                             )}
                                         </div>
 
                                         <div className="flex items-center justify-between">
-                                            <div className={cn(
-                                                "truncate text-xs",
-                                                hasUnread ? "text-foreground font-medium" : "text-muted-foreground"
-                                            )}>
-                                                {conversation.last_message?.content || 'Chưa có tin nhắn'}
+                                            <div className="truncate text-xs text-muted-foreground">
+                                                {lastMessage?.content || 'Chưa có tin nhắn'}
                                             </div>
-                                            {hasUnread && (
-                                                <Badge variant="default" className="h-5 w-5 rounded-full p-0 text-xs">
-                                                    {conversation.unread_count}
-                                                </Badge>
-                                            )}
                                         </div>
                                     </div>
                                 </div>

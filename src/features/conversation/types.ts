@@ -29,16 +29,28 @@ export interface CreateConversationRequest {
 }
 
 export interface SendMessageRequest {
+    sender_id: number
     conversation_id: number
     message_type?: MessageType
     content: string
 }
 
 export interface GetConversationsResponse {
-    conversations: Conversation[]
-    total: number
-    page: number
-    limit: number
+    success?: boolean
+    message?: string
+    data?: {
+        success: boolean
+        conversations: ConversationWithUser[]
+        total: number
+        page: number
+        limit: number
+        totalPages: number
+    }
+    // Alternative flat structure
+    conversations?: ConversationWithUser[]
+    total?: number
+    page?: number
+    limit?: number
 }
 
 export interface GetMessagesRequest {
@@ -48,10 +60,21 @@ export interface GetMessagesRequest {
 }
 
 export interface GetMessagesResponse {
-    messages: Message[]
-    total: number
-    page: number
-    limit: number
+    success?: boolean
+    message?: string
+    data?: {
+        success: boolean
+        messages: Message[]
+        total: number
+        page: number
+        limit: number
+        totalPages: number
+    }
+    // Alternative flat structure
+    messages?: Message[]
+    total?: number
+    page?: number
+    limit?: number
 }
 
 // Extended types with user info

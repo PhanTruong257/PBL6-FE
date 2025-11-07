@@ -26,9 +26,10 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
     const sendMessageMutation = useSendMessage()
     const markAsReadMutation = useMarkAsRead()
 
-    const messages = messagesData?.messages || []
-
-    // Auto scroll to bottom when new messages arrive
+    // Backend returns nested structure: { success, data: { messages: [...] } }
+    const messages = messagesData?.data?.messages
+        || messagesData?.messages
+        || (Array.isArray(messagesData) ? messagesData : [])    // Auto scroll to bottom when new messages arrive
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [messages])
@@ -45,6 +46,7 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
 
         try {
             await sendMessageMutation.mutateAsync({
+                sender_id: currentUserId,
                 conversation_id: conversation.id,
                 content: message.trim(),
                 message_type: MessageType.text,
@@ -142,7 +144,7 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {messages.map((msg, index) => {
+                        {messages.map((msg: any, index: number) => {
                             const isCurrentUser = msg.sender_id === currentUserId
                             const showDate = index === 0 ||
                                 formatDate(messages[index - 1].timestamp) !== formatDate(msg.timestamp)

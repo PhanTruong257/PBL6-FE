@@ -11,22 +11,25 @@ import type {
 } from '../types'
 
 const CONVERSATION_ENDPOINTS = {
-    conversations: '/conversations',
-    messages: '/messages',
-    conversation: (id: number) => `/conversations/${id}`,
-    conversationMessages: (id: number) => `/conversations/${id}/messages`,
+    conversations: '/chats/conversations', // For POST create
+    userConversations: (userId: number) => `/chats/users/${userId}/conversations`,
+    messages: '/chats/messages',
+    conversation: (id: number) => `/chats/conversations/${id}`,
+    conversationMessages: (id: number) => `/chats/conversations/${id}/messages`,
 } as const
 
 export class ConversationService {
     /**
      * Get all conversations for current user
      */
-    static async getConversations(params?: {
+    static async getConversations(params: {
+        userId: number
         page?: number
         limit?: number
     }): Promise<GetConversationsResponse> {
-        const response = await httpClient.get(CONVERSATION_ENDPOINTS.conversations, {
-            params,
+        const { userId, ...queryParams } = params
+        const response = await httpClient.get(CONVERSATION_ENDPOINTS.userConversations(userId), {
+            params: queryParams,
         })
         return response.data
     }
