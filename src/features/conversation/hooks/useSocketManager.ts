@@ -48,6 +48,10 @@ export function useSocketManager(options: SocketManagerOptions) {
             return socketRef.current
         }
 
+        console.log('🔌 [SOCKET_MANAGER] Connecting to Socket.IO server...')
+        console.log('   URL:', url)
+        console.log('   User ID:', userId)
+
         setState(prev => ({ ...prev, isConnecting: true, error: null }))
 
         const socket = io(url, {
@@ -59,6 +63,9 @@ export function useSocketManager(options: SocketManagerOptions) {
             timeout: 10000,
             autoConnect: true,
         }) as TypedSocket
+
+        console.log('   Transports:', ['websocket', 'polling'])
+        console.log('   Query params:', { userId: userId.toString() })
 
         // Connection event handlers
         socket.on('connect', () => {

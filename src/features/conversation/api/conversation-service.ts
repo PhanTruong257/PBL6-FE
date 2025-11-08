@@ -65,13 +65,16 @@ export class ConversationService {
      */
     static async getMessages(params: GetMessagesRequest): Promise<GetMessagesResponse> {
         const { conversation_id, ...queryParams } = params
+        console.log('📞 API: Fetching messages for conversation:', conversation_id, queryParams)
+
         const response = await httpClient.get(
             CONVERSATION_ENDPOINTS.conversationMessages(conversation_id),
             {
                 params: queryParams,
             }
         )
-        return response.data
+
+         return response.data
     }
 
     /**
