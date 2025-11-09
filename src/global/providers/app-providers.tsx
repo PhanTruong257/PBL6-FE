@@ -1,5 +1,6 @@
 import { StrictMode, type ReactNode } from 'react'
 import { ThemeProvider } from './theme-provider'
+import { GlobalSocketProvider } from './socket-provider'
 import * as TanStackQueryProvider from '@/integrations/tanstack-query/root-provider'
 
 /**
@@ -16,9 +17,11 @@ export function AppProviders({ children }: AppProvidersProps) {
       <TanStackQueryProvider.Provider
         {...TanStackQueryProvider.getContext()}
       >
-        <ThemeProvider defaultTheme="light" storageKey="pbl6-ui-theme">
-          {children}
-        </ThemeProvider>
+        <GlobalSocketProvider>
+          <ThemeProvider defaultTheme="light" storageKey="pbl6-ui-theme">
+            {children}
+          </ThemeProvider>
+        </GlobalSocketProvider>
       </TanStackQueryProvider.Provider>
     </StrictMode>
   )

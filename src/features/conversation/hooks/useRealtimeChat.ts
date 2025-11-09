@@ -73,7 +73,6 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
       user_id: userId,
     }
 
-    console.log('🚀 Emitting JOIN_CONVERSATION:', payload)
     socket.emit(SOCKET_EVENTS.JOIN_CONVERSATION, payload)
   }, [socket, conversationId, userId, enabled])
 
@@ -81,12 +80,7 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
    * Leave conversation room
    */
   const leaveConversation = useCallback(() => {
-    console.log('🚪 [LEAVE_CONVERSATION] Leaving conversation:', conversationId)
-
-    if (!socket?.connected) {
-      console.warn('⚠️ Socket not connected, cannot leave')
-      return
-    }
+    if (!socket?.connected) return
 
     socket.emit(SOCKET_EVENTS.LEAVE_CONVERSATION, {
       conversation_id: conversationId,
@@ -123,8 +117,6 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
         status: MessageStatus.SENDING,
         client_id: clientId,
       }
-
-      console.log('💬 Real-time message created:', realtimeMessage)
 
       // Add to pending messages
       pendingMessagesRef.current.set(clientId, realtimeMessage)
@@ -246,7 +238,7 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
    */
   const markAsRead = useCallback(
     (lastMessageId: number) => {
-      if (!socket?.connected) return
+      if (!socket?.connected || !lastMessageId || lastMessageId <= 0) return
 
       socket.emit(SOCKET_EVENTS.MESSAGE_READ, {
         conversation_id: conversationId,
@@ -262,30 +254,18 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
    * Handle message received from server
    */
   useEffect(() => {
-    if (!socket || !enabled) {
-      console.log('⚠️ Socket event listeners NOT registered:', {
-        socket: !!socket,
-        enabled,
-      })
-      return
-    }
-
-    console.log(
-      '✅ Registering Socket.IO event listeners for conversation:',
-      conversationId,
-    )
+    if (!socket || !enabled) return
 
     const handleMessageReceived = (data: MessageReceivedResponse) => {
-      console.log('📨 [MESSAGE_RECEIVED] Raw data:', data)
+      console.log('📨 [MESSAGE_RECEIVED]:', {
+        messageId: data.id,
+        senderId: data.sender_id,
+        conversationId: data.conversation_id,
+        currentUserId: userId,
+      })
 
       // Only process messages for this conversation
       if (data.conversation_id !== conversationId) {
-        console.log(
-          '⏭️ Skipping message for different conversation:',
-          data.conversation_id,
-          'vs',
-          conversationId,
-        )
         return
       }
 
@@ -295,17 +275,9 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
         data.client_id &&
         pendingMessagesRef.current.has(data.client_id)
       ) {
-        console.log(
-          '⏭️ Skipping own message (already optimistically added):',
-          data.client_id,
-        )
+        console.log('⏭️ Skipping own message (optimistic update)')
         return
       }
-
-      console.log(
-        '✅ Processing message for current conversation:',
-        conversationId,
-      )
 
       // Update messages cache
       queryClient.setQueryData<any>(
@@ -331,6 +303,13 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
             newMessages = [...currentMessages, data as unknown as Message]
           }
 
+          console.log(
+            '✅ Cache updated:',
+            currentMessages.length,
+            '→',
+            newMessages.length,
+          )
+
           // Preserve the original structure
           if (old?.data?.messages) {
             return {
@@ -353,14 +332,17 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
 
       // If message is from another user, mark as delivered
       if (data.sender_id !== userId) {
-        socket.emit(SOCKET_EVENTS.MESSAGE_DELIVERED, {
-          message_id: data.id,
-          user_id: userId,
-          delivered_at: new Date().toISOString(),
-        })
+        // Only emit delivered if message has a real DB ID (positive number)
+        if (data.id && data.id > 0) {
+          socket.emit(SOCKET_EVENTS.MESSAGE_DELIVERED, {
+            message_id: data.id,
+            user_id: userId,
+            delivered_at: new Date().toISOString(),
+          })
+        }
 
         // Auto-mark as read if conversation is active
-        if (document.visibilityState === 'visible') {
+        if (document.visibilityState === 'visible' && data.id && data.id > 0) {
           setTimeout(() => {
             markAsRead(data.id)
           }, 500)
@@ -372,12 +354,9 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
     }
 
     const handleMessageSent = (data: MessageSentResponse) => {
-      console.log('✅ [MESSAGE_SENT] Confirmation:', data)
-
       // Remove from pending messages
       if (data.client_id) {
         pendingMessagesRef.current.delete(data.client_id)
-        console.log('🗑️ Removed pending message:', data.client_id)
       }
 
       // Update message in cache with server ID
@@ -453,8 +432,6 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
     }
 
     const handleMessageStatusUpdated = (data: MessageStatusUpdatedResponse) => {
-      console.log('📊 Message status updated:', data)
-
       queryClient.setQueryData<any>(
         conversationKeys.messages(conversationId),
         (old: any) => {
@@ -491,14 +468,11 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
     }
 
     const handleConversationJoined = (data: ConversationJoinedResponse) => {
-      console.log('✅ [CONVERSATION_JOINED]:', data)
       setIsJoined(true)
       setOnlineParticipants(data.online_participants)
     }
 
     const handleUserTyping = (data: UserTypingResponse) => {
-      console.log('⌨️ [USER_TYPING]:', data)
-
       if (data.conversation_id !== conversationId || data.user_id === userId) {
         return
       }
@@ -524,25 +498,7 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
     socket.on(SOCKET_EVENTS.CONVERSATION_JOINED, handleConversationJoined)
     socket.on(SOCKET_EVENTS.USER_TYPING, handleUserTyping)
 
-    console.log(
-      '🎧 Socket.IO listeners registered:',
-      Object.keys(SOCKET_EVENTS).filter((k) =>
-        [
-          'MESSAGE_RECEIVED',
-          'MESSAGE_SENT',
-          'MESSAGE_ERROR',
-          'MESSAGE_STATUS_UPDATED',
-          'CONVERSATION_JOINED',
-          'USER_TYPING',
-        ].includes(k),
-      ),
-    )
-
     return () => {
-      console.log(
-        '🔌 Cleaning up Socket.IO listeners for conversation:',
-        conversationId,
-      )
       socket.off(SOCKET_EVENTS.MESSAGE_RECEIVED, handleMessageReceived)
       socket.off(SOCKET_EVENTS.MESSAGE_SENT, handleMessageSent)
       socket.off(SOCKET_EVENTS.MESSAGE_ERROR, handleMessageError)
@@ -560,13 +516,11 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
    */
   useEffect(() => {
     if (enabled && socket?.connected && !isJoined) {
-      console.log('🚪 Auto-joining conversation:', conversationId)
       joinConversation()
     }
 
     return () => {
       if (isJoined) {
-        console.log('🚪 Leaving conversation on unmount:', conversationId)
         leaveConversation()
       }
     }

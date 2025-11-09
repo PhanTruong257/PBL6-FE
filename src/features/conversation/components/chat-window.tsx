@@ -6,9 +6,10 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { cn } from '@/libs/utils/cn'
-import { useSocket } from '../context/SocketContext'
+import { useGlobalSocket } from '@/global/providers/socket-provider'
 import { useRealtimeChat } from '../hooks/useRealtimeChat'
 import { MessageType } from '../types/socket-events'
+import { ConversationService } from '../api/conversation-service'
 import type { ConversationWithUser } from '../types'
 
 interface ChatWindowProps {
@@ -20,7 +21,7 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
     const [message, setMessage] = useState('')
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
-    const { socket, socketState } = useSocket()
+    const { socket, isConnected } = useGlobalSocket()
 
     // Use real-time chat hook
     const {
@@ -42,15 +43,43 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [messages])
 
-    // Mark messages as read when conversation changes
+    // Mark messages as read when conversation is opened
     useEffect(() => {
-        if (conversation?.id && messages.length > 0) {
-            const lastMessage = messages[messages.length - 1]
-            if (lastMessage && lastMessage.sender_id !== currentUserId) {
-                markAsRead(lastMessage.id)
-            }
+        if (!conversation?.id) return
+
+        console.log('📖 [CHAT_WINDOW] Conversation opened, marking as read...')
+        
+        // Call REST API to mark all unread messages as read in the database
+        ConversationService.markAsRead(conversation.id)
+            .then((response) => {
+                console.log('✅ Marked conversation as read via API:', response)
+            })
+            .catch((error) => {
+                console.error('❌ Failed to mark as read:', error)
+            })
+    }, [conversation?.id])
+
+    // Also mark as read when new messages arrive from others
+    useEffect(() => {
+        if (!conversation?.id || messages.length === 0) return
+
+        const lastMessage = messages[messages.length - 1]
+        
+        // Only mark as read if the last message is from someone else
+        if (lastMessage && lastMessage.sender_id !== currentUserId) {
+            console.log('📖 [CHAT_WINDOW] New message from other user, marking as read...')
+            
+            ConversationService.markAsRead(conversation.id)
+                .then(() => {
+                    console.log('✅ Marked new messages as read')
+                    // Also emit socket event for real-time update
+                    markAsRead(lastMessage.id)
+                })
+                .catch((error) => {
+                    console.error('❌ Failed to mark as read:', error)
+                })
         }
-    }, [conversation?.id, messages, currentUserId, markAsRead])
+    }, [messages.length, conversation?.id, currentUserId, markAsRead])
 
     const handleSendMessage = async () => {
         if (!message.trim() || !conversation) return
@@ -118,10 +147,8 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
                     <div>
                         <div className="font-semibold">{conversation.receiver_name || 'Người dùng'}</div>
                         <div className="text-xs text-muted-foreground">
-                            {socketState.isConnected ? (
+                            {isConnected ? (
                                 <span className="text-green-600">● Online</span>
-                            ) : socketState.isConnecting ? (
-                                <span className="text-yellow-600">● Đang kết nối...</span>
                             ) : (
                                 <span className="text-red-600">● Offline</span>
                             )}
@@ -194,13 +221,13 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
 
                                             <div
                                                 className={cn(
-                                                    "max-w-[70%] rounded-lg p-3 text-sm",
+                                                    "max-w-[70%] rounded-lg p-3 text-sm break-words",
                                                     isCurrentUser
                                                         ? "bg-primary text-primary-foreground"
                                                         : "bg-muted"
                                                 )}
                                             >
-                                                <div>{msg.content}</div>
+                                                <div className="whitespace-pre-wrap break-words">{msg.content}</div>
                                                 <div
                                                     className={cn(
                                                         "mt-1 text-xs",
@@ -238,13 +265,13 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
                             onKeyPress={handleKeyPress}
-                            disabled={!socketState.isConnected || isLoading}
+                            disabled={!isConnected || isLoading}
                         />
                     </div>
 
                     <Button
                         onClick={handleSendMessage}
-                        disabled={!message.trim() || !socketState.isConnected || isLoading}
+                        disabled={!message.trim() || !isConnected || isLoading}
                     >
                         <Send className="h-4 w-4" />
                     </Button>
