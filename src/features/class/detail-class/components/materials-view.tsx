@@ -83,7 +83,7 @@ export function MaterialsView({ materials }: MaterialsViewProps) {
     const uploadFileToServer = async (): Promise<string> => {
         const formData = new FormData()
         for (let file of uploadedFiles) formData.append('files', file);
-        formData.append('uploaderId', user.user_id.toString());
+        formData.append('uploader_id', user.user_id.toString());
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/classes/${classInfo.class_id}/upload-files`, {
                 method: 'POST',

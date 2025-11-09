@@ -26,7 +26,7 @@ export function CreatePostModal({ isOpen, onOpenChange }: CreatePostModalProps) 
   const uploadFileToServer = async (): Promise<string> => {
     const formData = new FormData()
     for (let file of uploadedFiles) formData.append('files', file);
-    formData.append('uploaderId', user.user_id.toString());
+    formData.append('uploader_id', user.user_id.toString());
     formData.append('title', title);
     formData.append('message', message);
     try {
