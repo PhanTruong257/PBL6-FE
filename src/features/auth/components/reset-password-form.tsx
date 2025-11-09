@@ -7,8 +7,8 @@ import { Eye, EyeOff, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { useResetPassword } from '@/features/auth/hooks/use-auth'
+import { toast } from '@/libs/toast'
+import { useResetPassword, useAuthTranslation } from '../hooks'
 import { resetPasswordSchema, type ResetPasswordFormData } from '../schemas/reset-password.schema'
 import { sessionStorage } from '@/libs/utils/session-storage'
 
@@ -16,6 +16,7 @@ export function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const navigate = useNavigate()
+  const { t } = useAuthTranslation()
   const email = sessionStorage.get('temp_reset_email')
   const code = sessionStorage.get('temp_reset_code')
   const resetPasswordMutation = useResetPassword()
@@ -35,6 +36,21 @@ export function ResetPasswordForm() {
     resolver: zodResolver(resetPasswordSchema),
   })
 
+  // Handle success/error with toast
+  useEffect(() => {
+    if (resetPasswordMutation.isSuccess) {
+      toast.success(t('resetPassword.success'))
+    }
+  }, [resetPasswordMutation.isSuccess, t])
+
+  useEffect(() => {
+    if (resetPasswordMutation.isError) {
+      const error = resetPasswordMutation.error as any
+      const errorMessage = error?.response?.data?.message || t('resetPassword.error')
+      toast.error(errorMessage)
+    }
+  }, [resetPasswordMutation.isError, resetPasswordMutation.error, t])
+
   const onSubmit = (data: ResetPasswordFormData) => {
     if (!email || !code) return
 
@@ -52,22 +68,14 @@ export function ResetPasswordForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {resetPasswordMutation.error && (
-        <Alert variant="destructive">
-          <AlertDescription>
-            {resetPasswordMutation.error.message}
-          </AlertDescription>
-        </Alert>
-      )}
-
       <div className="space-y-2">
-        <Label htmlFor="password">Mật khẩu mới</Label>
+        <Label htmlFor="password">{t('resetPassword.newPassword')}</Label>
         <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="password"
             type={showPassword ? 'text' : 'password'}
-            placeholder="Nhập mật khẩu mới"
+            placeholder={t('resetPassword.newPasswordPlaceholder')}
             className="pl-9 pr-9"
             {...register('password')}
           />
@@ -91,13 +99,13 @@ export function ResetPasswordForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
+        <Label htmlFor="confirmPassword">{t('resetPassword.confirmPassword')}</Label>
         <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="confirmPassword"
             type={showConfirmPassword ? 'text' : 'password'}
-            placeholder="Nhập lại mật khẩu mới"
+            placeholder={t('resetPassword.confirmPasswordPlaceholder')}
             className="pl-9 pr-9"
             {...register('confirmPassword')}
           />
@@ -125,7 +133,7 @@ export function ResetPasswordForm() {
         className="w-full cursor-pointer"
         disabled={resetPasswordMutation.isPending}
       >
-        {resetPasswordMutation.isPending ? 'Đang đặt lại mật khẩu...' : 'Đặt lại mật khẩu'}
+        {resetPasswordMutation.isPending ? t('resetPassword.submittingButton') : t('resetPassword.submitButton')}
       </Button>
     </form>
   )

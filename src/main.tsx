@@ -2,6 +2,9 @@ import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { RecoilRoot } from 'recoil'
 
+// Import i18n to initialize translations before app renders
+import './libs/i18n'
+
 import { AppProviders } from './global/providers/index.ts'
 import * as TanStackQueryProvider from './integrations/tanstack-query/root-provider.tsx'
 

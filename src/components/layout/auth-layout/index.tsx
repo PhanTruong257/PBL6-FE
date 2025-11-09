@@ -1,7 +1,7 @@
 import { AuthHeader } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 
-interface AuthLayoutProps {
+export interface AuthLayoutProps {
   children: React.ReactNode
 }
 
@@ -12,7 +12,10 @@ export function AuthLayout({ children }: AuthLayoutProps) {
       <AuthHeader />
       
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-4 py-12 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+      <main 
+        className="flex-1 flex items-center justify-center px-4 py-12 bg-gradient-to-br from-background/30 to-muted"
+      >
+        {/* Children form */}
         {children}
       </main>
       

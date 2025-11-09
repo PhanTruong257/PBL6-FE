@@ -1,0 +1,50 @@
+{
+  "app": {
+    "name": "Nền tảng Giáo dục",
+    "welcome": "Chào mừng"
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "success": "Thành công",
+    "cancel": "Huỷ",
+    "save": "Lưu",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "view": "Xem",
+    "create": "Tạo mới",
+    "update": "Cập nhật",
+    "search": "Tìm kiếm",
+    "filter": "Bộ lọc",
+    "clear": "Xóa bộ lọc",
+    "close": "Đóng",
+    "confirm": "Xác nhận",
+    "yes": "Có",
+    "no": "Không",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "previous": "Trước",
+    "submit": "Gửi",
+    "reset": "Đặt lại",
+    "import": "Nhập",
+    "export": "Xuất",
+    "duplicate": "Nhân bản",
+    "public": "Công khai",
+    "private": "Riêng tư"
+  },
+  "validation": {
+    "required": "Trường này là bắt buộc",
+    "minLength": "Độ dài tối thiểu là {{count}} ký tự",
+    "maxLength": "Độ dài tối đa là {{count}} ký tự",
+    "email": "Địa chỉ email không hợp lệ",
+    "number": "Phải là số"
+  },
+  "actions": {
+    "createSuccess": "Tạo thành công",
+    "updateSuccess": "Cập nhật thành công",
+    "deleteSuccess": "Xóa thành công",
+    "createError": "Tạo thất bại",
+    "updateError": "Cập nhật thất bại",
+    "deleteError": "Xóa thất bại"
+  }
+}

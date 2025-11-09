@@ -3,9 +3,9 @@ import { z } from 'zod'
 export const verifyCodeSchema = z.object({
   code: z
     .string()
-    .min(6, 'Mã xác thực phải có 6 ký tự')
-    .max(6, 'Mã xác thực phải có 6 ký tự')
-    .regex(/^\d+$/, 'Mã xác thực chỉ chứa số'),
+    .min(1)
+    .length(6)
+    .regex(/^\d+$/, 'Mã xác thực chỉ được chứa số'),
 })
 
 export type VerifyCodeFormData = z.infer<typeof verifyCodeSchema>

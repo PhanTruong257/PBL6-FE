@@ -1,0 +1,119 @@
+{
+  "errors": {
+    "invalid_type": "Kiểu dữ liệu không hợp lệ. Cần {{expected}}, nhận được {{received}}",
+    "invalid_type_received_undefined": "Bắt buộc",
+    "invalid_type_received_null": "Bắt buộc",
+    "invalid_literal": "Giá trị không hợp lệ, cần \"{{expected}}\"",
+    "unrecognized_keys": "Các trường không được phép: {{keys}}",
+    "invalid_union": "Dữ liệu không hợp lệ",
+    "invalid_union_discriminator": "Giá trị phân biệt không hợp lệ. Cần {{options}}",
+    "invalid_enum_value": "Giá trị không hợp lệ. Cần {{options}}, nhận được '{{received}}'",
+    "invalid_arguments": "Tham số hàm không hợp lệ",
+    "invalid_return_type": "Kiểu trả về của hàm không hợp lệ",
+    "invalid_date": "Ngày không hợp lệ",
+    "custom": "Dữ liệu không hợp lệ",
+    "invalid_intersection_types": "Không thể hợp nhất các kết quả",
+    "not_multiple_of": "Phải là bội số của {{multipleOf}}",
+    "not_finite": "Phải là số hữu hạn",
+    "invalid_string": {
+      "email": "Email không hợp lệ",
+      "url": "URL không hợp lệ",
+      "uuid": "UUID không hợp lệ",
+      "cuid": "CUID không hợp lệ",
+      "cuid2": "CUID2 không hợp lệ",
+      "ulid": "ULID không hợp lệ",
+      "regex": "Định dạng không hợp lệ",
+      "datetime": "Ngày giờ không hợp lệ",
+      "startsWith": "Phải bắt đầu bằng \"{{startsWith}}\"",
+      "endsWith": "Phải kết thúc bằng \"{{endsWith}}\"",
+      "ip": "Địa chỉ IP không hợp lệ"
+    },
+    "too_small": {
+      "array": {
+        "exact": "Mảng phải có đúng {{minimum}} phần tử",
+        "inclusive": "Mảng phải có ít nhất {{minimum}} phần tử",
+        "not_inclusive": "Mảng phải có nhiều hơn {{minimum}} phần tử"
+      },
+      "string": {
+        "exact": "Phải có đúng {{minimum}} ký tự",
+        "inclusive": "Phải có ít nhất {{minimum}} ký tự",
+        "not_inclusive": "Phải có nhiều hơn {{minimum}} ký tự"
+      },
+      "number": {
+        "exact": "Phải bằng {{minimum}}",
+        "inclusive": "Phải lớn hơn hoặc bằng {{minimum}}",
+        "not_inclusive": "Phải lớn hơn {{minimum}}"
+      },
+      "set": {
+        "exact": "Tập hợp phải có đúng {{minimum}} phần tử",
+        "inclusive": "Tập hợp phải có ít nhất {{minimum}} phần tử",
+        "not_inclusive": "Tập hợp phải có nhiều hơn {{minimum}} phần tử"
+      },
+      "date": {
+        "exact": "Ngày phải là {{minimum, datetime}}",
+        "inclusive": "Ngày phải sau hoặc bằng {{minimum, datetime}}",
+        "not_inclusive": "Ngày phải sau {{minimum, datetime}}"
+      }
+    },
+    "too_big": {
+      "array": {
+        "exact": "Mảng phải có đúng {{maximum}} phần tử",
+        "inclusive": "Mảng phải có nhiều nhất {{maximum}} phần tử",
+        "not_inclusive": "Mảng phải có ít hơn {{maximum}} phần tử"
+      },
+      "string": {
+        "exact": "Phải có đúng {{maximum}} ký tự",
+        "inclusive": "Phải có nhiều nhất {{maximum}} ký tự",
+        "not_inclusive": "Phải có ít hơn {{maximum}} ký tự"
+      },
+      "number": {
+        "exact": "Phải bằng {{maximum}}",
+        "inclusive": "Phải nhỏ hơn hoặc bằng {{maximum}}",
+        "not_inclusive": "Phải nhỏ hơn {{maximum}}"
+      },
+      "set": {
+        "exact": "Tập hợp phải có đúng {{maximum}} phần tử",
+        "inclusive": "Tập hợp phải có nhiều nhất {{maximum}} phần tử",
+        "not_inclusive": "Tập hợp phải có ít hơn {{maximum}} phần tử"
+      },
+      "date": {
+        "exact": "Ngày phải là {{maximum, datetime}}",
+        "inclusive": "Ngày phải trước hoặc bằng {{maximum, datetime}}",
+        "not_inclusive": "Ngày phải trước {{maximum, datetime}}"
+      }
+    }
+  },
+  "validations": {
+    "email": "Email không hợp lệ",
+    "url": "URL không hợp lệ",
+    "uuid": "UUID không hợp lệ",
+    "cuid": "CUID không hợp lệ",
+    "cuid2": "CUID2 không hợp lệ",
+    "ulid": "ULID không hợp lệ",
+    "regex": "Định dạng không hợp lệ",
+    "datetime": "Ngày giờ không hợp lệ",
+    "ip": "Địa chỉ IP không hợp lệ"
+  },
+  "types": {
+    "function": "hàm",
+    "number": "số",
+    "string": "chuỗi",
+    "nan": "NaN",
+    "integer": "số nguyên",
+    "float": "số thực",
+    "boolean": "boolean",
+    "date": "ngày",
+    "bigint": "bigint",
+    "undefined": "undefined",
+    "symbol": "symbol",
+    "null": "null",
+    "array": "mảng",
+    "object": "đối tượng",
+    "unknown": "unknown",
+    "promise": "promise",
+    "void": "void",
+    "never": "never",
+    "map": "map",
+    "set": "set"
+  }
+}

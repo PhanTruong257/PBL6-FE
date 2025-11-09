@@ -1,15 +1,15 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { toast } from '@/libs/toast'
 
-import { useRegister } from '../hooks/use-auth'
+import { useRegister, useAuthTranslation } from '../hooks'
 import {
   registerSchema,
   type RegisterFormData,
@@ -18,6 +18,7 @@ import {
 export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const { t } = useAuthTranslation()
   const registerMutation = useRegister()
 
   const {
@@ -28,55 +29,53 @@ export function RegisterForm() {
     resolver: zodResolver(registerSchema),
   })
 
+  // Handle success/error with toast
+  useEffect(() => {
+    if (registerMutation.isSuccess) {
+      toast.success(t('register.success'))
+    }
+  }, [registerMutation.isSuccess, t])
+
+  useEffect(() => {
+    if (registerMutation.isError) {
+      const error = registerMutation.error as any
+      const errorMessage = error?.response?.data?.message || t('register.error')
+      toast.error(errorMessage)
+    }
+  }, [registerMutation.isError, registerMutation.error, t])
+
   const onSubmit = (data: RegisterFormData) => {
     registerMutation.mutate(data)
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {registerMutation.error && (
-        <Alert variant="destructive">
-          <AlertDescription>
-            {(registerMutation.error as any)?.response?.data?.message ||
-              'Đăng ký thất bại. Vui lòng thử lại.'}
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {registerMutation.isSuccess && (
-        <Alert>
-          <AlertDescription>
-            Đăng ký thành công! Đang chuyển đến trang đăng nhập...
-          </AlertDescription>
-        </Alert>
-      )}
-
       <div className="space-y-2">
-        <Label htmlFor="full_name">Full Name</Label>
+        <Label htmlFor="full_name">{t('register.fullName')}</Label>
         <div className="relative">
           <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="full_name"
-            placeholder="Nguyễn Văn A"
+            placeholder={t('register.fullNamePlaceholder')}
             className="pl-9"
-            {...register('full_name')}
+            {...register('fullName')}
           />
         </div>
-        {errors.full_name && (
+        {errors.fullName && (
           <p className="text-sm text-destructive">
-            {errors.full_name.message}
+            {errors.fullName.message}
           </p>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">{t('register.email')}</Label>
         <div className="relative">
           <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="email"
             type="email"
-            placeholder="name@example.com"
+            placeholder={t('register.emailPlaceholder')}
             className="pl-9"
             {...register('email')}
           />
@@ -87,13 +86,13 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password">{t('register.password')}</Label>
         <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="password"
             type={showPassword ? 'text' : 'password'}
-            placeholder="At least 6 characters"
+            placeholder={t('register.passwordPlaceholder')}
             className="pl-9 pr-9"
             {...register('password')}
           />
@@ -117,13 +116,13 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
+        <Label htmlFor="confirmPassword">{t('register.confirmPassword')}</Label>
         <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="confirmPassword"
             type={showConfirmPassword ? 'text' : 'password'}
-            placeholder="Re-enter your password"
+            placeholder={t('register.confirmPasswordPlaceholder')}
             className="pl-9 pr-9"
             {...register('confirmPassword')}
           />
@@ -153,13 +152,13 @@ export function RegisterForm() {
         className="w-full"
         disabled={registerMutation.isPending}
       >
-        {registerMutation.isPending ? 'Registering...' : 'Register'}
+        {registerMutation.isPending ? t('register.submittingButton') : t('register.submitButton')}
       </Button>
 
       <div className="text-center text-sm">
-        <span className="text-muted-foreground">Already have an account? </span>
+        <span className="text-muted-foreground">{t('register.hasAccount')} </span>
         <Link to="/auth/login" className="text-primary hover:underline">
-          Log in now
+          {t('register.loginLink')}
         </Link>
       </div>
 

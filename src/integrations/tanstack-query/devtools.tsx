@@ -4,3 +4,7 @@ export default {
   name: 'Tanstack Query',
   render: <ReactQueryDevtoolsPanel />,
 }
+
+// Comment out devtools in production
+// You can enable it back by uncommenting the export above
+// export default null
