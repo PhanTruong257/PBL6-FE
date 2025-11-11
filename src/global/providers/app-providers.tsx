@@ -1,5 +1,6 @@
 import { StrictMode, type ReactNode } from 'react'
 import { ThemeProvider } from './theme-provider'
+import { Toaster } from '@/components/ui/sonner'
 import { GlobalSocketProvider } from './socket-provider'
 import * as TanStackQueryProvider from '@/integrations/tanstack-query/root-provider'
 
@@ -20,6 +21,7 @@ export function AppProviders({ children }: AppProvidersProps) {
         <GlobalSocketProvider>
           <ThemeProvider defaultTheme="light" storageKey="pbl6-ui-theme">
             {children}
+          <Toaster position="top-right" richColors closeButton />
           </ThemeProvider>
         </GlobalSocketProvider>
       </TanStackQueryProvider.Provider>

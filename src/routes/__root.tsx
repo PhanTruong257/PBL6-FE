@@ -6,7 +6,7 @@ import { useSetRecoilState } from 'recoil'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import { cookieStorage } from '@/libs/utils/cookie'
-import { AuthService } from '@/features/auth/api/auth-service'
+import { AuthService } from '@/features/auth/apis/auth-service'
 import { currentUserState } from '@/global/recoil/user'
 
 import type { QueryClient } from '@tanstack/react-query'

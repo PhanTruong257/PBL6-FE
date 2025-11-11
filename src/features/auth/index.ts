@@ -1,5 +1,5 @@
 // Export API services
-export * from './api'
+export * from './apis'
 
 // Export hooks
 export * from './hooks'

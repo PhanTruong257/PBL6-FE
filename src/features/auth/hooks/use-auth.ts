@@ -2,7 +2,7 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useSetRecoilState } from 'recoil'
 
-import { AuthService } from '../api/auth-service'
+import { AuthService } from '../apis/auth-service'
 import { cookieStorage } from '@/libs/utils/cookie'
 import { sessionStorage } from '@/libs/utils/session-storage'
 import { currentUserState } from '@/global/recoil/user'

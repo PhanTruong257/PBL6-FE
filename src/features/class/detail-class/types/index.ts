@@ -4,8 +4,9 @@ import type { ClassBasicInfo } from '@/types/class'
 export interface PostCardProps {
     id: number
     sender: User
+    title: string
     message: string
-    create_at: Date
+    created_at: Date
     replies: PostCardProps[]
 }
 

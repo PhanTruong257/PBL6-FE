@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import type { Class } from '@/types/class'
 import type { User } from '@/types'
+import type { Material, Material_full_info } from '@/types/material'
 import type { PostCardProps } from '../types'
 
 const defaultUser: User = {
@@ -15,6 +16,12 @@ const defaultUser: User = {
 
 export const fetchClassAllInfo = async (classId: string): Promise<Class> => {
     const res = await fetch(`${import.meta.env.VITE_API_URL}/classes/${classId}`)
+    const json = await res.json()
+    return json
+}
+
+export const fetchAllMaterials = async (classId: number): Promise<Material[]> => {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/classes/${classId}/get-all-materials`)
     const json = await res.json()
     return json
 }
@@ -73,21 +80,52 @@ export function useClassDetail(classId: string) {
                 let formattedReplies: PostCardProps[] = replies ? replies.map((reply) => ({
                     id: reply.id,
                     sender: userDict.get(reply.sender_id) || defaultUser,
+                    title: '',
                     message: reply.message,
-                    create_at: new Date(reply.created_at),
+                    created_at: new Date(reply.created_at),
                     replies: [],
                 })) : []
 
                 formattedPostData.push({
                     id: post.id,
                     sender: userDict.get(post.sender_id) || defaultUser,
+                    title: post.title,
                     message: post.message,
-                    create_at: new Date(post.created_at),
+                    created_at: new Date(post.created_at),
                     replies: formattedReplies,
                 })
             }
 
             return { classInfo, formattedPostData }
+        },
+    })
+}
+
+export function useMaterialsDetail(classId: number) {
+    return useQuery({
+        queryKey: ['class', classId],
+        queryFn: async () => {
+            const materials = await fetchAllMaterials(classId)
+
+            const userIds = new Set<number>()
+            const userIdsList = [...userIds]
+            for (let material of materials){
+                userIdsList.push(material.uploaded_by);
+            }
+        
+            const userInfoList = await fetchUserProfileFromIds(userIdsList)
+            const userDict = new Map<number, User>()
+        
+            for (let i = 0; i < userIdsList.length; i++) {
+                userDict.set(userIdsList[i], userInfoList[i])
+            }
+            
+            const materials_full_info: Material_full_info[] = materials.map((material)=>({
+                ...material,
+                uploaded_by: userDict.get(material.uploaded_by)||defaultUser,
+            }))
+        
+            return materials_full_info
         },
     })
 }

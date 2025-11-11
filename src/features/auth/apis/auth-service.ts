@@ -33,8 +33,23 @@ export const AuthService = {
    * Register new user
    */
   async register(data: RegisterRequest): Promise<RegisterResponse> {
-    const dataSend = { ...data, role: 'user', status: 'active' }
-    console.log(dataSend)
+    const dataSend: any = {
+      fullName: data.fullName,
+      email: data.email,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+      role: 'user',
+      status: 'active',
+    }
+
+    // Remove undefined fields
+    Object.keys(dataSend).forEach(key => {
+      if (dataSend[key] === undefined) {
+        delete dataSend[key]
+      }
+    })
+
+    console.log('Register payload:', dataSend)
     const response = await httpClient.post<AuthApiResponse<RegisterResponse>>(
       '/users/create',
       dataSend,

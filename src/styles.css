@@ -24,6 +24,7 @@ code {
     source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
+/* Root theme/ Light theme */
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
@@ -60,6 +61,7 @@ code {
   --sidebar-ring: oklch(0.871 0.006 286.286);
 }
 
+/* Dark Theme - Hard dark */
 .dark {
   --background: oklch(0.08 0.005 264);
   --foreground: oklch(0.95 0.005 264);
@@ -357,4 +359,62 @@ code {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer components {
+  /* Required field indicator */
+  label.required::after {
+    content: ' *';
+    @apply text-destructive;
+  }
+}
+
+/* Hide default password toggle button */
+input[type='password']::-webkit-password-toggle-button,
+input[type='password']::-ms-reveal {
+  display: none;
+}
+
+/* Hide Edge/IE password reveal button */
+input[type='password']::-ms-clear {
+  display: none;
+}
+
+/* Disable default browser validation tooltips */
+input:invalid,
+select:invalid,
+textarea:invalid {
+  box-shadow: none;
+}
+
+/* Hide default validation tooltips */
+input::-webkit-validation-bubble-message,
+input::-moz-validation-bubble-message {
+  display: none;
+}
+
+/* Override autofill background colors to match theme */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--background) inset !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+  box-shadow: 0 0 0 1000px var(--background) inset !important;
+  color: var(--foreground) !important;
+  caret-color: var(--foreground) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Remove autofill background */
+input:-internal-autofill-selected {
+  background-color: var(--background) !important;
+  background-image: none !important;
+  color: var(--foreground) !important;
 }

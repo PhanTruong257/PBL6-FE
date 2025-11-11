@@ -1,20 +1,20 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Checkbox } from '@/components/ui/checkbox'
+import { toast } from '@/libs/toast'
 
-import { useLogin } from '../hooks/use-auth'
+import { useLogin, useAuthTranslation } from '../hooks'
 import { loginSchema, type LoginFormData } from '../schemas/login.schema'
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
+  const { t } = useAuthTranslation()
   const loginMutation = useLogin()
 
   const {
@@ -25,57 +25,68 @@ export function LoginForm() {
     resolver: zodResolver(loginSchema),
   })
 
+  // Handle success/error with toast
+  useEffect(() => {
+    if (loginMutation.isSuccess) {
+      toast.success(t('login.success'))
+    }
+  }, [loginMutation.isSuccess, t])
+
+  useEffect(() => {
+    if (loginMutation.isError) {
+      const error = loginMutation.error as any
+      const errorMessage = error?.response?.data?.message || t('login.error')
+      toast.error(errorMessage)
+    }
+  }, [loginMutation.isError, loginMutation.error, t])
+
+  /**
+   * Handle form submission.
+   * On submit, trigger the login mutation with form data to call POST /auth/login API.
+   */
   const onSubmit = (data: LoginFormData) => {
     loginMutation.mutate(data)
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {loginMutation.error && (
-        <Alert variant="destructive">
-          <AlertDescription>
-            {(loginMutation.error as any)?.response?.data?.message ||
-              'Đăng nhập thất bại. Vui lòng thử lại.'}
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {loginMutation.isSuccess && (
-        <Alert>
-          <AlertDescription>
-            Đăng nhập thành công! Đang chuyển hướng...
-          </AlertDescription>
-        </Alert>
-      )}
-
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4"
+    >
+      {/* Email Field */}
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">{t('login.email')}</Label>
         <div className="relative">
           <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="email"
             type="email"
-            placeholder="name@example.com"
+            placeholder={t('login.emailPlaceholder')}
             className="pl-9"
             {...register('email')}
           />
         </div>
+
+        {/* Email Error Message */}
         {errors.email && (
           <p className="text-sm text-destructive">{errors.email.message}</p>
         )}
       </div>
 
+      {/* Password Field */}
       <div className="space-y-2">
-        <Label htmlFor="password">Mật khẩu</Label>
+        <Label htmlFor="password">{t('login.password')}</Label>
         <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="password"
             type={showPassword ? 'text' : 'password'}
-            placeholder="Nhập mật khẩu"
+            placeholder={t('login.passwordPlaceholder')}
             className="pl-9 pr-9"
             {...register('password')}
           />
+
+          {/* Eye Icon Button => Hide/Show Password */}
           <Button
             type="button"
             variant="ghost"
@@ -90,32 +101,37 @@ export function LoginForm() {
             )}
           </Button>
         </div>
+
+        {/* Password Error Message */}
         {errors.password && (
           <p className="text-sm text-destructive">{errors.password.message}</p>
         )}
       </div>
 
+      {/* Forgot Password Link */}
       <div className="flex items-center justify-between">
         <Link
           to="/auth/forgot-password"
           className="text-sm text-primary hover:underline"
         >
-          Quên mật khẩu?
+          {t('login.forgotPassword')}
         </Link>
       </div>
 
+      {/* Submit Button */}
       <Button
         type="submit"
         className="w-full"
         disabled={loginMutation.isPending}
       >
-        {loginMutation.isPending ? 'Đang đăng nhập...' : 'Đăng nhập'}
+        {loginMutation.isPending ? t('login.submittingButton') : t('login.submitButton')}
       </Button>
 
+      {/* Register Link */}
       <div className="text-center text-sm">
-        <span className="text-muted-foreground">Chưa có tài khoản? </span>
+        <span className="text-muted-foreground">{t('login.noAccount')} </span>
         <Link to="/auth/register" className="text-primary hover:underline">
-          Đăng ký ngay
+          {t('login.registerLink')}
         </Link>
       </div>
     </form>
