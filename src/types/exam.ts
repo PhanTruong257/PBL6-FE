@@ -21,6 +21,15 @@ export enum QuestionDifficulty {
   HARD = 'hard',
 }
 
+export interface QuestionCategory {
+  category_id: number
+  name: string
+  description?: string
+  created_at: string
+  updated_at: string
+  question_count: number
+}
+
 export interface Question {
   question_id: number
   content: string
@@ -121,6 +130,34 @@ export interface GetQuestionsQuery {
   search?: string
   page?: number
   limit?: number
+}
+
+// Random Questions types
+export interface RandomQuestionCriterion {
+  category_id: number // Backend expects snake_case
+  type: string // Backend expects 'type' not 'questionType'
+  quantity: number // Backend expects 'quantity' not 'count'
+}
+
+export interface GetRandomQuestionsRequest {
+  criteria: RandomQuestionCriterion[]
+  userId: number
+}
+
+export interface RandomQuestionsResponse {
+  data: Question[] // Backend returns 'value' not 'data'
+  total: number
+  summary: {
+    requested: number
+    fetched: number
+    by_criteria: Array<{
+      category_id: number // Backend uses snake_case
+      type: string
+      requested: number
+      fetched: number
+      available: number
+    }>
+  }
 }
 
 // Question Bank types

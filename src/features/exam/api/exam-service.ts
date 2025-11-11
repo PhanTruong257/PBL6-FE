@@ -1,11 +1,14 @@
 import {
   type ExamWithQuestions,
   type Question,
+  type QuestionCategory,
   type CreateExamRequest,
   type UpdateExamRequest,
   type GetExamsQuery,
   type GetQuestionsQuery,
   type QuestionBank,
+  type GetRandomQuestionsRequest,
+  type RandomQuestionsResponse,
   QuestionType,
   ExamStatus,
 } from '@/types/exam'
@@ -421,5 +424,90 @@ export const ExamService = {
       class_name: cls.class_name,
     }))
     return res
-  }
+  },
+
+  /**
+   * Get list of question categories
+   */
+  async getQuestionCategories(search?: string): Promise<QuestionCategory[]> {
+    try {
+      const params: Record<string, any> = {}
+      
+      if (search) {
+        params.search = search
+      }
+
+      const response = await httpClient.get('/question-categories', { params })
+      
+      // Backend returns categories with question_count
+      return response.data.data || []
+    } catch (error) {
+      console.error('Error fetching question categories:', error)
+      return []
+    }
+  },
+
+  /**
+   * Get a single question category by ID
+   */
+  async getQuestionCategoryById(id: number): Promise<QuestionCategory | null> {
+    try {
+      const response = await httpClient.get(`/question-categories/${id}`)
+      return response.data.data || null
+    } catch (error) {
+      console.error('Error fetching question category by ID:', error)
+      return null
+    }
+  },
+
+  /**
+   * Get random questions based on criteria
+   */
+  async getRandomQuestions(request: GetRandomQuestionsRequest): Promise<RandomQuestionsResponse> {
+    try {
+      const response = await httpClient.post('/questions/random', request)
+      
+      // Transform questions if needed
+      console.log('Raw random questions response from API:', response.data)
+      const questions = response.data.data.value || []
+      const transformedQuestions = questions.map((q: any) => {
+        const question: Question = {
+          question_id: q.question_id,
+          content: q.content,
+          type: q.type, 
+          difficulty: q.difficulty,
+          tags: q.tags || [],
+          is_multiple_answer: q.is_multiple_answer || false,
+          created_at: q.created_at,
+        }
+        
+        // For multiple_choice questions, transform answers array to options array
+        if (q.type === 'multiple_choice' && q.options?.answers && Array.isArray(q.options.answers)) {
+          question.options = q.options.answers.map((answer: any) => answer.text)
+          const correctAnswer = q.options.answers.find((answer: any) => answer.is_correct)
+          if (correctAnswer) {
+            question.correct_answer = correctAnswer.text
+          }
+        }
+
+        return question
+      })
+
+
+      console.log('Random questions fetched from API:', transformedQuestions)
+
+      return {
+        data: transformedQuestions,
+        total: response.data.data.total || 0,
+        summary: response.data.data.summary || {
+          requested: 0,
+          fetched: 0,
+          by_criteria: []
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching random questions:', error)
+      throw error
+    }
+  },
 }

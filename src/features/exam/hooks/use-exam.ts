@@ -7,6 +7,7 @@ import type {
   CreateExamRequest,
   UpdateExamRequest,
   ExamStatus,
+  GetRandomQuestionsRequest,
 } from '@/types/exam'
 
 /**
@@ -44,6 +45,42 @@ export function useClassNames() {
   return useQuery({
     queryKey: ['class-names'],
     queryFn: () => ExamService.getClassNameOptions(),
+  })
+}
+
+/**
+ * Hook to fetch question categories
+ */
+export function useQuestionCategories(search?: string) {
+  return useQuery({
+    queryKey: ['question-categories', search],
+    queryFn: () => ExamService.getQuestionCategories(search),
+  })
+}
+
+/**
+ * Hook to fetch a single question category by ID
+ */
+export function useQuestionCategory(id: number) {
+  return useQuery({
+    queryKey: ['question-category', id],
+    queryFn: () => ExamService.getQuestionCategoryById(id),
+    enabled: !!id,
+  })
+}
+
+/**
+ * Hook to get random questions based on criteria
+ */
+export function useGetRandomQuestions() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (request: GetRandomQuestionsRequest) => ExamService.getRandomQuestions(request),
+    onSuccess: () => {
+      // Optionally invalidate questions cache
+      queryClient.invalidateQueries({ queryKey: ['questions'] })
+    },
   })
 }
 
