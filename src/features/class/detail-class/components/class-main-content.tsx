@@ -1,0 +1,56 @@
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { PostCard} from './post-card'
+import { MaterialsView } from './materials-view'
+import type { PostCardProps } from '../types'
+import { useMaterialsDetail } from '../hooks/use-class-detail'
+import { mockClassInfo } from '../mock-data'
+import type { Material_full_info } from '@/types/material'
+
+interface ClassMainContentProps {
+  activeTab: string
+  setActiveTab: (tab: string) => void
+  postData: PostCardProps[]
+}
+
+
+export function ClassMainContent({ activeTab, setActiveTab, postData }: ClassMainContentProps) {
+  const classInfo = mockClassInfo;
+  const {data: materials} = useMaterialsDetail(classInfo.class_id)
+  return (
+    <>
+      {/* Tabs */}
+      <div className="bg-white border-b border-gray-200 px-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid grid-cols-2 w-60">
+              <TabsTrigger value="posts">Posts</TabsTrigger>
+              <TabsTrigger value="materials">Materials</TabsTrigger>
+            </TabsList>
+        </Tabs>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'posts' ? (
+        <div className="flex-1 p-6 overflow-y-auto">
+          <div className="max-w-4xl mx-auto space-y-6">
+            {postData.map((post) => (
+              <PostCard
+                key={post.id}
+                id={post.id}
+                sender={post.sender}
+                title={post.title}
+                message={post.message}
+                created_at={post.created_at}
+                replies={post.replies}
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <MaterialsView 
+        materials={materials||([] as Material_full_info[])}/>
+      )}
+
+      
+    </>
+  )
+}
