@@ -4,19 +4,24 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { AtSign, Hash, MoreHorizontal, Paperclip, Smile, X, FileText } from 'lucide-react'
-import { mockClassInfo, mockUser } from '../mock-data'
 import { AvatarHoverCard } from './avatar-hover-card'
+import { useRecoilValue } from 'recoil'
+import { currentUserState } from '@/global/recoil/user'
+import { cookieStorage } from '@/libs/utils/cookie'
 
 
 interface CreatePostModalProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
+  classInfo: {
+    class_id: number
+    class_name: string
+  }
 }
 
-export function CreatePostModal({ isOpen, onOpenChange }: CreatePostModalProps) {
+export function CreatePostModal({ isOpen, onOpenChange, classInfo }: CreatePostModalProps) {
 
-  const user=mockUser;
-  const classInfo = mockClassInfo;
+  const user = useRecoilValue(currentUserState);
 
   const [title, setTitle] = useState('')
   const [message, setMessage] = useState('')
@@ -26,13 +31,28 @@ export function CreatePostModal({ isOpen, onOpenChange }: CreatePostModalProps) 
   const uploadFileToServer = async (): Promise<string> => {
     const formData = new FormData()
     for (let file of uploadedFiles) formData.append('files', file);
-    formData.append('uploader_id', user.user_id.toString());
+    formData.append('uploader_id', user?.user_id?.toString() || '');
     formData.append('title', title);
     formData.append('message', message);
+    
+    // Get token from cookies
+    const accessToken = cookieStorage.getAccessToken()
+    const refreshToken = cookieStorage.getRefreshToken()
+    
+    const headers: HeadersInit = {}
+    if (accessToken) {
+      headers['Authorization'] = `Bearer ${accessToken}`
+    }
+    if (refreshToken) {
+      headers['x-refresh-token'] = refreshToken
+    }
+    
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/classes/${classInfo.class_id}/upload-post-with-files`, {
         method: 'POST',
         body: formData,
+        credentials: 'include', // Gửi cookies
+        headers, // Thêm Authorization header
       })
       
       if (!response.ok) {
@@ -93,9 +113,9 @@ export function CreatePostModal({ isOpen, onOpenChange }: CreatePostModalProps) 
         <DialogHeader className="p-4 pb-0 border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <AvatarHoverCard user={user} placeHolder='/placeholder-avatar.jpg'/>
+              {user && <AvatarHoverCard user={user} placeHolder='/placeholder-avatar.jpg'/>}
               <div>
-                <DialogTitle className="text-lg font-medium">{user.full_name}</DialogTitle>
+                <DialogTitle className="text-lg font-medium">{user?.full_name || 'Unknown User'}</DialogTitle>
               </div>
             </div>
             <Button

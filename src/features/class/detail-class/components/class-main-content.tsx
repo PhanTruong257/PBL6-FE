@@ -3,19 +3,18 @@ import { PostCard} from './post-card'
 import { MaterialsView } from './materials-view'
 import type { PostCardProps } from '../types'
 import { useMaterialsDetail } from '../hooks/use-class-detail'
-import { mockClassInfo } from '../mock-data'
 import type { Material_full_info } from '@/types/material'
 
 interface ClassMainContentProps {
   activeTab: string
   setActiveTab: (tab: string) => void
   postData: PostCardProps[]
+  classId: number
 }
 
 
-export function ClassMainContent({ activeTab, setActiveTab, postData }: ClassMainContentProps) {
-  const classInfo = mockClassInfo;
-  const {data: materials} = useMaterialsDetail(classInfo.class_id)
+export function ClassMainContent({ activeTab, setActiveTab, postData, classId }: ClassMainContentProps) {
+  const {data: materials} = useMaterialsDetail(classId)
   return (
     <>
       {/* Tabs */}
@@ -41,6 +40,7 @@ export function ClassMainContent({ activeTab, setActiveTab, postData }: ClassMai
                 message={post.message}
                 created_at={post.created_at}
                 replies={post.replies}
+                classId={classId}
               />
             ))}
           </div>

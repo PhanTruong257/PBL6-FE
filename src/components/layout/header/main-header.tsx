@@ -12,6 +12,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { ThemeToggle } from "@/components/theme-toggler"
 import { Menu, Search, Bell, Settings, LogOut, User } from "lucide-react"
 import { Link } from "@tanstack/react-router"
+import { useLogout } from "@/features/auth/hooks/use-auth"
+import { toast } from "sonner"
 
 interface MainHeaderProps {
   onToggleSidebar?: () => void
@@ -19,6 +21,7 @@ interface MainHeaderProps {
 }
 
 export function MainHeader({ onToggleSidebar, sidebarContent }: MainHeaderProps) {
+  const { mutate: logout, isPending: isLoggingOut } = useLogout()
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
       {/* Mobile menu & Sidebar toggle */}
@@ -98,19 +101,26 @@ export function MainHeader({ onToggleSidebar, sidebarContent }: MainHeaderProps)
             <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link className="flex items-center gap-2" to="/student/settings/profile">
-                <User className="mr-2 h-4 w-4" />
-                <span>Hồ sơ</span>
-              </Link>
+              <User className="mr-2 h-4 w-4" />
+              <span>Hồ sơ</span>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Settings className="mr-2 h-4 w-4" />
               <span>Cài đặt</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => {
+                logout(undefined, {
+                  onSuccess: () => {
+                    toast.success('Đăng xuất thành công')
+                  },
+                })
+              }}
+              disabled={isLoggingOut}
+            >
               <LogOut className="mr-2 h-4 w-4" />
-              <span>Đăng xuất</span>
+              <span>{isLoggingOut ? 'Đang đăng xuất...' : 'Đăng xuất'}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

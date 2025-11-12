@@ -11,6 +11,7 @@ import {
 import type { ClassBasicInfo } from '@/types/class'
 import { type User } from '@/types'
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
+import { cookieStorage } from '@/libs/utils/cookie'
 
 
 interface AddMemberModalProps {
@@ -60,40 +61,89 @@ export function AddMemberModal({
   const [openMatchedList, setOpenMatchedList] = useState<boolean>(false);
   const [textInput, setTextInput] = useState<string>('');
 
-  const fetchUserProfileFromEmail = async(emails: string[])=>{
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/users/get-list-profile-by-emails`,
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            userEmails: emails
-          })
-        }
-      );
-      const json = res.json();
-      return json;
+  const fetchUserProfileFromEmail = async(emails: string[]) => {
+    try {
+      const token = cookieStorage.getAccessToken()
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/get-list-profile-by-emails`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          userEmails: emails
+        })
+      })
+      
+      if (!res.ok) {
+        throw new Error('Failed to fetch user profiles')
+      }
+      
+      const json = await res.json()
+      // Backend returns { data: { users: [...] } }
+      return json.data?.users || []
+    } catch (error) {
+      console.error('Error fetching user profiles:', error)
+      return []
+    }
   }
 
   const handleAddMember = async () => {
     if (textInput.length > 0) {
+      try {
+        const emailList = textInput.trim().split(/\s+/)
+        const users = await fetchUserProfileFromEmail(emailList)
+        
+        if (users.length === 0) {
+          alert('Không tìm thấy người dùng nào với email đã nhập')
+          return
+        }
 
-      const emailList = textInput.trim().split(/\s+/);
-      // console.log(emailList)
-      const users = await fetchUserProfileFromEmail(emailList);
-      
+        // Map users to required format for API (UserInfoDto)
+        const students = users.map((user: any) => {
+          // Split full_name into firstName and lastName
+          const nameParts = (user.full_name || '').trim().split(' ')
+          const firstName = nameParts[0] || ''
+          const lastName = nameParts.slice(1).join(' ') || ''
+          
+          return {
+            id: user.user_id,
+            email: user.email,
+            firstName: firstName,
+            lastName: lastName
+          }
+        })
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/classes/add-students`,
-        {
+        const token = cookieStorage.getAccessToken()
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/classes/add-students`, {
           method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify({
-            students: users,
+            students: students,
             class_id: classInfo.class_id,
           })
-        }
-      );
-      const json = res.json();
+        })
 
-      console.log('reponse: ' + json)
-      handleClose()
+        if (!res.ok) {
+          throw new Error('Failed to add students')
+        }
+
+        const json = await res.json()
+        console.log('Response:', json)
+        
+        if (json.success) {
+          alert('Đã thêm học sinh thành công!')
+          handleClose()
+        } else {
+          alert('Có lỗi xảy ra: ' + (json.message || 'Unknown error'))
+        }
+      } catch (error) {
+        console.error('Error adding members:', error)
+        alert('Có lỗi xảy ra khi thêm học sinh')
+      }
     }
   }
 
@@ -102,17 +152,31 @@ export function AddMemberModal({
     setTextInput('')
   }
 
-  const searchUserMatchEmailPattern = async (emailPattern: string)=>{
-    // console.log(emailPattern);
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/users/get-list-profile-match-email`,{
-      method:'POST',
-      body:JSON.stringify({
-        emailPattern,
-      }),
-    });
-    
-    const json = await res.json();
-    return json;
+  const searchUserMatchEmailPattern = async (emailPattern: string) => {
+    try {
+      const token = cookieStorage.getAccessToken()
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/get-list-profile-match-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          emailPattern,
+        }),
+      })
+      
+      if (!res.ok) {
+        throw new Error('Failed to search users')
+      }
+      
+      const json = await res.json()
+      // Backend returns { data: { users: [...] } }
+      return json.data?.users || []
+    } catch (error) {
+      console.error('Error searching users:', error)
+      return []
+    }
   }
 
 

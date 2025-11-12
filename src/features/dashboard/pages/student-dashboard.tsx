@@ -1,71 +1,33 @@
 import type { User } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Users } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
 import { ClassCard } from '../components/class-card'
+import { useQuery } from '@tanstack/react-query'
+import { ClassService } from '@/features/teacher/api/class-service'
 
 interface StudentDashboardProps {
     user: User
 }
 
-const mockClasses = [
-    {
-        id: '1',
-        name: 'Group_KI2_2023-2024_Lập Trình Java_22Nh11',
-        code: 'GL',
-        color: 'blue' as const,
-        teacher: 'Nguyễn Văn A',
-        students: 45
-    },
-    {
-        id: '2',
-        name: 'Group_Kỹ thuật lập trình 22.13',
-        code: 'Gt',
-        color: 'pink' as const,
-        teacher: 'Trần Thị B',
-        students: 38
-    },
-    {
-        id: '3',
-        name: 'Group_Anh Văn 2.1_32',
-        code: 'GV',
-        color: 'purple' as const,
-        teacher: 'Smith John',
-        students: 30
-    },
-    {
-        id: '4',
-        name: 'Group_PBL6-22N11B-HK1-25-26',
-        code: 'G2',
-        color: 'pink' as const,
-        teacher: 'Lê Văn C',
-        students: 25
-    },
-    {
-        id: '5',
-        name: 'Group_Kỹ 1. 25-26. Chuyên đề CN CNPM. 22.10&11',
-        code: 'GC',
-        color: 'blue' as const,
-        teacher: 'Phạm Thị D',
-        students: 42
-    },
-    {
-        id: '6',
-        name: 'Group_KTPM 22.10 T4,1 -2,F210',
-        code: 'GK',
-        color: 'gray' as const,
-        teacher: 'Hoàng Văn E',
-        students: 35
-    }
-]
-
 export function StudentDashboard({ user }: StudentDashboardProps) {
-    const handleClassClick = (classId: string) => {
-        // Navigate to class detail
-        console.log('Navigate to class:', classId)
+    const navigate = useNavigate()
+
+    // Fetch classes của học sinh
+    const { data: classesData, isLoading } = useQuery({
+        queryKey: ['student-classes', user.user_id],
+        queryFn: () => ClassService.GetClassesByStudent(user.user_id),
+        enabled: !!user.user_id,
+    })
+
+    const classes = classesData?.data || []
+
+    const handleClassClick = (classId: number) => {
+        navigate({ to: '/classes/detail-class', search: { id: classId } })
     }
 
     const handleJoinClass = () => {
-        // Open join class modal
+        // TODO: Implement join class modal
         console.log('Open join class modal')
     }
 
@@ -83,7 +45,7 @@ export function StudentDashboard({ user }: StudentDashboardProps) {
                     className="flex items-center space-x-2 bg-purple-600 hover:bg-purple-700"
                 >
                     <Users className="h-4 w-4" />
-                    <span>Tham gia hoặc tạo nhóm</span>
+                    <span>Tham gia nhóm</span>
                 </Button>
             </div>
 
@@ -91,23 +53,33 @@ export function StudentDashboard({ user }: StudentDashboardProps) {
                 <div className="flex items-center space-x-2 mb-6">
                     <span className="text-gray-500 text-lg">▼</span>
                     <h2 className="text-xl font-medium text-gray-900">Lớp học của tôi</h2>
-                    <span className="text-gray-500">({mockClasses.length})</span>
+                    <span className="text-gray-500">({classes.length})</span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {mockClasses.map((classItem) => (
-                        <ClassCard
-                            key={classItem.id}
-                            id={classItem.id}
-                            name={classItem.name}
-                            code={classItem.code}
-                            color={classItem.color}
-                            teacher={classItem.teacher}
-                            students={classItem.students}
-                            onClick={() => handleClassClick(classItem.id)}
-                        />
-                    ))}
-                </div>
+                {isLoading ? (
+                    <div className="text-center py-8 text-gray-600">
+                        Đang tải danh sách lớp học...
+                    </div>
+                ) : classes.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {classes.map((classItem) => (
+                            <ClassCard
+                                key={classItem.class_id}
+                                id={classItem.class_id.toString()}
+                                name={classItem.class_name}
+                                code={classItem.class_code}
+                                color="purple"
+                                teacher="Giáo viên"
+                                students={0}
+                                onClick={() => handleClassClick(classItem.class_id)}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-8 text-gray-600">
+                        Bạn chưa tham gia lớp học nào. Hãy tham gia nhóm để bắt đầu!
+                    </div>
+                )}
             </div>
         </div>
     )

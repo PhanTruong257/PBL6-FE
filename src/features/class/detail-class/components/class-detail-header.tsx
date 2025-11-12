@@ -2,8 +2,11 @@ import { Button } from '@/components/ui/button'
 import {
     MoreHorizontal,
     Settings,
-    UserPlus
+    UserPlus,
+    Users
 } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { ClassService } from '@/features/teacher/api/class-service'
 
 interface ClassDetailHeaderProps {
     classInfo: {
@@ -26,6 +29,13 @@ export function ClassDetailHeader({
     onAddMember,
     onToggleSettings
 }: ClassDetailHeaderProps) {
+    // Fetch student count
+    const { data: studentsData } = useQuery({
+        queryKey: ['class-students', classInfo.class_id],
+        queryFn: () => ClassService.GetStudentsOfClass(classInfo.class_id),
+        enabled: !!classInfo.class_id,
+    })
+
     return (
         <div className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between">
@@ -37,7 +47,18 @@ export function ClassDetailHeader({
                     </div>
                     <div>
                         <h1 className="text-xl font-semibold text-gray-900">{classInfo.class_name}</h1>
-                        <p className="text-sm text-gray-500">Class</p>
+                        <div className="flex items-center space-x-2 text-sm text-gray-500">
+                            <span>Class</span>
+                            {studentsData && (
+                                <>
+                                    <span>•</span>
+                                    <div className="flex items-center space-x-1">
+                                        <Users className="h-3 w-3" />
+                                        <span>{studentsData.total_students} {studentsData.total_students === 1 ? 'student' : 'students'}</span>
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
                 <div className="flex items-center space-x-2">

@@ -15,7 +15,8 @@ export function PostCard({
   message,
   created_at,
   replies,
-}: PostCardProps) {
+  classId,
+}: PostCardProps & { classId: number }) {
   const [hideReply, setHideReply] = useState<boolean>(true)
   return (
     <Card className="shadow-sm">
@@ -29,7 +30,7 @@ export function PostCard({
             </div>
             <h3 className="font-semibold text-gray-900 mb-2">{title}</h3>
             <p className="text-gray-800 mb-3">{message}</p>
-            {replies && (
+            {replies && replies.length > 0 && (
               <div className="text-sm text-blue-600 mb-4" onClick={()=>{setHideReply(!hideReply)}}>
                 <a className='no-underline hover:underline cursor-pointer'>{replies.length} replies for this post</a>
               </div>
@@ -53,7 +54,7 @@ export function PostCard({
             )))}
             
             <div className="flex items-center space-x-4 mt-4">
-              {replyInput(replies)}
+              {replyInput({ classId, postId: id, replies: replies || [] })}
             </div>
           </div>
         </div>

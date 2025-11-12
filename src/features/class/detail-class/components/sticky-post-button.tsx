@@ -3,8 +3,14 @@ import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { CreatePostModal } from './create-post-modal'
 
+interface StickyPostButtonProps {
+  classInfo: {
+    class_id: number
+    class_name: string
+  }
+}
 
-export function StickyPostButton() {
+export function StickyPostButton({ classInfo }: StickyPostButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
@@ -25,6 +31,7 @@ export function StickyPostButton() {
       <CreatePostModal
         isOpen={isModalOpen}
         onOpenChange={setIsModalOpen}
+        classInfo={classInfo}
       />
     </>
   )
