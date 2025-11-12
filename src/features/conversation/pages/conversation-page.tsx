@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRecoilValue } from 'recoil'
 import { ConversationList } from '../components/conversation-list'
 import { ChatWindow } from '../components/chat-window'
 import { currentUserState } from '@/global/recoil/user'
+import { useConversations } from '../hooks'
 import type { ConversationWithUser } from '../types'
 
 export function ConversationPage() {
@@ -11,6 +12,13 @@ export function ConversationPage() {
     // Get current user from Recoil
     const currentUser = useRecoilValue(currentUserState)
     const currentUserId = currentUser?.user_id || 0
+
+    // Prefetch conversations data immediately when page loads
+    const { data: conversationsData, isLoading } = useConversations({ userId: currentUserId })
+
+    useEffect(() => {
+        console.log('📋 [CONVERSATION_PAGE] Conversations data loaded:', conversationsData)
+    }, [conversationsData])
 
     // Show loading or error if user not logged in
     if (!currentUser || !currentUserId) {
@@ -24,6 +32,7 @@ export function ConversationPage() {
     }
 
     const handleSelectConversation = (conversation: ConversationWithUser) => {
+        console.log('🎯 [CONVERSATION_PAGE] Conversation selected:', conversation)
         setSelectedConversation(conversation)
     }
 

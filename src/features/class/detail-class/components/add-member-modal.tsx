@@ -12,6 +12,7 @@ import type { ClassBasicInfo } from '@/types/class'
 import { type User } from '@/types'
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
 import { cookieStorage } from '@/libs/utils/cookie'
+import { useQueryClient } from '@tanstack/react-query'
 
 
 interface AddMemberModalProps {
@@ -60,6 +61,7 @@ export function AddMemberModal({
   const [matchedUserList, setMatchedUserList] = useState<Array<User>>([]);
   const [openMatchedList, setOpenMatchedList] = useState<boolean>(false);
   const [textInput, setTextInput] = useState<string>('');
+  const queryClient = useQueryClient();
 
   const fetchUserProfileFromEmail = async(emails: string[]) => {
     try {
@@ -135,6 +137,10 @@ export function AddMemberModal({
         console.log('Response:', json)
         
         if (json.success) {
+          // Invalidate queries to refresh student count and list
+          queryClient.invalidateQueries({ queryKey: ['class-students', classInfo.class_id] })
+          queryClient.invalidateQueries({ queryKey: ['class-students-count', classInfo.class_id] })
+          
           alert('Đã thêm học sinh thành công!')
           handleClose()
         } else {

@@ -4,19 +4,23 @@ import { useEffect } from 'react'
 import { ConversationService } from '../api/conversation-service'
 
 /**
- * Hook để lấy số lượng tin nhắn chưa đọc
+ * Hook để đếm số CUỘC TRÒ CHUYỆN có tin nhắn chưa đọc
+ * (không phải tổng số tin nhắn chưa đọc)
  * - Query từ API
  * - Update real-time qua Socket.IO
  */
-export function useUnreadCount(userId: number | undefined, enabled = true) {
+export function useUnreadConversationsCount(userId: number | undefined, enabled = true) {
   const { socket, isConnected } = useGlobalSocket()
 
-  // Query unread count
+  // Query unread conversations count
   const query = useQuery({
-    queryKey: ['unread-count', userId],
+    queryKey: ['unread-conversations-count', userId],
     queryFn: async () => {
-      const response = await ConversationService.getUnreadCount(userId!)
-      return { count: response.data }
+      const response = await ConversationService.getUnreadCountByConversation(userId!)
+      // Đếm số lượng conversations có tin nhắn chưa đọc
+      const conversations = response.data || []
+      const count = conversations.filter((conv: any) => conv.unread_count > 0).length
+      return { count }
     },
     enabled: enabled && !!userId,
     refetchInterval: 30000, // Refetch every 30s
@@ -27,16 +31,16 @@ export function useUnreadCount(userId: number | undefined, enabled = true) {
   useEffect(() => {
     if (!socket || !isConnected || !userId) return
 
-    console.log('🔔 [UNREAD_COUNT] Setting up real-time listeners for user:', userId)
+    console.log('🔔 [UNREAD_CONVERSATIONS] Setting up real-time listeners for user:', userId)
 
     // Refetch count when new message received (from others)
     const handleMessageReceived = (data: any) => {
-      console.log('🔔 [UNREAD_COUNT] Message received:', data)
+      console.log('🔔 [UNREAD_CONVERSATIONS] Message received:', data)
       // Only count messages from others
       if (data.sender_id !== userId) {
         // Small delay to ensure DB has been updated
         setTimeout(() => {
-          console.log('🔔 [UNREAD_COUNT] Refetching unread count...')
+          console.log('🔔 [UNREAD_CONVERSATIONS] Refetching unread conversations count...')
           query.refetch()
         }, 300)
       }
@@ -44,7 +48,7 @@ export function useUnreadCount(userId: number | undefined, enabled = true) {
 
     // Refetch count when messages marked as read
     const handleMessageStatusUpdated = (data: any) => {
-      console.log('🔔 [UNREAD_COUNT] Message status updated:', data)
+      console.log('🔔 [UNREAD_CONVERSATIONS] Message status updated:', data)
       if (data.status === 'read') {
         query.refetch()
       }
@@ -52,7 +56,7 @@ export function useUnreadCount(userId: number | undefined, enabled = true) {
 
     // Refetch when messages are marked as read via API
     const handleMessagesRead = (data: any) => {
-      console.log('🔔 [UNREAD_COUNT] Messages read event:', data)
+      console.log('🔔 [UNREAD_CONVERSATIONS] Messages read event:', data)
       query.refetch()
     }
 
@@ -68,7 +72,7 @@ export function useUnreadCount(userId: number | undefined, enabled = true) {
   }, [socket, isConnected, userId, query])
 
   return {
-    unreadCount: query.data?.count || 0,
+    unreadConversationsCount: query.data?.count || 0,
     isLoading: query.isLoading,
     error: query.error,
     refetch: query.refetch,

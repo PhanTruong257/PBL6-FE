@@ -1,6 +1,7 @@
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PostCard} from './post-card'
 import { MaterialsView } from './materials-view'
+import { StudentsView } from './students-view'
 import type { PostCardProps } from '../types'
 import { useMaterialsDetail } from '../hooks/use-class-detail'
 import type { Material_full_info } from '@/types/material'
@@ -20,9 +21,10 @@ export function ClassMainContent({ activeTab, setActiveTab, postData, classId }:
       {/* Tabs */}
       <div className="bg-white border-b border-gray-200 px-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-2 w-60">
+            <TabsList className="grid grid-cols-3 w-96">
               <TabsTrigger value="posts">Posts</TabsTrigger>
               <TabsTrigger value="materials">Materials</TabsTrigger>
+              <TabsTrigger value="students">Students</TabsTrigger>
             </TabsList>
         </Tabs>
       </div>
@@ -45,9 +47,11 @@ export function ClassMainContent({ activeTab, setActiveTab, postData, classId }:
             ))}
           </div>
         </div>
-      ) : (
+      ) : activeTab === 'materials' ? (
         <MaterialsView 
         materials={materials||([] as Material_full_info[])}/>
+      ) : (
+        <StudentsView classId={classId} />
       )}
 
       

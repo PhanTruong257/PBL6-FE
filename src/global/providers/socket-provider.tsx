@@ -17,6 +17,10 @@ interface ServerToClientEvents {
     'presence:list': (data: any) => void
     'error': (data: any) => void
     'reconnected': (data: any) => void
+    // Post events
+    'post:created': (data: any) => void
+    'reply:created': (data: any) => void
+    'class:joined': (data: any) => void
 }
 
 interface ClientToServerEvents {
@@ -29,6 +33,11 @@ interface ClientToServerEvents {
     'typing:stop': (data: any) => void
     'presence:update': (data: any) => void
     'presence:request': (data: any) => void
+    // Post events
+    'class:join': (data: any) => void
+    'class:leave': (data: any) => void
+    'post:create': (data: any) => void
+    'reply:create': (data: any) => void
 }
 
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>

@@ -6,7 +6,7 @@ import {
     Users
 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
-import { ClassService } from '@/features/teacher/api/class-service'
+import { cookieStorage } from '@/libs/utils/cookie'
 
 interface ClassDetailHeaderProps {
     classInfo: {
@@ -23,6 +23,40 @@ interface ClassDetailHeaderProps {
     onToggleSettings: () => void
 }
 
+const fetchStudentCount = async (classId: number): Promise<number> => {
+    const token = cookieStorage.getAccessToken()
+    const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/classes/${classId}/students`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    )
+
+    if (!res.ok) {
+        return 0
+    }
+
+    const json = await res.json()
+    
+    // Backend returns { data: { class_id, total_students, students: [...] } }
+    if (json.data?.total_students !== undefined) {
+        return json.data.total_students
+    }
+    
+    // Fallback: count from students array
+    if (json.data?.students && Array.isArray(json.data.students)) {
+        return json.data.students.length
+    }
+    
+    if (Array.isArray(json.data)) {
+        return json.data.length
+    }
+    
+    return 0
+}
+
 export function ClassDetailHeader({
     classInfo,
     isTeacher,
@@ -30,9 +64,9 @@ export function ClassDetailHeader({
     onToggleSettings
 }: ClassDetailHeaderProps) {
     // Fetch student count
-    const { data: studentsData } = useQuery({
-        queryKey: ['class-students', classInfo.class_id],
-        queryFn: () => ClassService.GetStudentsOfClass(classInfo.class_id),
+    const { data: studentCount = 0 } = useQuery({
+        queryKey: ['class-students-count', classInfo.class_id],
+        queryFn: () => fetchStudentCount(classInfo.class_id),
         enabled: !!classInfo.class_id,
     })
 
@@ -49,15 +83,11 @@ export function ClassDetailHeader({
                         <h1 className="text-xl font-semibold text-gray-900">{classInfo.class_name}</h1>
                         <div className="flex items-center space-x-2 text-sm text-gray-500">
                             <span>Class</span>
-                            {studentsData && (
-                                <>
-                                    <span>•</span>
-                                    <div className="flex items-center space-x-1">
-                                        <Users className="h-3 w-3" />
-                                        <span>{studentsData.total_students} {studentsData.total_students === 1 ? 'student' : 'students'}</span>
-                                    </div>
-                                </>
-                            )}
+                            <span>•</span>
+                            <div className="flex items-center space-x-1">
+                                <Users className="h-3 w-3" />
+                                <span>{studentCount} {studentCount === 1 ? 'student' : 'students'}</span>
+                            </div>
                         </div>
                     </div>
                 </div>

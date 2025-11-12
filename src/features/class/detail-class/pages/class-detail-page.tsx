@@ -1,12 +1,14 @@
 import { ClassSettings, ClassMainContent, AddMemberModal, StickyPostButton } from '../components'
 import { ClassDetailHeader } from '../components'
 import { useClassDetailPage } from '../hooks'
+import { useClassSocket } from '../hooks/use-class-socket'
 import { useSearch } from '@tanstack/react-router'
 
 export function ClassDetailPage() {
     // Get classId from URL search params
     const searchParams = useSearch({ from: '/classes/detail-class' })
     const classId = searchParams.id?.toString() || ''
+    const numericClassId = classId ? parseInt(classId, 10) : null
 
     const {
         classInfo,
@@ -21,6 +23,11 @@ export function ClassDetailPage() {
         isLoading,
         error
     } = useClassDetailPage(classId)
+
+    // Setup real-time socket for this class
+    useClassSocket({
+        classId: numericClassId,
+    })
 
     if (isLoading) {
         return (

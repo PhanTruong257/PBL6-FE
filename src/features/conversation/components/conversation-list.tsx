@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, Search, MessageCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Search, MessageCircle } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -9,6 +8,7 @@ import { cn } from '@/libs/utils/cn'
 import { useConversations, useUnreadByConversation, conversationKeys } from '../hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { useGlobalSocket } from '@/global/providers/socket-provider'
+import { CreateConversationDialog } from './create-conversation-dialog'
 import type { ConversationWithUser } from '../types'
 
 interface ConversationListProps {
@@ -127,9 +127,13 @@ export function ConversationList({
             {/* Header */}
             <div className="flex items-center justify-between border-b p-4">
                 <h2 className="text-lg font-semibold">Tin nhắn</h2>
-                <Button size="sm" onClick={onCreateConversation}>
-                    <Plus className="h-4 w-4" />
-                </Button>
+                <CreateConversationDialog
+                    currentUserId={currentUserId}
+                    onConversationCreated={(conversation) => {
+                        refetchConversations()
+                        onSelectConversation(conversation)
+                    }}
+                />
             </div>
 
             {/* Search */}

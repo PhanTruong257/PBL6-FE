@@ -5,6 +5,8 @@ import { useNavigate } from '@tanstack/react-router'
 import { ClassCard } from '../components/class-card'
 import { useQuery } from '@tanstack/react-query'
 import { ClassService } from '@/features/teacher/api/class-service'
+import { JoinClassModal } from '@/features/class'
+import { useState } from 'react'
 
 interface StudentDashboardProps {
     user: User
@@ -12,6 +14,7 @@ interface StudentDashboardProps {
 
 export function StudentDashboard({ user }: StudentDashboardProps) {
     const navigate = useNavigate()
+    const [isJoinModalOpen, setIsJoinModalOpen] = useState(false)
 
     // Fetch classes của học sinh
     const { data: classesData, isLoading } = useQuery({
@@ -27,8 +30,7 @@ export function StudentDashboard({ user }: StudentDashboardProps) {
     }
 
     const handleJoinClass = () => {
-        // TODO: Implement join class modal
-        console.log('Open join class modal')
+        setIsJoinModalOpen(true)
     }
 
     return (
@@ -81,6 +83,12 @@ export function StudentDashboard({ user }: StudentDashboardProps) {
                     </div>
                 )}
             </div>
+
+            {/* Join Class Modal */}
+            <JoinClassModal 
+                isOpen={isJoinModalOpen} 
+                onOpenChange={setIsJoinModalOpen} 
+            />
         </div>
     )
 }
