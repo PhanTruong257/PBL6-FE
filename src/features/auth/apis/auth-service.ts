@@ -25,7 +25,10 @@ export const AuthService = {
    * Login user
    */
   async login(data: LoginRequest): Promise<LoginResponse> {
-    const response = await httpClient.post<AuthApiResponse<LoginResponse>>('/users/login', data)
+    const response = await httpClient.post<AuthApiResponse<LoginResponse>>(
+      '/users/login',
+      data,
+    )
     return response.data.data
   },
 
@@ -43,7 +46,7 @@ export const AuthService = {
     }
 
     // Remove undefined fields
-    Object.keys(dataSend).forEach(key => {
+    Object.keys(dataSend).forEach((key) => {
       if (dataSend[key] === undefined) {
         delete dataSend[key]
       }
@@ -60,11 +63,12 @@ export const AuthService = {
   /**
    * Request password reset (send OTP to email)
    */
-  async forgotPassword(data: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
-    const response = await httpClient.post<AuthApiResponse<ForgotPasswordResponse>>(
-      '/users/forgot-password',
-      data
-    )
+  async forgotPassword(
+    data: ForgotPasswordRequest,
+  ): Promise<ForgotPasswordResponse> {
+    const response = await httpClient.post<
+      AuthApiResponse<ForgotPasswordResponse>
+    >('/users/forgot-password', data)
     return response.data.data
   },
 
@@ -74,7 +78,7 @@ export const AuthService = {
   async verifyCode(data: VerifyCodeRequest): Promise<VerifyCodeResponse> {
     const response = await httpClient.post<AuthApiResponse<VerifyCodeResponse>>(
       '/users/verify-code',
-      data
+      data,
     )
     return response.data.data
   },
@@ -82,22 +86,24 @@ export const AuthService = {
   /**
    * Reset password with token
    */
-  async resetPassword(data: ResetPasswordRequest): Promise<ResetPasswordResponse> {
-    const response = await httpClient.post<AuthApiResponse<ResetPasswordResponse>>(
-      '/users/reset-password',
-      data
-    )
+  async resetPassword(
+    data: ResetPasswordRequest,
+  ): Promise<ResetPasswordResponse> {
+    const response = await httpClient.post<
+      AuthApiResponse<ResetPasswordResponse>
+    >('/users/reset-password', data)
     return response.data.data
   },
 
   /**
    * Resend verification code
    */
-  async resendCode(data: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
-    const response = await httpClient.post<AuthApiResponse<ForgotPasswordResponse>>(
-      '/users/forgot-password',
-      data
-    )
+  async resendCode(
+    data: ForgotPasswordRequest,
+  ): Promise<ForgotPasswordResponse> {
+    const response = await httpClient.post<
+      AuthApiResponse<ForgotPasswordResponse>
+    >('/users/forgot-password', data)
     return response.data.data
   },
 
@@ -105,19 +111,20 @@ export const AuthService = {
    * Refresh access token
    */
   async refreshToken(data: RefreshTokenRequest): Promise<RefreshTokenResponse> {
-    const response = await httpClient.post<AuthApiResponse<RefreshTokenResponse>>(
-      '/users/refresh-token',
-      data
-    )
+    const response = await httpClient.post<
+      AuthApiResponse<RefreshTokenResponse>
+    >('/users/refresh-token', data)
     return response.data.data
   },
 
   /**
    * Logout user
+   * For JWT stateless authentication, logout is handled client-side only
+   * No need to call backend API - just clear tokens and cache
    */
   async logout(): Promise<{ message: string }> {
-    const response = await httpClient.post<AuthApiResponse<{ message: string }>>('/users/logout')
-    return response.data.data
+    // JWT logout is client-side only - no backend API needed
+    return Promise.resolve({ message: 'Logged out successfully' })
   },
 
   /**

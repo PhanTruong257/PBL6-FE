@@ -41,8 +41,7 @@ export function useLogin() {
       return AuthService.login(data)
     },
     onSuccess: async (response) => {
-      const { user, accessToken, refreshToken } = response;
-
+      const { user, accessToken, refreshToken } = response
 
       // Step 1: Save tokens to cookies
       cookieStorage.setTokens(accessToken, refreshToken)
@@ -51,15 +50,18 @@ export function useLogin() {
       try {
         const userDataResponse = await AuthService.getCurrentUser()
         const userData = userDataResponse.data
-        
+
         // Step 3: Update Recoil state with complete user data
         setUser(userData)
-        
+        console.log(`✅ Fetched user data:  `, userData)
+
         // Step 4: Update React Query cache
         queryClient.setQueryData(authKeys.user(), userData)
-        
+
         console.log(`✅ Login successful: ${userData.email}`)
-        console.log(`✅ Loaded ${userData.roles?.length || 0} roles and ${userData.permissions?.length || 0} permissions`)
+        console.log(
+          `✅ Loaded ${userData.roles?.length || 0} roles and ${userData.permissions?.length || 0} permissions`,
+        )
       } catch (error) {
         console.error('❌ Failed to fetch user data from /users/me:', error)
         // Fallback: Set basic user info from login response
@@ -101,7 +103,8 @@ export function useForgotPassword() {
   const navigate = useNavigate()
 
   return useMutation({
-    mutationFn: (data: ForgotPasswordRequest) => AuthService.forgotPassword(data),
+    mutationFn: (data: ForgotPasswordRequest) =>
+      AuthService.forgotPassword(data),
     onSuccess: (_response, variables) => {
       // Save email to sessionStorage for next step
       sessionStorage.set('temp_reset_email', variables.email)
@@ -166,13 +169,25 @@ export function useResendCode() {
 export function useLogout() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const setUser = useSetRecoilState(currentUserState)
 
   return useMutation({
     mutationFn: () => AuthService.logout(),
     onSettled: () => {
       // Always clear local data, even if API call fails
+      // 1. Clear React Query cache
       queryClient.clear()
+
+      // 2. Clear cookies (access token & refresh token)
       cookieStorage.clearTokens()
+
+      // 3. Clear Recoil state
+      setUser(null)
+
+      // 4. Clear session storage
+      sessionStorage.clear()
+
+      // 5. Navigate to login page
       navigate({ to: '/auth/login' })
     },
   })

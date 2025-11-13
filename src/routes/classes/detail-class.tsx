@@ -1,25 +1,19 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { ClassDetailPage } from '@/features/class'
-import { RequireAuth } from '@/components/auth'
 import { MainLayout } from '@/components/layout'
+import { z } from 'zod'
 
-// export const Route = createFileRoute('/classes/detail-class')({
-//   component: () => (
-//     < RequireAuth >
-//       <MainLayout>
-//         <ClassDetailPage />
-//       </MainLayout>
-//     </RequireAuth>
-//   ),
-// })
+// Define search params validation
+const classDetailSearchSchema = z.object({
+  id: z.number().or(z.string()).optional(),
+})
 
 export const Route = createFileRoute('/classes/detail-class')({
+  validateSearch: classDetailSearchSchema,
   component: () => (
-
     <MainLayout>
       <ClassDetailPage />
     </MainLayout>
-
   ),
 })
 

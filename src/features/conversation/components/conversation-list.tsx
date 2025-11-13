@@ -1,33 +1,106 @@
-import { useState } from 'react'
-import { Plus, Search, MessageCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { useState, useEffect } from 'react'
+import { Search, MessageCircle } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/libs/utils/cn'
-import { useConversations } from '../hooks'
+import { useConversations, useUnreadByConversation, conversationKeys } from '../hooks'
+import { useQueryClient } from '@tanstack/react-query'
+import { useGlobalSocket } from '@/global/providers/socket-provider'
+import { CreateConversationDialog } from './create-conversation-dialog'
 import type { ConversationWithUser } from '../types'
 
 interface ConversationListProps {
+    currentUserId: number
     selectedConversationId?: number
     onSelectConversation: (conversation: ConversationWithUser) => void
     onCreateConversation: () => void
 }
 
 export function ConversationList({
+    currentUserId,
     selectedConversationId,
     onSelectConversation,
     onCreateConversation,
 }: ConversationListProps) {
     const [searchQuery, setSearchQuery] = useState('')
 
-    const { data: conversationsData, isLoading } = useConversations()
-    const conversations = conversationsData?.conversations || []
+    const { data: conversationsData, isLoading, refetch: refetchConversations } = useConversations({ userId: currentUserId })
+    const queryClient = useQueryClient()
+    const { unreadByConversation } = useUnreadByConversation(currentUserId)
+    const { socket } = useGlobalSocket()
 
-    const filteredConversations = (conversations as ConversationWithUser[]).filter((conversation) =>
-        conversation.receiver_name?.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    // Listen for new messages to update conversation list
+    useEffect(() => {
+        if (!socket) return
+
+        console.log('📋 [CONVERSATION_LIST] Setting up real-time listeners')
+
+        const handleMessageReceived = (message: any) => {
+            // Optimistically update conversations list preview so UI shows latest content immediately.
+            try {
+                const key = conversationKeys.list({ userId: currentUserId })
+                queryClient.setQueryData<any>(key, (old: any) => {
+                    if (!old) {
+                        // fallback to refetch if no cache
+                        refetchConversations()
+                        return old
+                    }
+
+                    // Normalize conversations array in different response shapes
+                    const conversations = old?.data?.conversations || old?.conversations || (Array.isArray(old) ? old : [])
+                    const idx = conversations.findIndex((c: any) => c.id === message.conversation_id)
+                    if (idx === -1) {
+                        // conversation not present in list cache -> refetch to be safe
+                        refetchConversations()
+                        return old
+                    }
+
+                    const updated = [...conversations]
+                    // Update last_message preview (optimistic). Use message.timestamp/content even if id is temporary.
+                    updated[idx] = {
+                        ...updated[idx],
+                        last_message: {
+                            id: message.id,
+                            content: message.content,
+                            timestamp: message.timestamp,
+                        },
+                    }
+
+                    // Return in the same shape as `old`
+                    if (old?.data?.conversations) {
+                        return { ...old, data: { ...old.data, conversations: updated } }
+                    } else if (old?.conversations) {
+                        return { ...old, conversations: updated }
+                    }
+                    return updated
+                })
+            } catch (e) {
+                // fallback
+                refetchConversations()
+            }
+        }
+
+        const handleMessagesRead = (_data: any) => {
+            refetchConversations()
+        }
+
+        socket.on('message:received', handleMessageReceived)
+        socket.on('messages:read', handleMessagesRead)
+
+        return () => {
+            socket.off('message:received', handleMessageReceived)
+            socket.off('messages:read', handleMessagesRead)
+        }
+    }, [socket, refetchConversations])
+
+    // Backend returns nested structure: { success, data: { conversations } }
+    const conversations = conversationsData?.data?.conversations
+        || conversationsData?.conversations
+        || (Array.isArray(conversationsData) ? conversationsData : [])
+
+    const filteredConversations = conversations.filter(() => true)
 
     const formatTime = (timestamp: string) => {
         const date = new Date(timestamp)
@@ -54,9 +127,13 @@ export function ConversationList({
             {/* Header */}
             <div className="flex items-center justify-between border-b p-4">
                 <h2 className="text-lg font-semibold">Tin nhắn</h2>
-                <Button size="sm" onClick={onCreateConversation}>
-                    <Plus className="h-4 w-4" />
-                </Button>
+                <CreateConversationDialog
+                    currentUserId={currentUserId}
+                    onConversationCreated={(conversation) => {
+                        refetchConversations()
+                        onSelectConversation(conversation)
+                    }}
+                />
             </div>
 
             {/* Search */}
@@ -90,51 +167,65 @@ export function ConversationList({
                     </div>
                 ) : (
                     <div className="space-y-1 p-2">
-                        {filteredConversations.map((conversation) => {
+                        {filteredConversations.map((conversation: any) => {
                             const isSelected = conversation.id === selectedConversationId
-                            const hasUnread = (conversation.unread_count || 0) > 0
+                            // Use last_message from backend (snake_case)
+                            const lastMessage = conversation.last_message
+                            // Get receiver info from backend
+                            const receiverName = conversation.receiver_name || `User #${conversation.receiver_id}`
+                            // Get unread count for this conversation
+                            const unreadCount = unreadByConversation[conversation.id] || 0
+                            const hasUnread = unreadCount > 0
 
                             return (
                                 <div
                                     key={conversation.id}
                                     className={cn(
                                         "flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent",
-                                        isSelected && "bg-accent"
+                                        isSelected && "bg-accent",
+                                        hasUnread && "bg-accent/50"
                                     )}
                                     onClick={() => onSelectConversation(conversation)}
                                 >
-                                    <Avatar className="h-10 w-10">
-                                        <AvatarImage src={conversation.receiver_avatar} />
-                                        <AvatarFallback>
-                                            {conversation.receiver_name?.charAt(0).toUpperCase()}
-                                        </AvatarFallback>
-                                    </Avatar>
+                                    <div className="relative">
+                                        <Avatar className="h-10 w-10">
+                                            <AvatarFallback>
+                                                {receiverName.charAt(0).toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        {hasUnread && (
+                                            <div className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-destructive border-2 border-background" />
+                                        )}
+                                    </div>
 
                                     <div className="flex-1 overflow-hidden">
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex items-center justify-between gap-2">
                                             <div className={cn(
                                                 "truncate text-sm",
                                                 hasUnread && "font-semibold"
                                             )}>
-                                                {conversation.receiver_name || 'Người dùng'}
+                                                {receiverName}
                                             </div>
-                                            {conversation.last_message && (
-                                                <div className="text-xs text-muted-foreground">
-                                                    {formatTime(conversation.last_message.timestamp)}
+                                            {lastMessage && (
+                                                <div className={cn(
+                                                    "text-xs shrink-0",
+                                                    hasUnread ? "text-foreground font-medium" : "text-muted-foreground"
+                                                )}>
+                                                    {formatTime(lastMessage.timestamp)}
                                                 </div>
                                             )}
                                         </div>
 
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex items-center justify-between gap-2">
                                             <div className={cn(
                                                 "truncate text-xs",
                                                 hasUnread ? "text-foreground font-medium" : "text-muted-foreground"
                                             )}>
-                                                {conversation.last_message?.content || 'Chưa có tin nhắn'}
+                                                {lastMessage?.content || 'Chưa có tin nhắn'}
                                             </div>
                                             {hasUnread && (
-                                                <Badge variant="default" className="h-5 w-5 rounded-full p-0 text-xs">
-                                                    {conversation.unread_count}
+                                                <Badge variant="destructive" className="ml-auto h-5 min-w-[20px] px-1.5 text-[10px] flex items-center justify-center shrink-0">
+                                                    {unreadCount > 99 ? '99+' : unreadCount}
                                                 </Badge>
                                             )}
                                         </div>

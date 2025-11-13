@@ -19,10 +19,11 @@ export const conversationKeys = {
 /**
  * Hook to get conversations list
  */
-export function useConversations(params?: { page?: number; limit?: number }) {
+export function useConversations(params: { userId: number; page?: number; limit?: number }) {
     return useQuery({
-        queryKey: conversationKeys.list(params || {}),
+        queryKey: conversationKeys.list(params),
         queryFn: () => ConversationService.getConversations(params),
+        enabled: !!params.userId,
         staleTime: 30000, // 30 seconds
     })
 }

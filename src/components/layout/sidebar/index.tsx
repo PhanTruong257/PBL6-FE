@@ -2,11 +2,13 @@ import { cn } from "@/libs/utils/cn"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import { Badge } from "@/components/ui/badge"
 import { ChevronLeft } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { useRecoilValue } from 'recoil'
 import { currentUserState } from '@/global/recoil/user'
 import { getNavigationByRole } from '@/libs/constants/sidebar-navigation.const'
+import { useUnreadConversationsCount } from '@/features/conversation/hooks'
 import type { MenuItem } from '@/libs/constants/sidebar-navigation.const'
 
 export interface BaseMenuItem {
@@ -35,6 +37,11 @@ export function Sidebar({ className, isCollapsed = false, onToggleCollapse }: Si
     'student'
   
   const navigation = getNavigationByRole(userRole)
+  
+  // Get unread CONVERSATIONS count for badge (not total messages)
+  const { unreadConversationsCount } = useUnreadConversationsCount(user?.user_id)
+  
+  console.log('🔔 [SIDEBAR] Current user:', user?.user_id, 'Unread conversations:', unreadConversationsCount)
 
   const filterByPermission = (items: MenuItem[]) => {
     if (!user?.permissions?.length) return items
@@ -71,6 +78,9 @@ export function Sidebar({ className, isCollapsed = false, onToggleCollapse }: Si
         <nav className="grid gap-1">
           {mainMenuItems.map((item, index) => {
             const Icon = item.icon
+            const isMessageItem = item.title === 'Tin nhắn'
+            const showBadge = isMessageItem && unreadConversationsCount > 0
+            
             return (
               <Button
                 key={`main-${index}-${item.title}`}
@@ -83,7 +93,21 @@ export function Sidebar({ className, isCollapsed = false, onToggleCollapse }: Si
               >
                 <Link to={item.href}>
                   <Icon className="h-4 w-4 shrink-0" />
-                  {!isCollapsed && <span>{item.title}</span>}
+                  {!isCollapsed && (
+                    <>
+                      <span>{item.title}</span>
+                      {showBadge && (
+                        <Badge variant="destructive" className="ml-auto h-5 w-5 p-0 flex items-center justify-center rounded-full">
+                          {unreadConversationsCount > 99 ? '99+' : unreadConversationsCount}
+                        </Badge>
+                      )}
+                    </>
+                  )}
+                  {isCollapsed && showBadge && (
+                    <Badge variant="destructive" className="absolute -right-1 -top-1 h-4 w-4 p-0 flex items-center justify-center rounded-full text-[10px]">
+                      {unreadConversationsCount > 9 ? '9+' : unreadConversationsCount}
+                    </Badge>
+                  )}
                 </Link>
               </Button>
             )
@@ -96,6 +120,9 @@ export function Sidebar({ className, isCollapsed = false, onToggleCollapse }: Si
         <nav className="grid gap-1 px-3 pb-4">
           {bottomItems.map((item, index) => {
             const Icon = item.icon
+            const isMessageItem = item.title === 'Tin nhắn'
+            const showBadge = isMessageItem && unreadConversationsCount > 0
+            
             return (
               <Button
                 key={`bottom-${index}-${item.title}`}
@@ -108,7 +135,21 @@ export function Sidebar({ className, isCollapsed = false, onToggleCollapse }: Si
               >
                 <Link to={item.href}>
                   <Icon className="h-4 w-4 shrink-0" />
-                  {!isCollapsed && <span>{item.title}</span>}
+                  {!isCollapsed && (
+                    <>
+                      <span>{item.title}</span>
+                      {showBadge && (
+                        <Badge variant="destructive" className="ml-auto h-5 w-5 p-0 flex items-center justify-center rounded-full">
+                          {unreadConversationsCount > 99 ? '99+' : unreadConversationsCount}
+                        </Badge>
+                      )}
+                    </>
+                  )}
+                  {isCollapsed && showBadge && (
+                    <Badge variant="destructive" className="absolute -right-1 -top-1 h-4 w-4 p-0 flex items-center justify-center rounded-full text-[10px]">
+                      {unreadConversationsCount > 9 ? '9+' : unreadConversationsCount}
+                    </Badge>
+                  )}
                 </Link>
               </Button>
             )

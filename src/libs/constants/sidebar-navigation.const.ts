@@ -4,17 +4,13 @@ import {
   Users,
   Settings,
   Calendar,
-  FileText,
   GraduationCap,
   BarChart3,
   HelpCircle,
   LayoutDashboard,
   BookMarked,
   ClipboardList,
-  Trophy,
   Bell,
-  UserCog,
-  FolderKanban,
   MessageSquare,
   Library,
 } from 'lucide-react'
@@ -105,7 +101,7 @@ export const TEACHER_SIDEBAR_NAV: SidebarNavigation = {
     },
     {
       title: 'Lớp học của tôi',
-      href: '/classes',
+      href: '/dashboard',
       icon: BookMarked,
     },
     {
@@ -115,22 +111,22 @@ export const TEACHER_SIDEBAR_NAV: SidebarNavigation = {
     },
     {
       title: 'Quản lý bài kiểm tra',
-      href: '/teacher/exams',
+      href: '/exam',
       icon: ClipboardList,
     },
     {
       title: 'Sinh viên của tôi',
-      href: '/teacher/students',
+      href: '/dashboard',
       icon: Users,
     },
     {
       title: 'Lịch giảng dạy',
-      href: '/teacher/schedule',
+      href: '/calendar',
       icon: Calendar,
     },
     {
       title: 'Thống kê',
-      href: '/teacher/statistics',
+      href: '/dashboard',
       icon: BarChart3,
     },
     {
@@ -142,12 +138,12 @@ export const TEACHER_SIDEBAR_NAV: SidebarNavigation = {
   bottom: [
     {
       title: 'Cài đặt',
-      href: '/settings',
+      href: '/profile',
       icon: Settings,
     },
     {
       title: 'Trợ giúp',
-      href: '/teacher/help',
+      href: '/dashboard',
       icon: HelpCircle,
     },
   ],
@@ -159,61 +155,41 @@ export const TEACHER_SIDEBAR_NAV: SidebarNavigation = {
 export const STUDENT_SIDEBAR_NAV: SidebarNavigation = {
   main: [
     {
-      title: 'Trang chủ',
-      href: '/student/dashboard',
+      title: 'Teams',
+      href: '/dashboard',
       icon: Home,
     },
     {
-      title: 'Khóa học của tôi',
-      href: '/student/my-courses',
-      icon: BookOpen,
-    },
-    {
-      title: 'Khám phá khóa học',
-      href: '/student/explore-courses',
+      title: 'Lớp học của tôi',
+      href: '/dashboard',
       icon: BookMarked,
     },
     {
-      title: 'Bài tập',
-      href: '/student/assignments',
-      icon: FileText,
+      title: 'Quản lý bài kiểm tra',
+      href: '/exam',
+      icon: ClipboardList,
     },
     {
-      title: 'Lịch học',
-      href: '/student/schedule',
+      title: 'Lịch giảng dạy',
+      href: '/calendar',
       icon: Calendar,
     },
     {
-      title: 'Điểm số',
-      href: '/student/grades',
-      icon: Trophy,
+      title: 'Thống kê',
+      href: '/dashboard',
+      icon: BarChart3,
     },
     {
       title: 'Tin nhắn',
       href: '/conversation',
       icon: MessageSquare,
     },
-    {
-      title: 'Thông báo',
-      href: '/student/notifications',
-      icon: Bell,
-    },
   ],
   bottom: [
     {
-      title: 'Hồ sơ của tôi',
-      href: '/student/profile',
-      icon: UserCog,
-    },
-    {
       title: 'Cài đặt',
-      href: '/student/settings',
+      href: '/profile',
       icon: Settings,
-    },
-    {
-      title: 'Trợ giúp',
-      href: '/student/help',
-      icon: HelpCircle,
     },
   ],
 }
