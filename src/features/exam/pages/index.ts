@@ -1,3 +1,5 @@
 export { CreateExamPage } from './create-exam-page'
 export { EditExamPage } from './edit-exam-page'
 export { ExamListPage } from './exam-list-page'
+export { ExamTakingPage } from './exam-taking-page'
+export { StudentExamListPage } from './student-exam-list-page'

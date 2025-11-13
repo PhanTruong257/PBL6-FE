@@ -9,6 +9,8 @@ import {
   type QuestionBank,
   type GetRandomQuestionsRequest,
   type RandomQuestionsResponse,
+  type GetStudentExamsQuery,
+  type StudentExamsResponse,
   QuestionType,
   ExamStatus,
 } from '@/types/exam'
@@ -508,6 +510,51 @@ export const ExamService = {
     } catch (error) {
       console.error('Error fetching random questions:', error)
       throw error
+    }
+  },
+
+  /**
+   * Get list of exams for current student
+   */
+  async getStudentExams(query?: GetStudentExamsQuery): Promise<StudentExamsResponse> {
+    try {
+      const params: Record<string, any> = {}
+      
+      if (query?.search) {
+        params.search = query.search
+      }
+      
+      if (query?.status) {
+        params.status = query.status
+      }
+      
+      if (query?.start_time) {
+        params.start_time = query.start_time
+      }
+      
+      if (query?.end_time) {
+        params.end_time = query.end_time
+      }
+      
+      // Pagination
+      params.page = query?.page || 1
+      params.limit = query?.limit || 10
+
+      const response = await httpClient.get('/students/exams', { params })
+      
+      return response.data
+    } catch (error) {
+      console.error('Error fetching student exams:', error)
+      // Return empty result on error
+      return {
+        data: [],
+        pagination: {
+          total: 0,
+          page: query?.page || 1,
+          limit: query?.limit || 10,
+          totalPages: 0,
+        }
+      }
     }
   },
 }

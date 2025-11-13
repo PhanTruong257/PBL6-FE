@@ -167,3 +167,46 @@ export interface QuestionBank {
   page: number
   limit: number
 }
+
+// Student Exam types
+export interface StudentSubmission {
+  submission_id: number
+  status: 'in_progress' | 'submitted' | 'graded'
+  score?: number
+  submitted_at: string
+  remaining_time?: number
+  current_question_order?: number
+}
+
+export interface StudentExam extends Exam {
+  question_exams: Array<{
+    question_id: number
+    exam_id: number
+    order: number
+    points: number
+    question: Question
+  }>
+  submissions: StudentSubmission[]
+  _count: {
+    submissions: number
+  }
+}
+
+export interface GetStudentExamsQuery {
+  search?: string
+  status?: ExamStatus
+  start_time?: string
+  end_time?: string
+  page?: number
+  limit?: number
+}
+
+export interface StudentExamsResponse {
+  data: StudentExam[]
+  pagination: {
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+  }
+}

@@ -14,3 +14,4 @@ export {
 } from './use-exam'
 
 export { useExamList } from './use-exam-list'
+export { useExamTaking } from './use-exam-taking'

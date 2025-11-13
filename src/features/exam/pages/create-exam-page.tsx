@@ -17,7 +17,7 @@ export function CreateExamPage() {
       questions: data.questions.map((q) => ({
         question_id: q.question_id,
         points: Number(q.points),
-        order: q.order,
+        order: q.order + 1,
       })),
     }
 
