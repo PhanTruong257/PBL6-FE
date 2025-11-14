@@ -13,7 +13,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
   const maxVisiblePages = 5
 
   let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2))
-  let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
+  const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
 
   if (endPage - startPage + 1 < maxVisiblePages) {
     startPage = Math.max(1, endPage - maxVisiblePages + 1)
@@ -44,7 +44,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
             variant="outline"
             size="sm"
             onClick={() => onPageChange(1)}
-            className={currentPage === 1 ? 'bg-indigo-600 text-white' : ''}
+            className={currentPage === 1 ? 'bg-primary text-primary-foreground' : ''}
           >
             1
           </Button>
@@ -58,7 +58,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
           variant="outline"
           size="sm"
           onClick={() => onPageChange(page)}
-          className={currentPage === page ? 'bg-indigo-600 text-white hover:bg-indigo-700' : ''}
+          className={currentPage === page ? 'bg-primary text-primary-foreground hover:bg-primary/90' : ''}
         >
           {page}
         </Button>
@@ -71,7 +71,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
             variant="outline"
             size="sm"
             onClick={() => onPageChange(totalPages)}
-            className={currentPage === totalPages ? 'bg-indigo-600 text-white' : ''}
+            className={currentPage === totalPages ? 'bg-primary text-primary-foreground' : ''}
           >
             {totalPages}
           </Button>
