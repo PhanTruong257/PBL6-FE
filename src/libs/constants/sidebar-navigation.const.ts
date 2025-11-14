@@ -172,7 +172,7 @@ export const STUDENT_SIDEBAR_NAV: SidebarNavigation = {
     },
     {
       title: 'Quản lý bài kiểm tra',
-      href: '/exam',
+      href: '/exam/student',
       icon: ClipboardList,
     },
     {
