@@ -13,6 +13,7 @@ import {
   Bell,
   MessageSquare,
   Library,
+  Shield,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -41,8 +42,13 @@ export const ADMIN_SIDEBAR_NAV: SidebarNavigation = {
     },
     {
       title: 'Quản lý người dùng',
-      href: '/admin/users',
+      href: '/admin/manage-users',
       icon: Users,
+    },
+    {
+      title: 'Phân quyền',
+      href: '/admin/permissions',
+      icon: Shield,
     },
     {
       title: 'Quản lý khóa học',
