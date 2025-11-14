@@ -86,7 +86,7 @@ export const useUserFilters = () => {
     role: undefined,
     gender: undefined,
     page: 1,
-    limit: 2,
+    limit: 5,
   })
 
   const updateFilters = (newFilters: Partial<UserFilters>) => {
@@ -103,7 +103,7 @@ export const useUserFilters = () => {
       role: undefined,
       gender: undefined,
       page:1,
-      limit:2,
+      limit:5,
     })
   }
 

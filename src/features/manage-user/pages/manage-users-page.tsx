@@ -90,13 +90,16 @@ export function ManageUserPage() {
     setShowEditDialog(true)
   }
 
-
-
-
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Quản lý người dùng</h1>
+          <p className="text-muted-foreground mt-1">
+            Quản lý thông tin và quyền hạn của người dùng trong hệ thống
+          </p>
+        </div>
         <Button onClick={() => setShowCreateDialog(true)} className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           Thêm người dùng

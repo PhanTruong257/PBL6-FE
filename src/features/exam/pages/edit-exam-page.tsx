@@ -19,7 +19,7 @@ export function EditExamPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="container mx-auto px-4 py-6 flex items-center justify-center min-h-[400px]">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-12 w-12 animate-spin text-primary" />
           <p className="text-lg text-muted-foreground">Đang tải thông tin bài kiểm tra...</p>
@@ -30,7 +30,7 @@ export function EditExamPage() {
 
   if (error || !exam) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="container mx-auto px-4 py-6 flex items-center justify-center min-h-[400px]">
         <div className="max-w-md w-full rounded-xl border border-destructive bg-destructive/10 p-8 text-center space-y-4">
           <div className="w-16 h-16 rounded-full bg-destructive/20 flex items-center justify-center mx-auto">
             <span className="text-3xl">⚠️</span>
@@ -45,7 +45,7 @@ export function EditExamPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="container mx-auto px-4 py-6">
       <CreateExamForm 
         onSubmit={onSubmit} 
         isSubmitting={isSubmitting}

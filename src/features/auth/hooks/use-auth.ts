@@ -43,19 +43,19 @@ export function useLogin() {
     onSuccess: async (response) => {
       const { user, accessToken, refreshToken } = response
 
-      // Step 1: Save tokens to cookies
+      // Save tokens to cookies
       cookieStorage.setTokens(accessToken, refreshToken)
 
-      // Step 2: Fetch complete user data from /users/me (includes roles & permissions)
+      // Fetch complete user data from /users/me (includes roles & permissions)
       try {
         const userDataResponse = await AuthService.getCurrentUser()
         const userData = userDataResponse.data
 
-        // Step 3: Update Recoil state with complete user data
+        // Update Recoil state with complete user data
         setUser(userData)
         console.log(`✅ Fetched user data:  `, userData)
 
-        // Step 4: Update React Query cache
+        // Update React Query cache
         queryClient.setQueryData(authKeys.user(), userData)
 
         console.log(`✅ Login successful: ${userData.email}`)
@@ -69,7 +69,7 @@ export function useLogin() {
         queryClient.setQueryData(authKeys.user(), user)
       }
 
-      // Step 5: Navigate to unified dashboard
+      // Navigate to unified dashboard
       const redirectPath = '/dashboard'
       navigate({ to: redirectPath as any })
     },
@@ -147,9 +147,7 @@ export function useResetPassword() {
       sessionStorage.remove('temp_reset_code')
 
       // Redirect to login page
-      setTimeout(() => {
-        navigate({ to: '/auth/login' })
-      }, 2000)
+      navigate({ to: '/auth/login' })
     },
   })
 }
@@ -175,19 +173,19 @@ export function useLogout() {
     mutationFn: () => AuthService.logout(),
     onSettled: () => {
       // Always clear local data, even if API call fails
-      // 1. Clear React Query cache
+      // Clear React Query cache
       queryClient.clear()
 
-      // 2. Clear cookies (access token & refresh token)
+      // Clear cookies (access token & refresh token)
       cookieStorage.clearTokens()
 
-      // 3. Clear Recoil state
+      // Clear Recoil state
       setUser(null)
 
-      // 4. Clear session storage
+      // Clear session storage
       sessionStorage.clear()
 
-      // 5. Navigate to login page
+      // Navigate to login page
       navigate({ to: '/auth/login' })
     },
   })

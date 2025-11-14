@@ -77,7 +77,7 @@ export function RolePermissionsPage() {
   }
 
   return (
-    <div className="container mx-auto space-y-6">
+    <div className="container mx-auto space-y-6 max-w-full overflow-x-hidden">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -138,7 +138,7 @@ export function RolePermissionsPage() {
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -223,7 +223,7 @@ export function RolePermissionsPage() {
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

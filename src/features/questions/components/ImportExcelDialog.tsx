@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { Upload, FileSpreadsheet, Download, AlertCircle, CheckCircle, XCircle } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
+import { toast } from '@/libs/toast'
 
 import {
   Dialog,
@@ -252,6 +252,7 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="5">5</SelectItem>
                         <SelectItem value="10">10</SelectItem>
                         <SelectItem value="20">20</SelectItem>
                         <SelectItem value="50">50</SelectItem>
@@ -307,8 +308,8 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
                   </AlertDescription>
                 </Alert>
 
-                <div className="flex-1 overflow-auto border rounded-md">
-                  <Table className="relative">
+                <div className="flex-1 border rounded-md max-h-[55vh] overflow-auto">
+                  <Table className="relative min-w-full">
                     <TableHeader className="sticky top-0 bg-background z-10 shadow-sm">
                       <TableRow>
                         <TableHead className="w-12 whitespace-nowrap border-r">#</TableHead>
@@ -321,7 +322,9 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {preview.preview.map((row, index) => renderPreviewRow(row, index))}
+                      {preview.preview.slice(0, previewLimit).map((row, index) =>
+                        renderPreviewRow(row, index)
+                      )}
                     </TableBody>
                   </Table>
                 </div>
