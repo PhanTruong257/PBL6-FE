@@ -141,9 +141,6 @@ export function UserTable({
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Danh sách Người dùng ({users.length})</CardTitle>
-      </CardHeader>
       <CardContent className="p-0">
         <Table>
           <TableHeader>
@@ -247,11 +244,12 @@ export function UserTable({
           </Table>
       </CardContent>
       
-      {totalPages > 1 && (
-        <CardFooter className="flex items-center justify-between border-t px-6 py-4">
-          <div className="text-sm text-muted-foreground">
-            Hiển thị {startIndex + 1}-{endIndex} trong tổng số {total} giảng viên
-          </div>
+      <CardFooter className="flex items-center justify-between border-t px-6 py-4">
+        <div className="text-sm text-muted-foreground">
+          Hiển thị {startIndex + 1}-{endIndex} trong tổng số {total} người dùng
+        </div>
+        {totalPages > 1 && (
+        <div>
           <Pagination>
             <PaginationContent>
               <PaginationItem>
@@ -285,8 +283,9 @@ export function UserTable({
               </PaginationItem>
             </PaginationContent>
           </Pagination>
-        </CardFooter>
-      )}
+        </div>
+        )}
+      </CardFooter>
     </Card>
   )
 }

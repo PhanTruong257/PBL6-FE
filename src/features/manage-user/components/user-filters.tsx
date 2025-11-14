@@ -32,7 +32,7 @@ export function UserFiltersComponent({
       <CardContent className="p-4">
         <div className="space-y-4">
           {/* Search Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
             <div>
               <label className="text-sm font-medium mb-2 block">Tên hoặc Email</label>
               <div className="relative">
@@ -114,7 +114,26 @@ export function UserFiltersComponent({
             </div>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium">Hiển thị:</label>
+              <Select
+                value={filters.limit?.toString() || '5'}
+                onValueChange={(value) => onFiltersChange({ limit: parseInt(value), page: 1 })}
+              >
+                <SelectTrigger className="w-[100px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="100">100</SelectItem>
+                </SelectContent>
+              </Select>
+              <span className="text-sm text-muted-foreground">kết quả/trang</span>
+            </div>
             <Button
               variant="outline"
               onClick={onReset}
