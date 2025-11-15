@@ -23,5 +23,6 @@ export default {
     'subject-empty': [2, 'never'],
     'subject-case': [2, 'always', 'lower-case'],
     'scope-empty': [0, 'never'],
+    'header-max-length': [2, 'always', 500],
   }
 }

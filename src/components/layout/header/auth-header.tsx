@@ -13,7 +13,7 @@ export function AuthHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-0 sm:px-4">
+      <div className="container flex h-16 w-full max-w-screen-2xl mx-auto items-center justify-between px-0 sm:px-4">
         {/* Grid layout for left part */}
         <div className='grid grid-cols-3 items-center w-full'>
           {/* Logo - Left Part */}

@@ -159,8 +159,8 @@ export function ExamTakingPage() {
                 className={cn(
                   'group relative flex items-start gap-4 p-4 border-2 rounded-xl transition-all duration-200 cursor-pointer',
                   isChecked
-                    ? 'bg-indigo-50 border-indigo-500 shadow-md'
-                    : 'bg-white border-gray-200 hover:border-indigo-300 hover:shadow-sm'
+                    ? 'bg-primary/10 border-primary shadow-md'
+                    : 'bg-card border-border hover:border-primary/50 hover:shadow-sm'
                 )}
                 onClick={() => {
                   const checked = !isChecked
@@ -180,8 +180,8 @@ export function ExamTakingPage() {
                 <div className={cn(
                   "flex items-center justify-center w-8 h-8 rounded-lg font-bold text-sm shrink-0 transition-colors",
                   isChecked 
-                    ? "bg-indigo-600 text-white" 
-                    : "bg-gray-100 text-gray-600 group-hover:bg-indigo-100 group-hover:text-indigo-600"
+                    ? "bg-primary text-primary-foreground" 
+                    : "bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary"
                 )}>
                   {optionLabel}
                 </div>
@@ -206,7 +206,7 @@ export function ExamTakingPage() {
                 
                 {/* Checkmark indicator */}
                 {isChecked && (
-                  <CheckCircle2 className="w-5 h-5 text-indigo-600 shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
                 )}
               </div>
             )
@@ -230,8 +230,8 @@ export function ExamTakingPage() {
                 className={cn(
                   'group relative flex items-start gap-4 p-4 border-2 rounded-xl transition-all duration-200 cursor-pointer',
                   isSelected
-                    ? 'bg-indigo-50 border-indigo-500 shadow-md'
-                    : 'bg-white border-gray-200 hover:border-indigo-300 hover:shadow-sm'
+                    ? 'bg-primary/10 border-primary shadow-md'
+                    : 'bg-card border-border hover:border-primary/50 hover:shadow-sm'
                 )}
                 onClick={() => {
                   setCurrentAnswer(option.id)
@@ -246,8 +246,8 @@ export function ExamTakingPage() {
                 <div className={cn(
                   "flex items-center justify-center w-8 h-8 rounded-lg font-bold text-sm shrink-0 transition-colors",
                   isSelected 
-                    ? "bg-indigo-600 text-white" 
-                    : "bg-gray-100 text-gray-600 group-hover:bg-indigo-100 group-hover:text-indigo-600"
+                    ? "bg-primary text-primary-foreground" 
+                    : "bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary"
                 )}>
                   {optionLabel}
                 </div>
@@ -271,7 +271,7 @@ export function ExamTakingPage() {
                 
                 {/* Checkmark indicator */}
                 {isSelected && (
-                  <CheckCircle2 className="w-5 h-5 text-indigo-600 shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
                 )}
               </div>
             )
@@ -288,7 +288,7 @@ export function ExamTakingPage() {
     return (
       <div className="space-y-3">
         <div className="flex items-center justify-between text-sm">
-          <Label className="text-base font-medium text-gray-700">
+          <Label className="text-base font-medium text-foreground">
             Câu trả lời của bạn:
           </Label>
           <span className="text-muted-foreground">
@@ -299,7 +299,7 @@ export function ExamTakingPage() {
           value={currentAnswer}
           onChange={(e) => setCurrentAnswer(e.target.value)}
           placeholder="Nhập câu trả lời của bạn ở đây... Câu trả lời sẽ được tự động lưu."
-          className="min-h-[320px] resize-y text-base leading-relaxed border-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+          className="min-h-[320px] resize-y text-base leading-relaxed border-2 focus:border-primary focus:ring-2 focus:ring-primary/20"
         />
         {isSavingAnswer && (
           <p className="text-xs text-muted-foreground flex items-center gap-1.5">
@@ -346,14 +346,14 @@ export function ExamTakingPage() {
       {/* Main Content */}
       <div className="flex-1 container mx-auto px-4 py-6 max-w-5xl">
         {/* Header with Timer and Info */}
-        <Card className="mb-6 bg-indigo-50 border-indigo-200">
+        <Card className="mb-6 bg-primary/5 border-primary/20">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
-                <CardTitle className="text-2xl text-indigo-900">
+                <CardTitle className="text-2xl text-foreground">
                   {submission.exam_title}
                 </CardTitle>
-                <p className="text-sm text-indigo-600 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   Khoa Công nghệ Thông tin • Trường Đại học Bách khoa Đà Nẵng
                 </p>
               </div>
@@ -365,7 +365,7 @@ export function ExamTakingPage() {
                     'flex items-center gap-2 px-4 py-2 rounded-lg border font-mono text-lg font-semibold',
                     isTimeRunningOut
                       ? 'bg-destructive/10 border-destructive text-destructive'
-                      : 'bg-white border-indigo-300 text-indigo-700'
+                      : 'bg-card border-primary/30 text-primary'
                   )}
                 >
                   <Clock className="w-5 h-5" />
@@ -378,12 +378,12 @@ export function ExamTakingPage() {
 
         {/* Question Card */}
         <Card className="mb-6 shadow-lg border-2">
-          <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b-2">
+          <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 border-b-2">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-4 flex-wrap">
                   {/* Question Number Badge */}
-                  <div className="flex items-center gap-2 bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-semibold shadow-sm">
+                  <div className="flex items-center gap-2 bg-primary text-primary-foreground px-3 py-1.5 rounded-lg font-semibold shadow-sm">
                     <ListOrdered className="w-4 h-4" />
                     <span>Câu {currentQuestion.order}</span>
                   </div>
@@ -391,7 +391,7 @@ export function ExamTakingPage() {
                   {/* Question Type Badge */}
                   <Badge 
                     variant="secondary"
-                    className="px-3 py-1.5 bg-white border-2 border-indigo-200 text-indigo-700 font-medium"
+                    className="px-3 py-1.5 bg-card border-2 border-primary/20 text-foreground font-medium"
                   >
                     {currentQuestion.type === 'multiple_choice' ? (
                       <>
@@ -420,9 +420,9 @@ export function ExamTakingPage() {
                     variant="outline"
                     className={cn(
                       "px-3 py-1.5 font-medium border-2",
-                      currentQuestion.difficulty === 'easy' && "bg-green-50 border-green-300 text-green-700",
-                      currentQuestion.difficulty === 'medium' && "bg-amber-50 border-amber-300 text-amber-700",
-                      currentQuestion.difficulty === 'hard' && "bg-red-50 border-red-300 text-red-700"
+                      currentQuestion.difficulty === 'easy' && "bg-green-500/10 border-green-500/30 text-green-600 dark:text-green-400",
+                      currentQuestion.difficulty === 'medium' && "bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400",
+                      currentQuestion.difficulty === 'hard' && "bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400"
                     )}
                   >
                     {currentQuestion.difficulty === 'easy' && '⚡ Dễ'}
@@ -434,22 +434,22 @@ export function ExamTakingPage() {
                   {currentQuestion.category && (
                     <Badge 
                       variant="outline"
-                      className="px-3 py-1.5 bg-purple-50 border-purple-300 text-purple-700 font-medium"
+                      className="px-3 py-1.5 bg-secondary border-secondary text-secondary-foreground font-medium"
                     >
                       {currentQuestion.category.name}
                     </Badge>
                   )}
                   
                   {/* Points Badge */}
-                  <div className="ml-auto flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1.5 rounded-lg font-bold shadow-sm">
+                  <div className="ml-auto flex items-center gap-2 bg-primary text-primary-foreground px-3 py-1.5 rounded-lg font-bold shadow-sm">
                     <Award className="w-4 h-4" />
                     <span>{currentQuestion.points} điểm</span>
                   </div>
                 </div>
                 
                 {/* Question Content */}
-                <div className="bg-white p-4 rounded-lg border-2 border-indigo-100">
-                  <CardTitle className="text-xl font-semibold leading-relaxed text-gray-800">
+                <div className="bg-card p-4 rounded-lg border-2 border-border">
+                  <CardTitle className="text-xl font-semibold leading-relaxed text-foreground">
                     {currentQuestion.content}
                   </CardTitle>
                 </div>
@@ -465,7 +465,7 @@ export function ExamTakingPage() {
 
             {/* Time warning */}
             {isTimeRunningOut && (
-              <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-300 rounded-xl text-red-700 shadow-sm animate-pulse">
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 border-2 border-destructive/30 rounded-xl text-destructive shadow-sm animate-pulse">
                 <AlertCircle className="w-6 h-6 shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm font-semibold mb-1">
@@ -491,15 +491,15 @@ export function ExamTakingPage() {
               "min-w-[160px] h-12 border-2 font-semibold transition-all",
               !canGoPrev 
                 ? "opacity-50" 
-                : "hover:bg-indigo-50 hover:border-indigo-500 hover:scale-105"
+                : "hover:bg-primary/10 hover:border-primary hover:scale-105"
             )}
           >
             <ChevronLeft className="w-5 h-5 mr-2" />
             Câu trước
           </Button>
 
-          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border-2 border-indigo-200">
-            <span className="text-sm font-medium text-indigo-700">
+          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border-2 border-primary/20">
+            <span className="text-sm font-medium text-foreground">
               Câu {currentQuestion.order} / {submission.total_questions}
             </span>
           </div>
@@ -513,7 +513,7 @@ export function ExamTakingPage() {
               "min-w-[160px] h-12 border-2 font-semibold transition-all",
               !canGoNext 
                 ? "opacity-50" 
-                : "hover:bg-indigo-50 hover:border-indigo-500 hover:scale-105"
+                : "hover:bg-primary/10 hover:border-primary hover:scale-105"
             )}
           >
             Câu tiếp theo
@@ -528,27 +528,27 @@ export function ExamTakingPage() {
         <div className="sticky top-6 space-y-6">
 
           {/* Timer in sidebar */}
-          <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200 shadow-md">
+          <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-2 border-primary/20 shadow-md">
             <CardContent className="pt-6 text-center">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Clock className={cn(
                   "w-5 h-5",
-                  isTimeRunningOut ? "text-red-600 animate-pulse" : "text-indigo-600"
+                  isTimeRunningOut ? "text-destructive animate-pulse" : "text-primary"
                 )} />
-                <p className="text-sm font-semibold text-gray-700">
+                <p className="text-sm font-semibold text-foreground">
                   Thời gian còn lại
                 </p>
               </div>
               <div
                 className={cn(
                   'text-4xl font-mono font-bold py-2',
-                  isTimeRunningOut ? 'text-red-600 animate-pulse' : 'text-indigo-700'
+                  isTimeRunningOut ? 'text-destructive animate-pulse' : 'text-primary'
                 )}
               >
                 {formatTime(remainingTime)}
               </div>
               {isTimeRunningOut && (
-                <p className="text-xs text-red-600 font-medium mt-2">
+                <p className="text-xs text-destructive font-medium mt-2">
                   ⚠️ Sắp hết giờ!
                 </p>
               )}
@@ -558,7 +558,7 @@ export function ExamTakingPage() {
           {/* Question Grid */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h4 className="font-semibold text-sm text-gray-700">
+              <h4 className="font-semibold text-sm text-foreground">
                 Danh sách câu hỏi
               </h4>
               <Badge variant="secondary" className="font-medium">
@@ -580,9 +580,9 @@ export function ExamTakingPage() {
                       onClick={() => goToQuestion(num)}
                       className={cn(
                         'w-full aspect-square p-0 font-bold text-sm transition-all duration-200 border-2',
-                        isCurrent && 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 shadow-lg scale-110',
-                        !isCurrent && isAnswered && 'bg-green-500 hover:bg-green-600 text-white border-green-500',
-                        !isCurrent && !isAnswered && 'bg-white hover:bg-gray-50 border-gray-300 hover:border-indigo-400'
+                        isCurrent && 'bg-primary hover:bg-primary/90 text-primary-foreground border-primary shadow-lg scale-110',
+                        !isCurrent && isAnswered && 'bg-green-500/20 hover:bg-green-500/30 text-green-600 dark:text-green-400 border-green-500/50',
+                        !isCurrent && !isAnswered && 'bg-card hover:bg-muted border-border hover:border-primary/50'
                       )}
                     >
                       {isCurrent ? (

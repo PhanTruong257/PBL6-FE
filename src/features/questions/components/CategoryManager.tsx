@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRecoilValue } from 'recoil'
 import { Plus, Pencil, Trash2, Folder } from 'lucide-react'
-import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -126,7 +125,6 @@ export function CategoryManager({
         onSelectCategory(undefined)
       }
       onCategoriesChange()
-      toast.success(`Category "${categoryToDelete.name}" deleted successfully`)
     } catch (error) {
       // Error handled by hook
     } finally {
@@ -290,11 +288,18 @@ export function CategoryManager({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setCategoryToDelete(null)}>
-              Cancel
+            <AlertDialogCancel asChild>
+              <Button variant="outline" onClick={() => setCategoryToDelete(null)}>
+                Cancel
+              </Button>
             </AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
+            <AlertDialogAction asChild>
+              <Button 
+                onClick={confirmDelete} 
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </Button>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

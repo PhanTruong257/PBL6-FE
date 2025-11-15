@@ -18,11 +18,11 @@ export function StudentExamListItem({ exam, onStartExam, onContinueExam }: Stude
     if (currentSubmission) {
       switch (currentSubmission.status) {
         case 'in_progress':
-          return <Badge className="bg-yellow-500 hover:bg-yellow-600 text-white">Đang làm</Badge>
+          return <Badge variant="outline" className="border-yellow-500 text-yellow-600 dark:border-yellow-400 dark:text-yellow-400">Đang làm</Badge>
         case 'submitted':
-          return <Badge className="bg-green-500 hover:bg-green-600 text-white">Đã nộp</Badge>
+          return <Badge variant="outline" className="border-green-500 text-green-600 dark:border-green-400 dark:text-green-400">Đã nộp</Badge>
         case 'graded':
-          return <Badge className="bg-blue-500 hover:bg-blue-600 text-white">Đã chấm điểm</Badge>
+          return <Badge variant="outline" className="border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400">Đã chấm điểm</Badge>
       }
     }
     return <Badge variant="secondary">Chưa làm</Badge>
@@ -34,7 +34,7 @@ export function StudentExamListItem({ exam, onStartExam, onContinueExam }: Stude
       return (
         <Button 
           onClick={() => onStartExam(exam.exam_id)}
-          className="bg-blue-600 hover:bg-blue-700 min-w-[160px]"
+          className="min-w-[160px]"
         >
           <PlayCircle className="w-4 h-4 mr-2" />
           Làm bài kiểm tra
@@ -47,7 +47,8 @@ export function StudentExamListItem({ exam, onStartExam, onContinueExam }: Stude
       return (
         <Button 
           onClick={() => onContinueExam(exam.exam_id, currentSubmission.submission_id)}
-          className="bg-yellow-600 hover:bg-yellow-700 min-w-[160px]"
+          variant="secondary"
+          className="min-w-[160px]"
         >
           <PlayCircle className="w-4 h-4 mr-2" />
           Tiếp tục làm bài
@@ -86,23 +87,23 @@ export function StudentExamListItem({ exam, onStartExam, onContinueExam }: Stude
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow p-4">
+    <div className="border rounded-lg hover:shadow-md transition-shadow p-4 bg-card">
       <div className="flex items-start justify-between gap-4">
         {/* Left side - Main info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start gap-3 mb-3">
             <div className="flex-shrink-0 mt-1">
-              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <FileText className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <FileText className="w-5 h-5 text-primary" />
               </div>
             </div>
             
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 truncate">{exam.title}</h3>
+                  <h3 className="text-lg font-semibold truncate">{exam.title}</h3>
                   {exam.description && (
-                    <p className="text-sm text-gray-600 line-clamp-2 mt-1">{exam.description}</p>
+                    <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{exam.description}</p>
                   )}
                 </div>
                 {getStatusBadge()}
@@ -113,63 +114,63 @@ export function StudentExamListItem({ exam, onStartExam, onContinueExam }: Stude
           {/* Info grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 ml-13">
             <div className="flex items-center gap-2 text-sm">
-              <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <Calendar className="w-4 h-4 text-muted-foreground flex-shrink-0" />
               <div className="min-w-0">
-                <div className="text-gray-500 text-xs">Bắt đầu</div>
-                <div className="text-gray-900 font-medium truncate">{formatDateTime(exam.start_time)}</div>
+                <div className="text-muted-foreground text-xs">Bắt đầu</div>
+                <div className="font-medium truncate">{formatDateTime(exam.start_time)}</div>
               </div>
             </div>
             
             <div className="flex items-center gap-2 text-sm">
-              <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <Calendar className="w-4 h-4 text-muted-foreground flex-shrink-0" />
               <div className="min-w-0">
-                <div className="text-gray-500 text-xs">Kết thúc</div>
-                <div className="text-gray-900 font-medium truncate">{formatDateTime(exam.end_time)}</div>
+                <div className="text-muted-foreground text-xs">Kết thúc</div>
+                <div className="font-medium truncate">{formatDateTime(exam.end_time)}</div>
               </div>
             </div>
 
             {exam.duration && (
               <div className="flex items-center gap-2 text-sm">
-                <Clock className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <Clock className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                 <div>
-                  <div className="text-gray-500 text-xs">Thời gian</div>
-                  <div className="text-gray-900 font-medium">{formatDuration(exam.duration)}</div>
+                  <div className="text-muted-foreground text-xs">Thời gian</div>
+                  <div className="font-medium">{formatDuration(exam.duration)}</div>
                 </div>
               </div>
             )}
 
             <div className="flex items-center gap-2 text-sm">
-              <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <FileText className="w-4 h-4 text-muted-foreground flex-shrink-0" />
               <div>
-                <div className="text-gray-500 text-xs">Số câu hỏi</div>
-                <div className="text-gray-900 font-medium">{exam.question_exams?.length || 0} câu</div>
+                <div className="text-muted-foreground text-xs">Số câu hỏi</div>
+                <div className="font-medium">{exam.question_exams?.length || 0} câu</div>
               </div>
             </div>
 
             {exam.total_points !== undefined && (
               <div className="flex items-center gap-2 text-sm">
-                <CheckCircle2 className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                 <div>
-                  <div className="text-gray-500 text-xs">Tổng điểm</div>
-                  <div className="text-gray-900 font-medium">{exam.total_points} điểm</div>
+                  <div className="text-muted-foreground text-xs">Tổng điểm</div>
+                  <div className="font-medium">{exam.total_points} điểm</div>
                 </div>
               </div>
             )}
 
             <div className="flex items-center gap-2 text-sm">
-              <Users className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <Users className="w-4 h-4 text-muted-foreground flex-shrink-0" />
               <div>
-                <div className="text-gray-500 text-xs">Lượt làm</div>
-                <div className="text-gray-900 font-medium">{exam._count.submissions} lượt</div>
+                <div className="text-muted-foreground text-xs">Lượt làm</div>
+                <div className="font-medium">{exam._count.submissions} lượt</div>
               </div>
             </div>
           </div>
 
 
           {currentSubmission && currentSubmission.status === 'graded' && currentSubmission.score !== null && (
-            <div className="mt-3 ml-13 flex items-center gap-2 p-2 bg-blue-50 border border-blue-200 rounded text-sm">
-              <CheckCircle2 className="w-4 h-4 text-blue-600 flex-shrink-0" />
-              <span className="text-blue-800">
+            <div className="mt-3 ml-13 flex items-center gap-2 p-2 bg-primary/10 border border-primary/30 rounded text-sm">
+              <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+              <span className="text-foreground">
                 <span className="font-medium">Điểm số: </span>
                 <span className="text-lg font-bold">{currentSubmission.score}</span>
                 {exam.total_points && <span> / {exam.total_points}</span>}

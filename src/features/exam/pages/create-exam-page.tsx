@@ -30,7 +30,7 @@ export function CreateExamPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="container mx-auto px-4 py-6">
       <CreateExamForm onSubmit={handleSubmit} isSubmitting={createExamMutation.isPending} />
     </div>
   )
