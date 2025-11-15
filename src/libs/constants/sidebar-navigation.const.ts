@@ -13,6 +13,7 @@ import {
   Bell,
   MessageSquare,
   Library,
+  Bot,
   Shield,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -80,6 +81,11 @@ export const ADMIN_SIDEBAR_NAV: SidebarNavigation = {
       href: '/conversation',
       icon: MessageSquare,
     },
+    {
+      title: 'Trợ lý AI',
+      href: '/chatbot',
+      icon: Bot,
+    },
   ],
   bottom: [
     {
@@ -140,6 +146,11 @@ export const TEACHER_SIDEBAR_NAV: SidebarNavigation = {
       href: '/conversation',
       icon: MessageSquare,
     },
+    {
+      title: 'Trợ lý AI',
+      href: '/chatbot',
+      icon: Bot,
+    },
   ],
   bottom: [
     {
@@ -189,6 +200,11 @@ export const STUDENT_SIDEBAR_NAV: SidebarNavigation = {
       title: 'Tin nhắn',
       href: '/conversation',
       icon: MessageSquare,
+    },
+    {
+      title: 'Trợ lý AI',
+      href: '/chatbot',
+      icon: Bot,
     },
   ],
   bottom: [
