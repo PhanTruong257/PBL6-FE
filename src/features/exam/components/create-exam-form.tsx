@@ -241,6 +241,7 @@ export function CreateExamForm({
         criteria: config.criteria.map(c => ({
           category_id: c.categoryId,
           type: c.questionType || '',
+          difficulty: c.difficulty || undefined,
           quantity: c.count,
         })),
         userId: currentUser.user_id,
