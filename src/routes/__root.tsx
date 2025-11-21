@@ -1,17 +1,12 @@
 import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanstackDevtools } from '@tanstack/react-devtools'
-import { useEffect, useRef } from 'react'
+import type { QueryClient } from '@tanstack/react-query'
+import { AuthService } from '@/features/auth'
+import { currentUserState } from '@/global/recoil/user'
+import { cookieStorage } from '@/libs/utils'
+import { useRef, useEffect } from 'react'
 import { useSetRecoilState } from 'recoil'
 
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
-import { cookieStorage } from '@/libs/utils/cookie'
-import { AuthService } from '@/features/auth/apis/auth-service'
-import { currentUserState } from '@/global/recoil/user'
-
-import type { QueryClient } from '@tanstack/react-query'
-
-interface MyRouterContext {
+export interface MyRouterContext {
   queryClient: QueryClient
 }
 
@@ -70,20 +65,7 @@ function RootComponent() {
 
   return (
     <>
-      {/* <Header /> */}
       <Outlet />
-      <TanstackDevtools
-        config={{
-          position: 'bottom-left',
-        }}
-        plugins={[
-          {
-            name: 'Tanstack Router',
-            render: <TanStackRouterDevtoolsPanel />,
-          },
-          TanStackQueryDevtools,
-        ]}
-      />
     </>
   )
 }
