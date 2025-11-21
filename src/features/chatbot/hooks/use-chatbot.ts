@@ -39,12 +39,13 @@ export function useChatbot() {
     setState(prev => ({ ...prev, currentMessage: message }))
   }, [])
 
-  const addUserMessage = useCallback((content: string) => {
+  const addUserMessage = useCallback((content: string, attachedFiles?: UploadedFile[]) => {
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       content,
       role: 'user',
       timestamp: new Date(),
+      files: attachedFiles && attachedFiles.length > 0 ? [...attachedFiles] : undefined,
     }
 
     setState(prev => ({
@@ -106,9 +107,9 @@ export function useChatbot() {
     const messageToSend = state.currentMessage.trim()
     if ((!messageToSend && state.uploadedFiles.length === 0) || !state.threadID) return
 
-    // Add user message
+    // Add user message with attached files
     const displayMessage = messageToSend || `[Uploaded ${state.uploadedFiles.length} file(s)]`
-    addUserMessage(displayMessage)
+    addUserMessage(displayMessage, state.uploadedFiles)
 
     // Start processing
     setState(prev => ({ ...prev, isProcessing: true, currentResponse: '' }))

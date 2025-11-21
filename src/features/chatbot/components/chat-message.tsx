@@ -1,5 +1,7 @@
 import type { ChatMessage } from '../types'
 import ReactMarkdown from 'react-markdown'
+import { MessageFileDisplay } from './message-file-display'
+
 interface ChatMessageProps {
   message: ChatMessage
   isLast?: boolean
@@ -13,6 +15,11 @@ export function ChatMessageComponent({ message, isLast = false, messageRef }: Ch
         message.role === 'user' ? 'items-end' : 'items-start'
       }`}
     >
+      {/* Display files attached to this message */}
+      {message.files && message.files.length > 0 && (
+        <MessageFileDisplay files={message.files} messageRole={message.role} />
+      )}
+      
       <div className="flex items-center gap-2">
         {message.role === 'ai' && (
           <img 

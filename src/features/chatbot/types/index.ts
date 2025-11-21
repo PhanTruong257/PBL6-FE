@@ -3,6 +3,7 @@ export interface ChatMessage {
   content: string
   role: 'user' | 'ai'
   timestamp?: Date
+  files?: UploadedFile[]
 }
 
 export interface ChatSession {
