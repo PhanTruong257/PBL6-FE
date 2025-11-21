@@ -1,5 +1,5 @@
 import type { ChatMessage } from '../types'
-
+import ReactMarkdown from 'react-markdown'
 interface ChatMessageProps {
   message: ChatMessage
   isLast?: boolean
@@ -34,13 +34,15 @@ export function ChatMessageComponent({ message, isLast = false, messageRef }: Ch
       </div>
       <div 
         ref={isLast ? messageRef : undefined}
-        className={`px-3.5 py-2.5 rounded-[18px] text-sm leading-relaxed max-w-[70%] whitespace-pre-wrap ${
+        className={`px-3.5 py-2.5 rounded-[18px] text-sm leading-relaxed max-w-[70%] ${
           message.role === 'user'
             ? 'bg-blue-600 text-white rounded-br-1'
             : 'bg-green-100 text-black rounded-bl-1'
         }`}
       >
-        {message.content}
+        <ReactMarkdown>
+          {message.content}
+        </ReactMarkdown>
       </div>
     </div>
   )
