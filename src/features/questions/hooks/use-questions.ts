@@ -10,7 +10,6 @@ import type {
 } from '@/types/question'
 
 // ==================== CATEGORIES ====================
-
 export const useCategories = () => {
   return useQuery({
     queryKey: ['question-categories'],

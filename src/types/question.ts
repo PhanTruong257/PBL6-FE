@@ -14,9 +14,8 @@ export const QUESTION_DIFFICULTIES = {
 export type QuestionDifficulty = typeof QUESTION_DIFFICULTIES[keyof typeof QUESTION_DIFFICULTIES]
 
 export interface QuestionOption {
-  id: string
-  content: string
-  is_correct: boolean
+  id: number
+  text: string // Prefix: '=' for correct, '~' for incorrect
 }
 
 // ============================================================
@@ -26,6 +25,7 @@ export interface QuestionCategory {
   category_id: number
   name: string
   description?: string
+  created_by: number
   question_count?: number
   created_at: string
   updated_at: string
@@ -34,6 +34,7 @@ export interface QuestionCategory {
 export interface CreateQuestionCategoryRequest {
   name: string
   description?: string
+  created_by: number // Required: current user's ID from Recoil
 }
 
 export interface UpdateQuestionCategoryRequest {
@@ -81,7 +82,7 @@ export interface CreateQuestionRequest {
   is_multiple_answer?: boolean
   options?: QuestionOption[]
   is_public?: boolean
-  created_by?: number
+  created_by: number // Required: current user's ID from Recoil
 }
 
 export interface UpdateQuestionRequest {
@@ -106,8 +107,7 @@ export interface QuestionFilterParams {
 }
 
 export interface QuestionListResponse {
-  data?: Question[] // Optional for backward compatibility
-  value?: Question[] // API actually returns 'value'
+  data: Question[]
   meta: {
     total: number
     page: number
