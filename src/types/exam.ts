@@ -136,6 +136,7 @@ export interface GetQuestionsQuery {
 export interface RandomQuestionCriterion {
   category_id: number // Backend expects snake_case
   type: string // Backend expects 'type' not 'questionType'
+  difficulty?: string // Backend expects 'difficulty' (optional)
   quantity: number // Backend expects 'quantity' not 'count'
 }
 

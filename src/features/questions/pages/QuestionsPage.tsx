@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRecoilValue } from 'recoil'
 import { Plus, Grid3x3, List, Download, Upload } from 'lucide-react'
-import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -186,10 +185,8 @@ export function QuestionsPage() {
       
       if (editingQuestion) {
         await updateMutation.mutateAsync({ id: editingQuestion.question_id, data: submitData })
-        toast.success('Question updated successfully')
       } else {
         await createMutation.mutateAsync(submitData)
-        toast.success('Question created successfully')
       }
       handleCloseForm()
     } catch (error) {}
@@ -205,7 +202,7 @@ export function QuestionsPage() {
 
     try {
       await deleteMutation.mutateAsync(questionToDelete.question_id)
-      toast.success('Question deleted successfully')
+      // Toast message already shown in hook
     } catch (error) {
       // Error handled by hook
     } finally {
@@ -219,13 +216,13 @@ export function QuestionsPage() {
   }
 
   return (
-    <div className="container mx-auto py-6 max-w-[1800px]">
+    <div className="container mx-auto max-w-[1800px]">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         {/* Page title */}
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
-            📚 Ngân hàng câu hỏi
+            Ngân hàng câu hỏi
           </h1>
           <p className="text-muted-foreground mt-1">
             Quản lý câu hỏi và danh mục của bạn
@@ -439,11 +436,18 @@ export function QuestionsPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setQuestionToDelete(null)}>
-              Cancel
+            <AlertDialogCancel asChild>
+              <Button variant="outline" onClick={() => setQuestionToDelete(null)}>
+                Cancel
+              </Button>
             </AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
+            <AlertDialogAction asChild>
+              <Button 
+                onClick={confirmDelete} 
+                className="bg-destructive text-white hover:bg-destructive/90"
+              >
+                Delete
+              </Button>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

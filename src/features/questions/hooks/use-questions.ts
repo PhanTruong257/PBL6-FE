@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useToast } from '@/hooks/use-toast'
+import { toast } from '@/libs/toast'
 import { questionsApi, categoriesApi } from '../apis'
 import type {
   QuestionFilterParams,
@@ -28,31 +28,22 @@ export const useCategory = (id: number) => {
 
 export const useCreateCategory = () => {
   const queryClient = useQueryClient()
-  const { toast } = useToast()
 
   return useMutation({
     mutationFn: (data: CreateQuestionCategoryRequest) => categoriesApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['question-categories'] })
       queryClient.invalidateQueries({ queryKey: ['questions'] })
-      toast({
-        title: 'Success',
-        description: 'Category created successfully',
-      })
+      toast.success('Category created successfully')
     },
     onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.response?.data?.message || 'Failed to create category',
-        variant: 'destructive',
-      })
+      toast.error(error.response?.data?.message || 'Failed to create category')
     },
   })
 }
 
 export const useUpdateCategory = () => {
   const queryClient = useQueryClient()
-  const { toast } = useToast()
 
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateQuestionCategoryRequest }) =>
@@ -60,41 +51,26 @@ export const useUpdateCategory = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['question-categories'] })
       queryClient.invalidateQueries({ queryKey: ['questions'] })
-      toast({
-        title: 'Success',
-        description: 'Category updated successfully',
-      })
+      toast.success('Category updated successfully')
     },
     onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.response?.data?.message || 'Failed to update category',
-        variant: 'destructive',
-      })
+      toast.error(error.response?.data?.message || 'Failed to update category')
     },
   })
 }
 
 export const useDeleteCategory = () => {
   const queryClient = useQueryClient()
-  const { toast } = useToast()
 
   return useMutation({
     mutationFn: (id: number) => categoriesApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['question-categories'] })
       queryClient.invalidateQueries({ queryKey: ['questions'] })
-      toast({
-        title: 'Success',
-        description: 'Category deleted successfully',
-      })
+      toast.success('Category deleted successfully')
     },
     onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.response?.data?.message || 'Failed to delete category',
-        variant: 'destructive',
-      })
+      toast.error(error.response?.data?.message || 'Failed to delete category')
     },
   })
 }
@@ -118,31 +94,22 @@ export const useQuestion = (id: number) => {
 
 export const useCreateQuestion = () => {
   const queryClient = useQueryClient()
-  const { toast } = useToast()
 
   return useMutation({
     mutationFn: (data: CreateQuestionRequest) => questionsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['questions'] })
       queryClient.invalidateQueries({ queryKey: ['question-categories'] })
-      toast({
-        title: 'Success',
-        description: 'Question created successfully',
-      })
+      toast.success('Question created successfully')
     },
     onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.response?.data?.message || 'Failed to create question',
-        variant: 'destructive',
-      })
+      toast.error(error.response?.data?.message || 'Failed to create question')
     },
   })
 }
 
 export const useUpdateQuestion = () => {
   const queryClient = useQueryClient()
-  const { toast } = useToast()
 
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateQuestionRequest }) =>
@@ -150,41 +117,26 @@ export const useUpdateQuestion = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['questions'] })
       queryClient.invalidateQueries({ queryKey: ['question-categories'] })
-      toast({
-        title: 'Success',
-        description: 'Question updated successfully',
-      })
+      toast.success('Question updated successfully')
     },
     onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.response?.data?.message || 'Failed to update question',
-        variant: 'destructive',
-      })
+      toast.error(error.response?.data?.message || 'Failed to update question')
     },
   })
 }
 
 export const useDeleteQuestion = () => {
   const queryClient = useQueryClient()
-  const { toast } = useToast()
 
   return useMutation({
     mutationFn: (id: number) => questionsApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['questions'] })
       queryClient.invalidateQueries({ queryKey: ['question-categories'] })
-      toast({
-        title: 'Success',
-        description: 'Question deleted successfully',
-      })
+      toast.success('Question deleted successfully')
     },
     onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.response?.data?.message || 'Failed to delete question',
-        variant: 'destructive',
-      })
+      toast.error(error.response?.data?.message || 'Failed to delete question')
     },
   })
 }

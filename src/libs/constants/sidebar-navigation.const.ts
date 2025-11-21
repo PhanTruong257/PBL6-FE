@@ -14,6 +14,7 @@ import {
   MessageSquare,
   Library,
   Bot,
+  Shield,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -42,8 +43,13 @@ export const ADMIN_SIDEBAR_NAV: SidebarNavigation = {
     },
     {
       title: 'Quản lý người dùng',
-      href: '/admin/users',
+      href: '/admin/manage-users',
       icon: Users,
+    },
+    {
+      title: 'Phân quyền',
+      href: '/admin/permissions',
+      icon: Shield,
     },
     {
       title: 'Quản lý khóa học',
@@ -177,7 +183,7 @@ export const STUDENT_SIDEBAR_NAV: SidebarNavigation = {
     },
     {
       title: 'Quản lý bài kiểm tra',
-      href: '/exam',
+      href: '/exam/student',
       icon: ClipboardList,
     },
     {
