@@ -21,9 +21,13 @@ export type CategoryFormValues = z.infer<typeof categorySchema>
 // QUESTION SCHEMAS
 // ============================================================
 const questionOptionSchema = z.object({
-  id: z.string(),
-  content: z.string().min(1, 'Option content is required'),
-  is_correct: z.boolean(),
+  id: z.number(),
+  text: z.string()
+    .min(2, 'Option text is required')
+    .refine(
+      (val) => val.startsWith('=') || val.startsWith('~'),
+      { message: 'Option must start with = (correct) or ~ (incorrect)' }
+    ),
 })
 
 export const questionSchema = z
@@ -31,7 +35,10 @@ export const questionSchema = z
     content: z
       .string()
       .min(10, 'Question content must be at least 10 characters')
-      .max(2000, 'Question content must not exceed 2000 characters'),
+      .max(2000, 'Question content must not exceed 2000 characters')
+      .refine((val) => val.trim().length >= 10, {
+        message: 'Question content cannot be only whitespace',
+      }),
     type: z.enum(['multiple_choice', 'essay'], {
       required_error: 'Question type is required',
     }),
@@ -45,24 +52,41 @@ export const questionSchema = z
   })
   .superRefine((data, ctx) => {
     if (data.type === 'multiple_choice') {
+      // Validate ALL options must have text with valid prefix (no empty options allowed)
+      const hasEmptyOption = data.options.some((opt) => opt.text.trim().length <= 1)
+      
+      if (hasEmptyOption) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'All options must have text. Please fill in or remove empty options.',
+          path: ['options'],
+        })
+        return // Stop validation early
+      }
+      
+      // Check minimum options (at least 2)
       if (data.options.length < 2) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Multiple choice questions must have at least 2 options',
           path: ['options'],
         })
+        return
       }
 
-      const correctAnswers = data.options.filter((opt) => opt.is_correct).length || 0
-      if (correctAnswers === 0) {
+      // Check for correct answers (prefix with =)
+      const correctAnswers = data.options.filter((opt) => opt.text.startsWith('='))
+      
+      if (correctAnswers.length === 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Must have at least 1 correct answer',
+          message: 'Must have at least 1 correct answer (prefix with =)',
           path: ['options'],
         })
       }
 
-      if (!data.is_multiple_answer && correctAnswers > 1) {
+      // Check single choice can only have 1 correct answer
+      if (!data.is_multiple_answer && correctAnswers.length > 1) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Single choice questions can only have 1 correct answer',
@@ -70,11 +94,14 @@ export const questionSchema = z
         })
       }
 
-      const emptyOptions = data.options.filter((opt) => !opt.content.trim()).length || 0
-      if (emptyOptions > 0) {
+      // Validate all options have valid prefix (already validated in schema, but double-check)
+      const hasInvalidPrefix = data.options.some(
+        (opt) => !opt.text.startsWith('=') && !opt.text.startsWith('~')
+      )
+      if (hasInvalidPrefix) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'All options must have content',
+          message: 'All options must start with = (correct) or ~ (incorrect)',
           path: ['options'],
         })
       }

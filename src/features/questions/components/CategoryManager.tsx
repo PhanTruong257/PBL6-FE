@@ -33,7 +33,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { categorySchema, type CategoryFormValues } from '../schemas/question-schema'
 import { useCreateCategory, useUpdateCategory, useDeleteCategory } from '../hooks'
-import { userPermissionsSelector } from '@/global/recoil/user'
+import { userPermissionsSelector, currentUserState } from '@/global/recoil/user'
 import type { QuestionCategory } from '@/types/question'
 
 interface CategoryManagerProps {
@@ -54,7 +54,8 @@ export function CategoryManager({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [categoryToDelete, setCategoryToDelete] = useState<QuestionCategory | null>(null)
 
-  // Get user permissions from recoil
+  // Get current user and permissions from recoil
+  const currentUser = useRecoilValue(currentUserState)
   const userPermissions = useRecoilValue(userPermissionsSelector)
 
   // Check permissions
@@ -102,7 +103,15 @@ export function CategoryManager({
       if (editingCategory) {
         await updateMutation.mutateAsync({ id: editingCategory.category_id, data: values })
       } else {
-        await createMutation.mutateAsync(values)
+        // Add created_by from current user
+        if (!currentUser?.user_id) {
+          console.error('User not authenticated')
+          return
+        }
+        await createMutation.mutateAsync({
+          ...values,
+          created_by: currentUser.user_id,
+        })
       }
       setIsDialogOpen(false)
       onCategoriesChange()
@@ -296,7 +305,7 @@ export function CategoryManager({
             <AlertDialogAction asChild>
               <Button 
                 onClick={confirmDelete} 
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                className="bg-destructive hover:bg-destructive/90 text-white"
               >
                 Delete
               </Button>
