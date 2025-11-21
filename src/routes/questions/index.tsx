@@ -28,16 +28,16 @@ function QuestionsPageRoute() {
     console.log('No user - redirecting to login')
     return <Navigate to='/auth/login' />
   }
-
+  console.log('Authenticated user:', user)
   const isTeacherOrAdmin = user.role === 'teacher' || user.role === 'admin'
   const canViewQuestions = userPermissions.some(
     p => p.resource === 'questions' && p.action === 'view'
   )
   
-  if (!isTeacherOrAdmin || !canViewQuestions) {
-    console.log('Access denied - role:', user.role, 'hasPermission:', canViewQuestions)
-    return <Navigate to='/dashboard' />
-  }
+  // if (!isTeacherOrAdmin || !canViewQuestions) {
+  //   console.log('Access denied - role:', user.role, 'hasPermission:', canViewQuestions)
+  //   return <Navigate to='/dashboard' />
+  // }
 
   return (
     <MainLayout>

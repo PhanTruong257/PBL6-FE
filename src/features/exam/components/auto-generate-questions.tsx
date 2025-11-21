@@ -18,6 +18,7 @@ export interface AutoGenerateConfig {
     categoryId: number
     categoryName: string
     questionType?: string
+    difficulty?: string
     count: number
   }>
 }
@@ -27,18 +28,25 @@ interface Criterion {
   categoryId: number
   categoryName: string
   questionType: string
+  difficulty: string
   count: number
 }
 
-  const QUESTION_TYPES = [
-    { value: 'multiple_choice', label: 'Trắc nghiệm' },
-    { value: 'true_false', label: 'Đúng/Sai' },
-    { value: 'essay', label: 'Tự luận' },
-  ]
+const QUESTION_TYPES = [
+  { value: 'multiple_choice', label: 'Trắc nghiệm' },
+  { value: 'true_false', label: 'Đúng/Sai' },
+  { value: 'essay', label: 'Tự luận' },
+]
+
+const DIFFICULTY_LEVELS = [
+  { value: 'easy', label: 'Dễ' },
+  { value: 'medium', label: 'Trung bình' },
+  { value: 'hard', label: 'Khó' },
+]
 
 export function AutoGenerateQuestions({ onGenerate, isGenerating = false }: AutoGenerateQuestionsProps) {
   const [criteria, setCriteria] = useState<Criterion[]>([
-    { id: '1', categoryId: 0, categoryName: '', questionType: '', count: 0 },
+    { id: '1', categoryId: 0, categoryName: '', questionType: '', difficulty: '', count: 0 },
   ])
   const [searchTags, setSearchTags] = useState<string[]>([''])
   const [activeSearchIndex, setActiveSearchIndex] = useState<number | null>(null)
@@ -67,7 +75,7 @@ export function AutoGenerateQuestions({ onGenerate, isGenerating = false }: Auto
 
   const addCriterion = () => {
     const newId = (criteria.length + 1).toString()
-    setCriteria([...criteria, { id: newId, categoryId: 0, categoryName: '', questionType: '', count: 0 }])
+    setCriteria([...criteria, { id: newId, categoryId: 0, categoryName: '', questionType: '', difficulty: '', count: 0 }])
     setSearchTags([...searchTags, ''])
   }
 
@@ -117,6 +125,7 @@ export function AutoGenerateQuestions({ onGenerate, isGenerating = false }: Auto
     if (!criterion.questionType) {
       return { isValid: false }
     }
+    // difficulty is optional, so no validation needed
     if (!criterion.count || criterion.count <= 0) {
       return { isValid: false }
     }
@@ -157,6 +166,7 @@ export function AutoGenerateQuestions({ onGenerate, isGenerating = false }: Auto
         categoryId: c.categoryId,
         categoryName: c.categoryName,
         questionType: c.questionType,
+        difficulty: c.difficulty || undefined,
         count: c.count,
       })),
     }
@@ -214,7 +224,7 @@ export function AutoGenerateQuestions({ onGenerate, isGenerating = false }: Auto
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-12 pr-8">
                 {/* Category Selection */}
-                <div className="space-y-2 md:col-span-5 relative">
+                <div className="space-y-2 md:col-span-4 relative">
                   <Label htmlFor={`category-${criterion.id}`} className="text-sm font-medium flex items-center gap-1">
                     Category <span className="text-destructive">*</span>
                   </Label>
@@ -289,7 +299,7 @@ export function AutoGenerateQuestions({ onGenerate, isGenerating = false }: Auto
                 </div>
 
                 {/* Question Type */}
-                <div className="space-y-2 md:col-span-4">
+                <div className="space-y-2 md:col-span-3">
                   <Label htmlFor={`type-${criterion.id}`} className="text-sm font-medium flex items-center gap-1">
                     Loại câu hỏi <span className="text-destructive">*</span>
                   </Label>
@@ -303,6 +313,26 @@ export function AutoGenerateQuestions({ onGenerate, isGenerating = false }: Auto
                     {QUESTION_TYPES.map((type) => (
                       <option key={type.value} value={type.value}>
                         {type.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Difficulty Level */}
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor={`difficulty-${criterion.id}`} className="text-sm font-medium">
+                    Độ khó
+                  </Label>
+                  <select
+                    id={`difficulty-${criterion.id}`}
+                    className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    value={criterion.difficulty}
+                    onChange={(e) => updateCriterion(criterion.id, 'difficulty', e.target.value)}
+                  >
+                    <option value="">-- Tất cả --</option>
+                    {DIFFICULTY_LEVELS.map((level) => (
+                      <option key={level.value} value={level.value}>
+                        {level.label}
                       </option>
                     ))}
                   </select>
