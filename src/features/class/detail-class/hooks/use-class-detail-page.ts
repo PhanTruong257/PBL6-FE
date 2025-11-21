@@ -14,7 +14,7 @@ export function useClassDetailPage(classId: string): ClassDetailHookReturn {
   const isTeacher = currentUser?.role === 'teacher'
 
   // Fetch real class data
-  const { data: classData, isLoading, error } = useClassDetail(classId)
+  const { data: classData, isLoading, error, refetch } = useClassDetail(classId)
 
   return {
     classInfo: classData?.classInfo || {
@@ -35,5 +35,6 @@ export function useClassDetailPage(classId: string): ClassDetailHookReturn {
     isTeacher,
     isLoading,
     error: error as Error | null,
+    refetch,
   }
 }

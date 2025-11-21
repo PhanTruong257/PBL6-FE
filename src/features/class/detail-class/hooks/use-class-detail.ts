@@ -40,7 +40,7 @@ export const fetchAllMaterials = async (
 ): Promise<Material[]> => {
   const token = cookieStorage.getAccessToken()
   const res = await fetch(
-    `${import.meta.env.VITE_API_URL}/classes/${classId}/get-all-materials`,
+    `${import.meta.env.VITE_API_URL}/materials/class/${classId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -55,6 +55,83 @@ export const fetchAllMaterials = async (
   const json = await res.json()
   // API returns { success, message, data }
   return json.data || json
+}
+
+export const uploadMaterials = async (
+  classId: number,
+  files: File[],
+  uploaderId: number,
+  title?: string,
+  postId?: number,
+): Promise<any> => {
+  const token = cookieStorage.getAccessToken()
+  const formData = new FormData()
+
+  // Append files
+  files.forEach((file) => {
+    formData.append('files', file)
+  })
+
+  // Append metadata
+  formData.append('classId', classId.toString())
+  formData.append('uploaderId', uploaderId.toString())
+  if (title) {
+    formData.append('title', title)
+  }
+  if (postId) {
+    formData.append('postId', postId.toString())
+  }
+
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/materials/upload`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  })
+
+  if (!res.ok) {
+    throw new Error('Failed to upload materials')
+  }
+
+  return res.json()
+}
+
+export const downloadMaterial = async (filename: string): Promise<Blob> => {
+  const token = cookieStorage.getAccessToken()
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/materials/download/${filename}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+
+  if (!res.ok) {
+    throw new Error('Failed to download material')
+  }
+
+  return res.blob()
+}
+
+export const deleteMaterial = async (materialId: number): Promise<any> => {
+  const token = cookieStorage.getAccessToken()
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/materials/${materialId}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+
+  if (!res.ok) {
+    throw new Error('Failed to delete material')
+  }
+
+  return res.json()
 }
 
 export const fetchUserProfileFromIds = async (
@@ -141,6 +218,7 @@ export function useClassDetail(classId: string) {
               message: reply.message,
               created_at: new Date(reply.created_at),
               replies: [],
+              materials: reply.materials || [],
             }))
           : []
 
@@ -151,6 +229,7 @@ export function useClassDetail(classId: string) {
           message: post.message,
           created_at: new Date(post.created_at),
           replies: formattedReplies,
+          materials: post.materials || [],
         })
       }
 
@@ -161,7 +240,7 @@ export function useClassDetail(classId: string) {
 
 export function useMaterialsDetail(classId: number) {
   return useQuery({
-    queryKey: ['class', classId],
+    queryKey: ['materials', classId],
     queryFn: async () => {
       const materials = await fetchAllMaterials(classId)
 

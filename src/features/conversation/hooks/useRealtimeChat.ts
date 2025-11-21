@@ -94,7 +94,15 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
    * 2. Call REST API to save to DB (async, in background)
    */
   const sendMessage = useCallback(
-    async (content: string, messageType: MessageType = MessageType.TEXT) => {
+    async (
+      content: string,
+      messageType: MessageType = MessageType.TEXT,
+      fileMetadata?: {
+        file_url?: string
+        file_name?: string
+        file_size?: number
+      },
+    ) => {
       if (!socket?.connected || !content.trim()) {
         console.warn('⚠️ Cannot send message:', {
           socketConnected: socket?.connected,
@@ -116,6 +124,11 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
         timestamp: new Date().toISOString(),
         status: MessageStatus.SENDING,
         client_id: clientId,
+        ...(fileMetadata && {
+          file_url: fileMetadata.file_url,
+          file_name: fileMetadata.file_name,
+          file_size: fileMetadata.file_size,
+        }),
       }
 
       // Add to pending messages
@@ -157,6 +170,11 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
         conversation_id: conversationId,
         content: content.trim(),
         message_type: messageType as any, // Type cast for enum compatibility
+        ...(fileMetadata && {
+          file_url: fileMetadata.file_url,
+          file_name: fileMetadata.file_name,
+          file_size: fileMetadata.file_size,
+        }),
       })
         .then((response) => {
           // Update cache with real DB ID
