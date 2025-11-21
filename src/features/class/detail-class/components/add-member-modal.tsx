@@ -9,12 +9,12 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import type { ClassBasicInfo } from '@/types/class'
-import { type User } from '@/types'
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
 import { cookieStorage } from '@/libs/utils/cookie'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRecoilValue } from 'recoil'
 import { currentUserState } from '@/global/recoil/user'
+import { useAllUsers, useSearchUsers } from '@/global/hooks'
 
 interface AddMemberModalProps {
   isOpen: boolean
@@ -22,49 +22,25 @@ interface AddMemberModalProps {
   classInfo: ClassBasicInfo
 }
 
-// const users: User[]=[{
-//   user_id: '1',
-//   role: 'teacher',
-//   fullName: 'abc',
-//   email:"abc@gmail.com",
-//   isEmailVerified:true,
-//   status:'active',
-//   createdAt: '',
-//   updatedAt: '',
-// },
-// {
-//   user_id: '2',
-//   role: 'teacher',
-//   fullName: 'abc',
-//   email:"abc123@gmail.com",
-//   isEmailVerified:true,
-//   status:'active',
-//   createdAt: '',
-//   updatedAt: '',
-// },
-// {
-//   user_id: '3',
-//   role: 'teacher',
-//   fullName: 'abc',
-//   email:"abc789@gmail.com",
-//   isEmailVerified:true,
-//   status:'active',
-//   createdAt: '',
-//   updatedAt: '',
-// }]
-
 export function AddMemberModal({
   isOpen,
   onOpenChange,
   classInfo,
 }: AddMemberModalProps) {
   const [searchText, setSearchText] = useState<string>('')
-  const [matchedUserList, setMatchedUserList] = useState<Array<User>>([])
   const [openMatchedList, setOpenMatchedList] = useState<boolean>(false)
-  const [isSearching, setIsSearching] = useState<boolean>(false)
   const [selectedEmails, setSelectedEmails] = useState<string[]>([])
   const queryClient = useQueryClient()
   const currentUser = useRecoilValue(currentUserState)
+
+  // Fetch all users once and cache in Recoil
+  const { isLoading: isLoadingUsers } = useAllUsers({ autoFetch: true })
+
+  // Client-side search from cached users
+  const { users: matchedUserList } = useSearchUsers(
+    searchText,
+    currentUser?.user_id,
+  )
 
   const fetchUserProfileFromEmail = async (emails: string[]) => {
     try {
@@ -174,39 +150,7 @@ export function AddMemberModal({
     onOpenChange(false)
     setSearchText('')
     setSelectedEmails([])
-    setMatchedUserList([])
     setOpenMatchedList(false)
-  }
-
-  const searchUsersByNameOrEmail = async (searchPattern: string) => {
-    try {
-      const token = cookieStorage.getAccessToken()
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/users/search-by-name-or-email`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            searchPattern,
-            excludeUserId: currentUser?.user_id, // Exclude current user
-          }),
-        },
-      )
-
-      if (!res.ok) {
-        throw new Error('Failed to search users')
-      }
-
-      const json = await res.json()
-      // Backend returns { data: { users: [...] } }
-      return json.data?.users || []
-    } catch (error) {
-      console.error('Error searching users:', error)
-      return []
-    }
   }
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -215,41 +159,18 @@ export function AddMemberModal({
 
     if (!value.trim()) {
       setOpenMatchedList(false)
-      setMatchedUserList([])
-      return
+    } else {
+      setOpenMatchedList(true)
     }
-
-    setOpenMatchedList(true)
   }
 
-  // Debounce search with 300ms delay
-  useEffect(() => {
-    if (!searchText.trim()) {
-      setMatchedUserList([])
-      return
-    }
-
-    setIsSearching(true)
-    const timer = setTimeout(async () => {
-      const userList: User[] = await searchUsersByNameOrEmail(searchText.trim())
-      setMatchedUserList(userList)
-      setIsSearching(false)
-    }, 300) // Reduced to 300ms for better UX
-
-    return () => {
-      clearTimeout(timer)
-      setIsSearching(false)
-    }
-  }, [searchText])
-
-  const handleChooseUserClick = (user: User) => {
+  const handleChooseUserClick = (user: any) => {
     // Add email to selected list if not already added
     if (!selectedEmails.includes(user.email)) {
       setSelectedEmails([...selectedEmails, user.email])
     }
     setSearchText('')
     setOpenMatchedList(false)
-    setMatchedUserList([])
   }
 
   const handleRemoveSelectedEmail = (emailToRemove: string) => {
@@ -314,10 +235,10 @@ export function AddMemberModal({
 
             {openMatchedList && (
               <div className="absolute z-10 mt-1 w-full bg-white border rounded-lg shadow-lg max-h-80 overflow-auto">
-                {isSearching ? (
+                {isLoadingUsers ? (
                   <div className="flex items-center justify-center py-8 text-gray-500">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-2"></div>
-                    <span>Đang tìm kiếm...</span>
+                    <span>Đang tải danh sách...</span>
                   </div>
                 ) : matchedUserList.length > 0 ? (
                   <div className="py-1">

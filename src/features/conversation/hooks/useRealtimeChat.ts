@@ -12,7 +12,7 @@ import {
   type MessageStatusUpdatedResponse,
   type ConversationJoinedResponse,
 } from '../types/socket-events'
-import type { TypedSocket } from './useSocketManager'
+import type { TypedSocket } from '@/global/recoil/socket'
 import { conversationKeys, useMessages } from './use-conversation'
 import { ConversationService } from '../api'
 import type { Message } from '../types'
@@ -47,11 +47,7 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
   )
 
   // Fetch initial messages from API
-  const {
-    data: messagesData,
-    isLoading: isLoadingMessages,
-    error: messagesError,
-  } = useMessages(
+  const { data: messagesData, isLoading: isLoadingMessages } = useMessages(
     { conversation_id: conversationId, page: 1, limit: 50 },
     enabled && conversationId > 0,
   )

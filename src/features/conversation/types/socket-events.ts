@@ -52,6 +52,7 @@ export const SOCKET_EVENTS = {
   MESSAGE_SENT: 'message:sent',
   MESSAGE_STATUS_UPDATED: 'message:status',
   MESSAGE_ERROR: 'message:error',
+  MESSAGES_READ: 'messages:read',
   CONVERSATION_JOINED: 'conversation:joined',
   USER_TYPING: 'user:typing',
   USER_ONLINE: 'user:online',
@@ -152,6 +153,13 @@ export interface MessageErrorResponse {
   }
 }
 
+export interface MessagesReadResponse {
+  conversation_id: number
+  user_id: number
+  last_read_message_id: number
+  read_at: string
+}
+
 export interface ConversationJoinedResponse {
   conversation_id: number
   success: boolean
@@ -199,6 +207,7 @@ export interface ServerToClientEvents {
     data: MessageStatusUpdatedResponse,
   ) => void
   [SOCKET_EVENTS.MESSAGE_ERROR]: (data: MessageErrorResponse) => void
+  [SOCKET_EVENTS.MESSAGES_READ]: (data: MessagesReadResponse) => void
   [SOCKET_EVENTS.CONVERSATION_JOINED]: (
     data: ConversationJoinedResponse,
   ) => void

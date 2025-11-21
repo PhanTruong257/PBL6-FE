@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/libs/utils/cn'
-import { useGlobalSocket } from '@/global/providers/socket-provider'
+import { useSocket } from '@/global/hooks'
 import { useRealtimeChat } from '../hooks/useRealtimeChat'
 import { MessageType } from '../types/socket-events'
 import { ConversationService } from '../api/conversation-service'
@@ -30,7 +30,7 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const { socket, isConnected } = useGlobalSocket()
+  const { socket, isConnected } = useSocket()
 
   // Use real-time chat hook
   const { messages, sendMessage, markAsRead, isLoading } = useRealtimeChat({
@@ -96,7 +96,7 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
         const uploadResult = await uploadChatFile(attachedFile)
 
         // Send message with file attachment
-        sendMessage(message.trim() || attachedFile.name, MessageType.file, {
+        sendMessage(message.trim() || attachedFile.name, MessageType.FILE, {
           file_url: uploadResult.file_url,
           file_name: uploadResult.file_name,
           file_size: uploadResult.file_size,
@@ -105,7 +105,7 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
         setAttachedFile(null)
       } else {
         // Send regular text message
-        sendMessage(message.trim(), MessageType.text)
+        sendMessage(message.trim(), MessageType.TEXT)
       }
 
       setMessage('')
