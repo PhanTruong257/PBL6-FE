@@ -1,18 +1,18 @@
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { RecoilRoot } from 'recoil'
+import { AppProviders } from './global/providers/index.ts'
+import * as TanStackQueryProvider from './integrations/tanstack-query/root-provider.tsx'
+import reportWebVitals from './reportWebVitals.ts'
 
 // Import i18n to initialize translations before app renders
 import './libs/i18n'
 
-import { AppProviders } from './global/providers/index.ts'
-import * as TanStackQueryProvider from './integrations/tanstack-query/root-provider.tsx'
-
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
 
+// Import global styles
 import './styles.css'
-import reportWebVitals from './reportWebVitals.ts'
 
 // Create a new router instance
 const TanStackQueryProviderContext = TanStackQueryProvider.getContext()

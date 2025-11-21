@@ -5,13 +5,16 @@ import { GlobalSocketProvider } from './socket-provider'
 import * as TanStackQueryProvider from '@/integrations/tanstack-query/root-provider'
 
 /**
- * Root providers wrapper
- * Combines all application-wide providers in the correct order
+ * Props for the AppProviders component.
  */
-interface AppProvidersProps {
+export interface AppProvidersProps {
   children: ReactNode
 }
 
+/**
+ * Root providers wrapper
+ * Combines all application-wide providers in the correct order
+ */
 export function AppProviders({ children }: AppProvidersProps) {
   return (
     <StrictMode>

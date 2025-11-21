@@ -1,59 +1,59 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useRecoilValue } from 'recoil'
-import { io, Socket } from 'socket.io-client'
+import { io, type Socket } from 'socket.io-client'
 import { currentUserState } from '@/global/recoil/user'
 
 interface ServerToClientEvents {
-    'message:received': (data: any) => void
-    'message:sent': (data: any) => void
-    'message:status': (data: any) => void
-    'message:error': (data: any) => void
-    'messages:read': (data: any) => void
-    'user:online': (data: any) => void
-    'user:offline': (data: any) => void
-    'user:typing': (data: any) => void
-    'user:presence': (data: any) => void
-    'conversation:joined': (data: any) => void
-    'presence:list': (data: any) => void
-    'error': (data: any) => void
-    'reconnected': (data: any) => void
-    // Post events
-    'post:created': (data: any) => void
-    'reply:created': (data: any) => void
-    'class:joined': (data: any) => void
+  'message:received': (data: any) => void
+  'message:sent': (data: any) => void
+  'message:status': (data: any) => void
+  'message:error': (data: any) => void
+  'messages:read': (data: any) => void
+  'user:online': (data: any) => void
+  'user:offline': (data: any) => void
+  'user:typing': (data: any) => void
+  'user:presence': (data: any) => void
+  'conversation:joined': (data: any) => void
+  'presence:list': (data: any) => void
+  'error': (data: any) => void
+  'reconnected': (data: any) => void
+  // Post events
+  'post:created': (data: any) => void
+  'reply:created': (data: any) => void
+  'class:joined': (data: any) => void
 }
 
 interface ClientToServerEvents {
-    'message:send': (data: any) => void
-    'message:delivered': (data: any) => void
-    'message:read': (data: any) => void
-    'conversation:join': (data: any) => void
-    'conversation:leave': (data: any) => void
-    'typing:start': (data: any) => void
-    'typing:stop': (data: any) => void
-    'presence:update': (data: any) => void
-    'presence:request': (data: any) => void
-    // Post events
-    'class:join': (data: any) => void
-    'class:leave': (data: any) => void
-    'post:create': (data: any) => void
-    'reply:create': (data: any) => void
+  'message:send': (data: any) => void
+  'message:delivered': (data: any) => void
+  'message:read': (data: any) => void
+  'conversation:join': (data: any) => void
+  'conversation:leave': (data: any) => void
+  'typing:start': (data: any) => void
+  'typing:stop': (data: any) => void
+  'presence:update': (data: any) => void
+  'presence:request': (data: any) => void
+  // Post events
+  'class:join': (data: any) => void
+  'class:leave': (data: any) => void
+  'post:create': (data: any) => void
+  'reply:create': (data: any) => void
 }
 
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>
 
 interface SocketContextValue {
-    socket: TypedSocket | null
-    isConnected: boolean
+  socket: TypedSocket | null
+  isConnected: boolean
 }
 
 const SocketContext = createContext<SocketContextValue>({
-    socket: null,
-    isConnected: false,
+  socket: null,
+  isConnected: false,
 })
 
 interface GlobalSocketProviderProps {
-    children: ReactNode
+  children: ReactNode
 }
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000/chat'
@@ -155,9 +155,6 @@ export function GlobalSocketProvider({ children }: GlobalSocketProviderProps) {
  * Hook để access global socket
  */
 export function useGlobalSocket() {
-    const context = useContext(SocketContext)
-    if (!context) {
-        throw new Error('useGlobalSocket must be used within GlobalSocketProvider')
-    }
-    return context
+  const context = useContext(SocketContext)
+  return context
 }
