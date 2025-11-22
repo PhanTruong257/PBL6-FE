@@ -16,17 +16,23 @@ import zodVI from './locales/vi/zod.json'
 import authEN from '../../features/auth/locales/en/auth.json'
 import authVI from '../../features/auth/locales/vi/auth.json'
 
+// Import questions translations (preload)
+import questionsEN from '../../features/questions/locales/en/questions.json'
+import questionsVI from '../../features/questions/locales/vi/questions.json'
+
 // Create resources object with preloaded auth namespace
 const resources = {
   en: {
     common: commonEN,
     zod: zodEN,
     auth: authEN, // Preload auth
+    questions: questionsEN, // Preload questions
   },
   vi: {
     common: commonVI,
     zod: zodVI,
     auth: authVI, // Preload auth
+    questions: questionsVI, // Preload questions
   },
 }
 

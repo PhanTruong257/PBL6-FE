@@ -1,2 +1,6 @@
-export { ThemeProvider } from './theme-provider'
-export { AppProviders } from './app-providers'
+export * from './app-providers'
+
+export * from './socket-provider'
+
+export * from './theme-provider'
+

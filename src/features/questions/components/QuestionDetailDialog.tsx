@@ -100,24 +100,30 @@ export function QuestionDetailDialog({
                 )}
               </h3>
               <div className="space-y-2">
-                {question.options.map((option, index) => (
-                  <div
-                    key={option.id}
-                    className={`flex items-start gap-3 p-3 rounded-lg border ${
-                      option.is_correct
-                        ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800'
-                        : 'bg-card'
-                    }`}
-                  >
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted text-xs font-medium">
-                      {String.fromCharCode(65 + index)}
+                {question.options.map((option, index) => {
+                  // Parse prefix to determine correctness
+                  const isCorrect = option.text.startsWith('=')
+                  const displayText = option.text.substring(1) // Remove prefix
+                  
+                  return (
+                    <div
+                      key={option.id}
+                      className={`flex items-start gap-3 p-3 rounded-lg border ${
+                        isCorrect
+                          ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800'
+                          : 'bg-card'
+                      }`}
+                    >
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted text-xs font-medium">
+                        {String.fromCharCode(65 + index)}
+                      </div>
+                      <p className="flex-1">{displayText}</p>
+                      {isCorrect && (
+                        <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+                      )}
                     </div>
-                    <p className="flex-1">{option.content}</p>
-                    {option.is_correct && (
-                      <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0" />
-                    )}
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
           )}

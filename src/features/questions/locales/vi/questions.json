@@ -42,12 +42,14 @@
     "category": "Danh mục",
     "selectCategory": "Chọn danh mục",
     "noCategory": "Không có danh mục",
-    "isPublic": "Trạng thái hiển thị",
+    "isPublic": "Công khai câu hỏi này",
+    "isPublicDescription": "Câu hỏi công khai có thể được xem và sử dụng bởi giáo viên khác",
     "isMultipleAnswer": "Cho phép chọn nhiều đáp án",
     "options": "Các lựa chọn trả lời",
     "addOption": "Thêm lựa chọn",
     "removeOption": "Xóa",
-    "markCorrectAnswer": "Đánh dấu đáp án đúng"
+    "markCorrectAnswer": "Đánh dấu đáp án đúng",
+    "optionPlaceholder": "Lựa chọn {{number}}"
   },
   
   "category": {
@@ -68,15 +70,62 @@
   "search": {
     "placeholder": "Tìm kiếm câu hỏi, nội dung, danh mục...",
     "filters": "Bộ lọc",
-    "activeFilters": "{{count}} bộ lọc",
-    "clearFilters": "Xóa tất cả bộ lọc"
+    "activeFilters": "{{count}} đang hoạt động",
+    "clearFilters": "Xóa tất cả bộ lọc",
+    "search": "Tìm kiếm"
   },
   
   "view": {
-    "grid": "Lưới",
+    "grid": "Dạng Lưới",
     "list": "Danh sách",
     "showing": "Hiển thị {{from}} đến {{to}} trong tổng số {{total}} câu hỏi",
     "page": "Trang {{current}} / {{total}}"
+  },
+  
+  "actions": {
+    "import": "Nhập",
+    "export": "Xuất",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "view": "Xem",
+    "duplicate": "Nhân bản",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "create": "Tạo",
+    "update": "Cập nhật",
+    "confirm": "Xác nhận",
+    "saving": "Đang lưu...",
+    "backToDashboard": "Quay về Dashboard"
+  },
+  
+  "page": {
+    "checkingAccess": "Đang kiểm tra quyền truy cập...",
+    "noAccess": "Không có quyền truy cập",
+    "noAccessMessage": "Chỉ admin và giáo viên mới có thể quản lý câu hỏi.",
+    "questionList": "Danh sách câu hỏi",
+    "showingRange": "Hiển thị {{from}} đến {{to}} trong tổng số {{total}} câu hỏi"
+  },
+  
+  "dialog": {
+    "createTitle": "Tạo câu hỏi mới",
+    "editTitle": "Chỉnh sửa câu hỏi",
+    "deleteTitle": "Bạn có chắc chắn?",
+    "deleteDescription": "Bạn có muốn xóa câu hỏi này không?",
+    "deleteDescriptionDetail": "Hành động này không thể hoàn tác.",
+    "loadingCategories": "Đang tải danh mục..."
+  },
+  
+  "import": {
+    "title": "Nhập câu hỏi",
+    "upload": "Tải lên",
+    "preview": "Xem trước",
+    "result": "Kết quả",
+    "downloadTemplate": "Tải mẫu Excel",
+    "selectFile": "Chọn file Excel",
+    "dragDrop": "hoặc kéo thả vào đây",
+    "previewLimit": "Giới hạn xem trước",
+    "importing": "Đang nhập...",
+    "close": "Đóng"
   },
   
   "messages": {
@@ -88,19 +137,27 @@
     "updateError": "Cập nhật câu hỏi thất bại",
     "deleteError": "Xóa câu hỏi thất bại",
     "noAccess": "Không có quyền truy cập",
-    "noAccessMessage": "Chỉ admin và giáo viên mới có thể quản lý câu hỏi."
+    "noAccessMessage": "Chỉ admin và giáo viên mới có thể quản lý câu hỏi.",
+    "optionAdded": "Đã thêm lựa chọn mới",
+    "optionAddedDesc": "Lựa chọn {{number}} đã được thêm vào",
+    "optionRemoved": "Đã xóa lựa chọn",
+    "optionRemovedDesc": "Lựa chọn {{number}} đã được xóa",
+    "cannotRemove": "Không thể xóa",
+    "minOptionsRequired": "Câu hỏi trắc nghiệm phải có ít nhất 2 lựa chọn"
   },
   
   "validation": {
     "contentRequired": "Nội dung câu hỏi là bắt buộc",
     "contentMin": "Nội dung câu hỏi phải có ít nhất {{count}} ký tự",
     "contentMax": "Nội dung câu hỏi không được vượt quá {{count}} ký tự",
+    "contentWhitespace": "Nội dung câu hỏi không được chỉ chứa khoảng trắng",
     "typeRequired": "Loại câu hỏi là bắt buộc",
     "difficultyRequired": "Độ khó là bắt buộc",
     "minOptions": "Câu hỏi trắc nghiệm phải có ít nhất 2 lựa chọn",
     "optionContentRequired": "Nội dung lựa chọn là bắt buộc",
+    "optionContentWhitespace": "Nội dung lựa chọn không được rỗng hoặc chỉ chứa khoảng trắng",
     "atLeastOneCorrect": "Phải có ít nhất 1 đáp án đúng",
     "onlyOneCorrect": "Câu hỏi một đáp án chỉ có thể có 1 đáp án đúng",
-    "allOptionsMustHaveContent": "Tất cả lựa chọn phải có nội dung"
+    "allOptionsMustHaveContent": "Tất cả lựa chọn phải có nội dung (không được rỗng hoặc chỉ chứa khoảng trắng)"
   }
 }
