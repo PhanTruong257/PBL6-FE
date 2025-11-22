@@ -93,7 +93,7 @@ export function ClassDetailPage() {
 
       {/* Sticky Post Button - Only show when not in settings and in posts tab */}
       {!showSettings && activeTab === 'posts' && (
-        <StickyPostButton classInfo={classInfo} />
+        <StickyPostButton classInfo={classInfo} onPostCreated={refetch} />
       )}
     </div>
   )

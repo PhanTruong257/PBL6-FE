@@ -1,6 +1,16 @@
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { MoreHorizontal, Calendar, Users, BookOpen } from 'lucide-react'
+import {
+  MoreHorizontal,
+  Calendar,
+  Users,
+  BookOpen,
+  Trash2,
+  Edit,
+} from 'lucide-react'
 import { getColorFromId, type ClassColor } from '@/libs/color-utils'
+import { cookieStorage } from '@/libs/utils/cookie'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface StyledClassCardProps {
   id: string | number
@@ -10,6 +20,7 @@ interface StyledClassCardProps {
   teacherAvatar?: string
   students?: number
   onClick?: () => void
+  isTeacher?: boolean
 }
 
 // Color themes using Tailwind classes
@@ -80,10 +91,94 @@ export function StyledClassCard({
   teacherAvatar,
   students = 0,
   onClick,
+  isTeacher = false,
 }: StyledClassCardProps) {
+  const [showMenu, setShowMenu] = useState(false)
+  const [isRenaming, setIsRenaming] = useState(false)
+  const [newName, setNewName] = useState(name)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const queryClient = useQueryClient()
+
   const color = getColorFromId(id)
   const theme = colorThemes[color]
   const teacherInitial = teacher?.charAt(0).toUpperCase() || 'T'
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+
+    if (!confirm(`Bạn có chắc muốn xóa lớp "${name}"?`)) return
+
+    setIsDeleting(true)
+    try {
+      const token = cookieStorage.getAccessToken()
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/classes/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!res.ok) throw new Error('Failed to delete class')
+
+      const json = await res.json()
+
+      if (json.success) {
+         queryClient.invalidateQueries({ queryKey: ['teacher-classes'] })
+        queryClient.invalidateQueries({ queryKey: ['student-classes'] })
+      } else {
+        alert(json.message || 'Không thể xóa lớp học')
+      }
+    } catch (error) {
+      console.error('Error deleting class:', error)
+      alert('Có lỗi xảy ra khi xóa lớp học')
+    } finally {
+      setIsDeleting(false)
+      setShowMenu(false)
+    }
+  }
+
+  const handleRename = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+
+    if (!newName.trim()) {
+      alert('Tên lớp không được bỏ trống')
+      return
+    }
+
+    try {
+      const token = cookieStorage.getAccessToken()
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/classes/${id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          class_name: newName.trim(),
+          class_code: code,
+        }),
+      })
+
+      if (!res.ok) throw new Error('Failed to rename class')
+
+      const json = await res.json()
+
+      if (json.success) {
+        alert('Đổi tên lớp học thành công!')
+        queryClient.invalidateQueries({ queryKey: ['teacher-classes'] })
+        queryClient.invalidateQueries({ queryKey: ['student-classes'] })
+        setIsRenaming(false)
+      } else {
+        alert(json.message || 'Không thể đổi tên lớp học')
+      }
+    } catch (error) {
+      console.error('Error renaming class:', error)
+      alert('Có lỗi xảy ra khi đổi tên lớp học')
+    } finally {
+      setShowMenu(false)
+    }
+  }
 
   return (
     <div
@@ -110,17 +205,47 @@ export function StyledClassCard({
           </div>
 
           {/* More button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0 bg-white/10 hover:bg-white/25 text-white border-none rounded-lg flex-shrink-0"
-            onClick={(e: React.MouseEvent) => {
-              e.stopPropagation()
-              console.log('More options for:', name)
-            }}
-          >
-            <MoreHorizontal className="h-5 w-5" />
-          </Button>
+          {isTeacher && (
+            <div className="relative flex-shrink-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 bg-white/10 hover:bg-white/25 text-white border-none rounded-lg"
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation()
+                  setShowMenu(!showMenu)
+                }}
+              >
+                <MoreHorizontal className="h-5 w-5" />
+              </Button>
+
+              {/* Dropdown menu */}
+              {showMenu && (
+                <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                  <button
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setIsRenaming(true)
+                      setShowMenu(false)
+                    }}
+                    disabled={isDeleting}
+                  >
+                    <Edit className="h-4 w-4" />
+                    Đổi tên lớp
+                  </button>
+                  <button
+                    className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {isDeleting ? 'Đang xóa...' : 'Xóa lớp học'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -172,6 +297,58 @@ export function StyledClassCard({
           </Button>
         </div>
       </div>
+
+      {/* Rename Dialog */}
+      {isRenaming && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={(e) => {
+            e.stopPropagation()
+            setIsRenaming(false)
+            setNewName(name)
+          }}
+        >
+          <div
+            className="bg-white rounded-lg p-6 w-96 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-semibold mb-4">Đổi tên lớp học</h3>
+            <input
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Nhập tên mới"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleRename(e as any)
+                if (e.key === 'Escape') {
+                  setIsRenaming(false)
+                  setNewName(name)
+                }
+              }}
+            />
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setIsRenaming(false)
+                  setNewName(name)
+                }}
+              >
+                Hủy
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 rounded-lg"
+                onClick={handleRename}
+              >
+                Lưu
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

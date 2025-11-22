@@ -62,7 +62,7 @@ function TeacherClassesView({ user, navigate }: { user: User; navigate: any }) {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6   ">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">
@@ -101,6 +101,7 @@ function TeacherClassesView({ user, navigate }: { user: User; navigate: any }) {
                 teacherAvatar={user.avatar}
                 students={classItem.enrollments?.length || 0}
                 onClick={() => handleClassClick(classItem.class_id)}
+                isTeacher={true}
               />
             ))}
           </div>
@@ -196,6 +197,7 @@ function StudentClassesView({
                 teacher="Giáo viên"
                 students={classItem.enrollments?.length || 0}
                 onClick={() => handleClassClick(classItem.class_id)}
+                isTeacher={false}
               />
             ))}
           </div>

@@ -124,13 +124,13 @@ export function CreateClassPage() {
   return (
     <div>
       <div>
-        <Button variant="ghost" size="sm" asChild className="mb-3">
+        <Button variant="ghost" size="sm" asChild className="mb-3 ">
           <Link to="/classes">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Quay lại
+            <ArrowLeft className="h-4 w-4  " />
+            Quay lại  
           </Link>
         </Button>
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 py-2" >
           <div className="p-2 bg-blue-100 rounded-lg">
             <BookOpen className="h-5 w-5 text-blue-600" />
           </div>
