@@ -41,6 +41,13 @@ export function ExamListPage() {
     navigate({ to: '/exam/edit/$id', params: { id: String(examId) } })
   }
 
+  const handleViewSubmissionsClick = (examId: number) => {
+    navigate({
+      to: '/exam/$examId/submissions/',
+      params: { examId: String(examId) },
+    } as any)
+  }
+
   return (
     <div className="container mx-auto">
       <ExamListHeader
@@ -60,6 +67,7 @@ export function ExamListPage() {
         exams={exams}
         isLoading={isLoading}
         onEditClick={handleEditClick}
+        onViewSubmissionsClick={handleViewSubmissionsClick}
       />
 
       {totalPages > 1 && (
