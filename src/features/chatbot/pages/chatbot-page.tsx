@@ -7,9 +7,9 @@ import {
   StreamingResponse,
   FileDisplay
 } from '../components'
-import { cookieStorage } from '@/libs/utils'
 import '../styles/chat.css'
-import type { User } from '@/types'
+import { currentUserState } from '@/global/recoil/user'
+import { useRecoilValue } from 'recoil'
 export function ChatbotPage() {
   const {
     messages,
@@ -25,11 +25,10 @@ export function ChatbotPage() {
     sendMessage,
     handleInputChange,
     handleKeyDown,
-    addFile,
     removeFile,
     handleFilesSelected,
   } = useChatbot()
-  const userData = cookieStorage.getUser() as User
+  const userData = useRecoilValue(currentUserState);
   
   return (
     <div className="chatbot-container flex flex-col">
@@ -75,7 +74,7 @@ export function ChatbotPage() {
         <ChatInput
           value={currentMessage}
           onChange={handleInputChange}
-          onSend={()=>sendMessage(userData.user_id, userData.role)}
+          onSend={()=>sendMessage(userData?.user_id, userData?.role)}
           onKeyDown={handleKeyDown}
           disabled={isProcessing}
           onFilesSelected={handleFilesSelected}
