@@ -9,7 +9,7 @@ import {
   PendingAssignmentsCard,
 } from '../components/teacher-cards'
 import { useQuery } from '@tanstack/react-query'
-import { ClassService } from '@/features/teacher/api/class-service'
+import { ClassService } from '@/features/class/api/class-service'
 
 interface TeacherDashboardProps {
   user: User

@@ -21,24 +21,17 @@ export const categoriesApi = {
    * Get all question categories
    */
   getAll: async (): Promise<QuestionCategory[]> => {
-    const response = await httpClient.get<IApiResponse<any[]>>('/question-categories')
-    // Map _count.questions to question_count
-    return response.data.data.map((cat: any) => ({
-      ...cat,
-      question_count: cat._count?.questions || 0,
-    }))
+    const response = await httpClient.get<IApiResponse<QuestionCategory[]>>('/question-categories')
+    const categories = response.data.data
+    return categories
   },
 
   /**
    * Get category by ID
    */
   getById: async (id: number): Promise<QuestionCategory> => {
-    const response = await httpClient.get<IApiResponse<any>>(`/question-categories/${id}`)
-    const cat = response.data.data
-    return {
-      ...cat,
-      question_count: cat._count?.questions || 0,
-    }
+    const response = await httpClient.get<IApiResponse<QuestionCategory>>(`/question-categories/${id}`)
+    return response.data.data
   },
 
   /**
@@ -74,7 +67,9 @@ export const questionsApi = {
    */
   getAll: async (params?: QuestionFilterParams): Promise<QuestionListResponse> => {
     const response = await httpClient.get<IApiResponse<QuestionListResponse>>('/questions', { params })
-    return response.data.data
+    // Backend returns {data: [], meta: {}}, ensure we have default values
+    const result = response.data.data
+    return result
   },
 
   /**
@@ -117,7 +112,8 @@ export const questionsApi = {
       search: searchTerm,
     }
     const response = await httpClient.get<IApiResponse<QuestionListResponse>>('/questions', { params })
-    return response.data.data
+    const result = response.data.data
+    return result
   },
 
   /**

@@ -5,7 +5,7 @@ import { Users, BookOpen, ChevronDown, ChevronRight } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
 import { SimpleStatsCard } from '../components/simple-stats-card'
 import { useQuery } from '@tanstack/react-query'
-import { ClassService } from '@/features/teacher/api/class-service'
+import { ClassService } from '@/features/class/api/class-service'
 
 interface StudentDashboardProps {
   user: User

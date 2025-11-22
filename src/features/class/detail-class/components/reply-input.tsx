@@ -14,8 +14,7 @@ import { useState, useRef } from 'react'
 import type { PostCardProps } from '../types'
 import { useRecoilValue } from 'recoil'
 import { currentUserState } from '@/global/recoil/user'
-import { cookieStorage } from '@/libs/utils/cookie'
-import { uploadMaterials } from '../hooks/use-class-detail'
+import { useCreatePost, useUploadMaterials } from '../hooks/use-class-detail'
 
 interface ReplyInputProps {
   classId: number
@@ -33,69 +32,44 @@ export function replyInput({
   const [reply, setReply] = useState<string>('')
   const [hideReplyInput, setHideReplyInput] = useState<boolean>(true)
   const [attachedFiles, setAttachedFiles] = useState<File[]>([])
-  const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const user = useRecoilValue(currentUserState)
+  const createPostMutation = useCreatePost()
+  const uploadMaterialsMutation = useUploadMaterials()
+
+  const isSubmitting =
+    createPostMutation.isPending || uploadMaterialsMutation.isPending
 
   const sendReplyHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
 
     if ((!reply?.trim() && attachedFiles.length === 0) || !user) return
 
-    setIsUploading(true)
-
-    const accessToken = cookieStorage.getAccessToken()
-    const refreshToken = cookieStorage.getRefreshToken()
-
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    }
-
-    if (accessToken) {
-      headers['Authorization'] = `Bearer ${accessToken}`
-    }
-    if (refreshToken) {
-      headers['x-refresh-token'] = refreshToken
-    }
-
     try {
       // First create the reply post
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/classes/add-new-post`,
-        {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({
-            class_id: classId,
-            parent_id: postId,
-            message: reply || `Uploaded ${attachedFiles.length} file(s)`,
-            title: '',
-            sender_id: user.user_id,
-          }),
-        },
-      )
+      const result = await createPostMutation.mutateAsync({
+        class_id: classId,
+        parent_id: postId,
+        message: reply || `Uploaded ${attachedFiles.length} file(s)`,
+        title: '',
+        sender_id: user.user_id,
+      })
 
-      if (!res.ok) {
-        throw new Error('Failed to add reply')
-      }
-
-      const json = await res.json()
-      const newPostId = json.data.id
+      const newPostId = result.data.id
+      console.log('Add reply result:', result)
 
       // If there are files, upload them
       if (attachedFiles.length > 0) {
-        const uploadResult = await uploadMaterials(
-          classId,
-          attachedFiles,
-          user.user_id,
-          reply || 'File attachment',
-          newPostId,
-        )
+        const uploadResult = await uploadMaterialsMutation.mutateAsync({
+          classId: classId,
+          files: attachedFiles,
+          uploaderId: user.user_id,
+          title: reply || 'File attachment',
+          postId: newPostId,
+        })
         console.log('Upload materials result:', uploadResult)
       }
-
-      console.log('Add reply result:', json)
 
       setReply('')
       setAttachedFiles([])
@@ -106,15 +80,13 @@ export function replyInput({
         await new Promise((resolve) => setTimeout(resolve, 1000))
       }
 
-      // Always refresh to get updated materials
+      // Always refresh to get updated materials (mutations already invalidate queries)
       if (onReplyAdded) {
         onReplyAdded()
       }
     } catch (error) {
       console.error('Error adding reply:', error)
       alert('Failed to add reply. Please try again.')
-    } finally {
-      setIsUploading(false)
     }
   }
 
@@ -185,7 +157,7 @@ export function replyInput({
                 variant="ghost"
                 size="sm"
                 onClick={() => handleRemoveFile(index)}
-                disabled={isUploading}
+                disabled={isSubmitting}
                 className="hover:bg-red-50"
               >
                 <X className="h-4 w-4 text-red-600" />
@@ -225,7 +197,7 @@ export function replyInput({
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault()
                 if (
-                  !isUploading &&
+                  !isSubmitting &&
                   (reply.trim() || attachedFiles.length > 0)
                 ) {
                   sendReplyHandler(e as any)
@@ -234,7 +206,7 @@ export function replyInput({
             }}
             onChange={(e) => setReply(e.target.value)}
             value={reply}
-            disabled={isUploading}
+            disabled={isSubmitting}
           />
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center space-x-1 reply-actions">
             <Button
@@ -247,7 +219,7 @@ export function replyInput({
                 e.stopPropagation()
                 handleAttachmentClick()
               }}
-              disabled={isUploading}
+              disabled={isSubmitting}
             >
               <Paperclip className="h-4 w-4" />
             </Button>
@@ -300,10 +272,10 @@ export function replyInput({
             sendReplyHandler(e)
           }}
           disabled={
-            isUploading || (!reply.trim() && attachedFiles.length === 0)
+            isSubmitting || (!reply.trim() && attachedFiles.length === 0)
           }
         >
-          {isUploading ? (
+          {isSubmitting ? (
             <span className="h-4 w-4">⏳</span>
           ) : (
             <Send className="h-4 w-4" />
@@ -319,7 +291,7 @@ export function replyInput({
             e.stopPropagation()
             handleCancel()
           }}
-          disabled={isUploading}
+          disabled={isSubmitting}
           title="Cancel"
         >
           <X className="h-4 w-4" />

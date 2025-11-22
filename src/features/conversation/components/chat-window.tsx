@@ -13,9 +13,12 @@ import {
 import { cn } from '@/libs/utils/cn'
 import { useSocket } from '@/global/hooks'
 import { useRealtimeChat } from '../hooks/useRealtimeChat'
+import {
+  useUploadChatFile,
+  useDownloadChatFile,
+} from '../hooks/use-conversation'
 import { MessageType } from '../types/socket-events'
 import { ConversationService } from '../api/conversation-service'
-import { uploadChatFile, downloadChatFile } from '../api/chat-files'
 import type { ConversationWithUser } from '../types'
 
 interface ChatWindowProps {
@@ -26,11 +29,12 @@ interface ChatWindowProps {
 export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
   const [message, setMessage] = useState('')
   const [attachedFile, setAttachedFile] = useState<File | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { socket, isConnected } = useSocket()
+  const uploadFileMutation = useUploadChatFile()
+  const downloadFileMutation = useDownloadChatFile()
 
   // Use real-time chat hook
   const { messages, sendMessage, markAsRead, isLoading } = useRealtimeChat({
@@ -89,11 +93,9 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
     if ((!message.trim() && !attachedFile) || !conversation) return
 
     try {
-      setIsUploading(true)
-
       // If there's a file, upload it first
       if (attachedFile) {
-        const uploadResult = await uploadChatFile(attachedFile)
+        const uploadResult = await uploadFileMutation.mutateAsync(attachedFile)
 
         // Send message with file attachment
         sendMessage(message.trim() || attachedFile.name, MessageType.FILE, {
@@ -112,8 +114,6 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
     } catch (error) {
       console.error('Failed to send message:', error)
       alert('Failed to send message. Please try again.')
-    } finally {
-      setIsUploading(false)
     }
   }
 
@@ -327,7 +327,9 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
                                   filenameFromUrl,
                                 )
                                 const blob =
-                                  await downloadChatFile(filenameFromUrl)
+                                  await downloadFileMutation.mutateAsync(
+                                    filenameFromUrl,
+                                  )
                                 console.log(
                                   '📥 Blob received:',
                                   blob.size,
@@ -418,7 +420,7 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
               variant="ghost"
               size="sm"
               onClick={handleRemoveFile}
-              disabled={isUploading}
+              disabled={uploadFileMutation.isPending}
             >
               <X className="h-4 w-4" />
             </Button>
@@ -437,7 +439,7 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
             variant="ghost"
             size="sm"
             onClick={handleAttachmentClick}
-            disabled={isUploading || !isConnected}
+            disabled={uploadFileMutation.isPending || !isConnected}
           >
             <Paperclip className="h-4 w-4" />
           </Button>
@@ -451,7 +453,9 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              disabled={!isConnected || isLoading || isUploading}
+              disabled={
+                !isConnected || isLoading || uploadFileMutation.isPending
+              }
             />
           </div>
 
@@ -461,10 +465,10 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
               (!message.trim() && !attachedFile) ||
               !isConnected ||
               isLoading ||
-              isUploading
+              uploadFileMutation.isPending
             }
           >
-            {isUploading ? (
+            {uploadFileMutation.isPending ? (
               <span className="h-4 w-4">⏳</span>
             ) : (
               <Send className="h-4 w-4" />

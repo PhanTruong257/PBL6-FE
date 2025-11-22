@@ -1,75 +1,38 @@
-import { useEffect, useCallback, useMemo } from 'react'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import {
-  allUsersState,
-  usersLoadingState,
-  usersLastFetchState,
-  shouldRefreshUsersSelector,
-} from '@/global/recoil/users'
-import { cookieStorage } from '@/libs/utils/cookie'
-import type { User } from '@/types'
+import { useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { UsersService } from '@/global/api/users-service'
+
+// Query keys
+export const usersKeys = {
+  all: ['users'] as const,
+  lists: () => [...usersKeys.all, 'list'] as const,
+  list: (filters: Record<string, unknown>) =>
+    [...usersKeys.lists(), { filters }] as const,
+  details: () => [...usersKeys.all, 'detail'] as const,
+  detail: (id: number) => [...usersKeys.details(), id] as const,
+}
 
 /**
- * Hook to fetch all users and cache in Recoil
- * Auto-refreshes if cache is older than 5 minutes
+ * Hook to fetch all users with React Query caching
+ * Auto-refreshes based on staleTime configuration
  */
-export function useAllUsers(options?: { autoFetch?: boolean }) {
-  const { autoFetch = true } = options || {}
+export function useAllUsers(options?: { enabled?: boolean }) {
+  const { enabled = true } = options || {}
 
-  const [allUsers, setAllUsers] = useRecoilState(allUsersState)
-  const [isLoading, setIsLoading] = useRecoilState(usersLoadingState)
-  const setLastFetch = useSetRecoilState(usersLastFetchState)
-  const shouldRefresh = useRecoilValue(shouldRefreshUsersSelector)
-
-  const fetchAllUsers = useCallback(async () => {
-    try {
-      setIsLoading(true)
-      const token = cookieStorage.getAccessToken()
-
-      // Use /users/list endpoint with large limit to get all users
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/users/list?page=1&limit=10000`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
-
-      if (!res.ok) {
-        throw new Error('Failed to fetch all users')
-      }
-
-      const json = await res.json()
-      const users: User[] = json.data?.users || []
-
-      setAllUsers(users)
-      setLastFetch(Date.now())
-
-      console.log(`✅ [USERS_CACHE] Fetched ${users.length} users`)
-      return users
-    } catch (error) {
-      console.error('❌ [USERS_CACHE] Error fetching users:', error)
-      return []
-    } finally {
-      setIsLoading(false)
-    }
-  }, [setAllUsers, setIsLoading, setLastFetch])
-
-  // Auto-fetch on mount if no data or cache expired
-  useEffect(() => {
-    if (autoFetch && (allUsers.length === 0 || shouldRefresh)) {
-      console.log('🔄 [USERS_CACHE] Auto-fetching users...')
-      fetchAllUsers()
-    }
-  }, [autoFetch, allUsers.length, shouldRefresh, fetchAllUsers])
+  const query = useQuery({
+    queryKey: usersKeys.list({ page: 1, limit: 10000 }),
+    queryFn: () => UsersService.getUsers({ page: 1, limit: 10000 }),
+    enabled,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+  })
 
   return {
-    users: allUsers,
-    isLoading,
-    refetch: fetchAllUsers,
+    users: query.data?.data?.users || [],
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error,
+    refetch: query.refetch,
   }
 }
 
@@ -77,7 +40,7 @@ export function useAllUsers(options?: { autoFetch?: boolean }) {
  * Hook to search users with client-side filtering
  */
 export function useSearchUsers(searchPattern: string, excludeUserId?: number) {
-  const allUsers = useRecoilValue(allUsersState)
+  const { users: allUsers } = useAllUsers()
 
   const filteredUsers = useMemo(() => {
     if (!searchPattern.trim()) {
@@ -110,4 +73,16 @@ export function useSearchUsers(searchPattern: string, excludeUserId?: number) {
     users: filteredUsers,
     totalUsers: allUsers.length,
   }
+}
+
+/**
+ * Hook to get user by ID
+ */
+export function useUser(userId: number, enabled = true) {
+  return useQuery({
+    queryKey: usersKeys.detail(userId),
+    queryFn: () => UsersService.getUserById(userId),
+    enabled: enabled && !!userId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
 }

@@ -20,8 +20,7 @@ import {
 import { AvatarHoverCard } from './avatar-hover-card'
 import { useRecoilValue } from 'recoil'
 import { currentUserState } from '@/global/recoil/user'
-import { cookieStorage } from '@/libs/utils/cookie'
-import { uploadMaterials } from '../hooks/use-class-detail'
+import { useCreatePost, useUploadMaterials } from '../hooks/use-class-detail'
 
 interface CreatePostModalProps {
   isOpen: boolean
@@ -40,34 +39,22 @@ export function CreatePostModal({
   onPostCreated,
 }: CreatePostModalProps) {
   const user = useRecoilValue(currentUserState)
+  const createPostMutation = useCreatePost()
+  const uploadMaterialsMutation = useUploadMaterials()
 
   const [title, setTitle] = useState('')
   const [message, setMessage] = useState('')
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
-  const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const isSubmitting =
+    createPostMutation.isPending || uploadMaterialsMutation.isPending
 
   const handleSubmit = async () => {
     // Allow submission if either message exists OR files are attached
     if ((!message.trim() && uploadedFiles.length === 0) || !user) {
       alert('Please enter a message or attach files')
       return
-    }
-
-    setIsUploading(true)
-
-    const accessToken = cookieStorage.getAccessToken()
-    const refreshToken = cookieStorage.getRefreshToken()
-
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    }
-
-    if (accessToken) {
-      headers['Authorization'] = `Bearer ${accessToken}`
-    }
-    if (refreshToken) {
-      headers['x-refresh-token'] = refreshToken
     }
 
     try {
@@ -79,59 +66,35 @@ export function CreatePostModal({
           : '')
       const postTitle = title.trim() || ''
 
-      const requestBody: any = {
+      const requestBody = {
         class_id: classInfo.class_id,
         message: postMessage,
         title: postTitle,
         sender_id: user.user_id,
       }
 
-      // Don't send parent_id for main posts (only for replies)
-      // Backend Transform will fail if we send null or undefined
-      // Make sure the field is not in the object at all
-
       console.log(
         'Creating post with data:',
         JSON.stringify(requestBody, null, 2),
       )
 
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/classes/add-new-post`,
-        {
-          method: 'POST',
-          headers,
-          body: JSON.stringify(requestBody),
-        },
-      )
+      // Create post using mutation
+      const result = await createPostMutation.mutateAsync(requestBody)
+      const newPostId = result.data.id
 
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}))
-        console.error('Failed to create post:', {
-          status: res.status,
-          statusText: res.statusText,
-          error: errorData,
-        })
-        throw new Error(
-          `Failed to create post: ${res.status} ${res.statusText}`,
-        )
-      }
-
-      const json = await res.json()
-      const newPostId = json.data.id
+      console.log('Create post result:', result)
 
       // If there are files, upload them
       if (uploadedFiles.length > 0) {
-        const uploadResult = await uploadMaterials(
-          classInfo.class_id,
-          uploadedFiles,
-          user.user_id,
-          title || message || 'File attachment',
-          newPostId,
-        )
+        const uploadResult = await uploadMaterialsMutation.mutateAsync({
+          classId: classInfo.class_id,
+          files: uploadedFiles,
+          uploaderId: user.user_id,
+          title: postTitle || postMessage || 'File attachment',
+          postId: newPostId,
+        })
         console.log('Upload materials result:', uploadResult)
       }
-
-      console.log('Create post result:', json)
 
       setTitle('')
       setMessage('')
@@ -142,7 +105,7 @@ export function CreatePostModal({
         await new Promise((resolve) => setTimeout(resolve, 1000))
       }
 
-      // Trigger refresh
+      // Trigger refresh (mutations already invalidate queries)
       if (onPostCreated) {
         onPostCreated()
       }
@@ -151,8 +114,6 @@ export function CreatePostModal({
     } catch (error) {
       console.error('Error creating post:', error)
       alert('Failed to create post. Please try again.')
-    } finally {
-      setIsUploading(false)
     }
   }
 
@@ -224,7 +185,7 @@ export function CreatePostModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="text-base border-0 border-b border-gray-200 rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-gray-400 bg-transparent"
-              disabled={isUploading}
+              disabled={isSubmitting}
             />
           </div>
 
@@ -235,7 +196,7 @@ export function CreatePostModal({
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               className="min-h-[100px] border-0 resize-none p-0 focus-visible:ring-0 bg-transparent placeholder:text-gray-400"
-              disabled={isUploading}
+              disabled={isSubmitting}
             />
           </div>
 
@@ -261,7 +222,7 @@ export function CreatePostModal({
                     size="sm"
                     onClick={() => removeFile(uploadedFile)}
                     className="h-6 w-6 p-0 hover:bg-red-100"
-                    disabled={isUploading}
+                    disabled={isSubmitting}
                   >
                     <X className="h-3 w-3 text-red-600" />
                   </Button>
@@ -289,7 +250,7 @@ export function CreatePostModal({
               size="sm"
               className="text-gray-600 hover:text-gray-900 hover:bg-gray-200"
               onClick={handleOpenFileModal}
-              disabled={isUploading}
+              disabled={isSubmitting}
             >
               <Paperclip className="h-4 w-4" />
             </Button>
@@ -297,7 +258,7 @@ export function CreatePostModal({
               variant="ghost"
               size="sm"
               className="text-gray-600 hover:text-gray-900 hover:bg-gray-200"
-              disabled={isUploading}
+              disabled={isSubmitting}
             >
               <Smile className="h-4 w-4" />
             </Button>
@@ -305,7 +266,7 @@ export function CreatePostModal({
               variant="ghost"
               size="sm"
               className="text-gray-600 hover:text-gray-900 hover:bg-gray-200"
-              disabled={isUploading}
+              disabled={isSubmitting}
             >
               <AtSign className="h-4 w-4" />
             </Button>
@@ -313,7 +274,7 @@ export function CreatePostModal({
               variant="ghost"
               size="sm"
               className="text-gray-600 hover:text-gray-900 hover:bg-gray-200"
-              disabled={isUploading}
+              disabled={isSubmitting}
             >
               <Hash className="h-4 w-4" />
             </Button>
@@ -321,7 +282,7 @@ export function CreatePostModal({
               variant="ghost"
               size="sm"
               className="text-gray-600 hover:text-gray-900 hover:bg-gray-200"
-              disabled={isUploading}
+              disabled={isSubmitting}
             >
               <MoreHorizontal className="h-4 w-4" />
             </Button>
@@ -330,11 +291,11 @@ export function CreatePostModal({
           <Button
             onClick={handleSubmit}
             disabled={
-              isUploading || (!message.trim() && uploadedFiles.length === 0)
+              isSubmitting || (!message.trim() && uploadedFiles.length === 0)
             }
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 disabled:bg-gray-300 disabled:text-gray-500"
           >
-            {isUploading ? '⏳' : 'Post'}
+            {isSubmitting ? '⏳' : 'Post'}
           </Button>
         </div>
       </DialogContent>

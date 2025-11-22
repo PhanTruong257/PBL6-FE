@@ -1,6 +1,4 @@
-import { Clock, FileText, Copy, Edit, Trash2 } from 'lucide-react'
-import { format } from 'date-fns'
-import { vi } from 'date-fns/locale'
+import { Clock, FileText, Copy, Edit, Trash2, Users } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -18,6 +16,7 @@ interface ExamListTableProps {
   onEditClick: (examId: number) => void
   onCopyClick?: (examId: number) => void
   onDeleteClick?: (examId: number) => void
+  onViewSubmissionsClick?: (examId: number) => void
 }
 
 const statusLabels: Record<string, string> = {
@@ -49,6 +48,7 @@ export function ExamListTable({
   onEditClick,
   onCopyClick,
   onDeleteClick,
+  onViewSubmissionsClick,
 }: ExamListTableProps) {
   if (isLoading) {
     return (
@@ -123,6 +123,16 @@ export function ExamListTable({
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-purple-600 hover:bg-purple-50"
+                    onClick={() => onViewSubmissionsClick?.(exam.exam_id)}
+                    disabled={!onViewSubmissionsClick}
+                    title="Xem bài nộp"
+                  >
+                    <Users className="w-4 h-4" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"

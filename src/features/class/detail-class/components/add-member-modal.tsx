@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -10,11 +10,10 @@ import {
 } from '@/components/ui/dialog'
 import type { ClassBasicInfo } from '@/types/class'
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
-import { cookieStorage } from '@/libs/utils/cookie'
-import { useQueryClient } from '@tanstack/react-query'
 import { useRecoilValue } from 'recoil'
 import { currentUserState } from '@/global/recoil/user'
 import { useAllUsers, useSearchUsers } from '@/global/hooks'
+import { useAddMembers, useGetUsersByEmails } from '../hooks/use-class-detail'
 
 interface AddMemberModalProps {
   isOpen: boolean
@@ -30,47 +29,20 @@ export function AddMemberModal({
   const [searchText, setSearchText] = useState<string>('')
   const [openMatchedList, setOpenMatchedList] = useState<boolean>(false)
   const [selectedEmails, setSelectedEmails] = useState<string[]>([])
-  const queryClient = useQueryClient()
   const currentUser = useRecoilValue(currentUserState)
 
-  // Fetch all users once and cache in Recoil
-  const { isLoading: isLoadingUsers } = useAllUsers({ autoFetch: true })
+  // Fetch all users once and cache
+  const { isLoading: isLoadingUsers } = useAllUsers({ enabled: true })
+
+  // Mutation hooks
+  const getUsersByEmailsMutation = useGetUsersByEmails()
+  const addMembersMutation = useAddMembers()
 
   // Client-side search from cached users
   const { users: matchedUserList } = useSearchUsers(
     searchText,
     currentUser?.user_id,
   )
-
-  const fetchUserProfileFromEmail = async (emails: string[]) => {
-    try {
-      const token = cookieStorage.getAccessToken()
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/users/get-list-profile-by-emails`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            userEmails: emails,
-          }),
-        },
-      )
-
-      if (!res.ok) {
-        throw new Error('Failed to fetch user profiles')
-      }
-
-      const json = await res.json()
-      // Backend returns { data: { users: [...] } }
-      return json.data?.users || []
-    } catch (error) {
-      console.error('Error fetching user profiles:', error)
-      return []
-    }
-  }
 
   const handleAddMember = async () => {
     if (selectedEmails.length === 0) {
@@ -79,7 +51,8 @@ export function AddMemberModal({
     }
 
     try {
-      const users = await fetchUserProfileFromEmail(selectedEmails)
+      // Use mutation to get users by emails
+      const users = await getUsersByEmailsMutation.mutateAsync(selectedEmails)
 
       if (users.length === 0) {
         alert('Không tìm thấy người dùng nào với email đã chọn')
@@ -101,45 +74,14 @@ export function AddMemberModal({
         }
       })
 
-      const token = cookieStorage.getAccessToken()
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/classes/add-students`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            students: students,
-            class_id: classInfo.class_id,
-          }),
-        },
-      )
+      // Use mutation to add members
+      await addMembersMutation.mutateAsync({
+        classId: classInfo.class_id,
+        students,
+      })
 
-      if (!res.ok) {
-        throw new Error('Failed to add students')
-      }
-
-      const json = await res.json()
-      console.log('Response:', json)
-
-      if (json.success) {
-        // Invalidate queries to refresh student count and list
-        queryClient.invalidateQueries({
-          queryKey: ['class-students', classInfo.class_id],
-        })
-        queryClient.invalidateQueries({
-          queryKey: ['class-students-count', classInfo.class_id],
-        })
-        queryClient.invalidateQueries({ queryKey: ['teacher-classes'] })
-        queryClient.invalidateQueries({ queryKey: ['student-classes'] })
-
-        alert(`Đã thêm ${students.length} sinh viên thành công!`)
-        handleClose()
-      } else {
-        alert('Có lỗi xảy ra: ' + (json.message || 'Unknown error'))
-      }
+      alert(`Đã thêm ${students.length} sinh viên thành công!`)
+      handleClose()
     } catch (error) {
       console.error('Error adding members:', error)
       alert('Có lỗi xảy ra khi thêm học sinh')

@@ -1,9 +1,20 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { Class } from '@/types/class'
 import type { User } from '@/types'
 import type { Material, Material_full_info } from '@/types/material'
 import type { PostCardProps } from '../types'
 import { cookieStorage } from '@/libs/utils/cookie'
+import {
+  PostsService,
+  type CreatePostRequest,
+  type UploadMaterialsRequest,
+} from '../../api/posts-service'
+import {
+  ClassService,
+  type AddMemberRequest,
+  type UpdateClassRequest,
+  type JoinClassRequest,
+} from '../../api/class-service'
 
 const defaultUser: User = {
   user_id: 1,
@@ -161,9 +172,16 @@ export const fetchUserProfileFromIds = async (
   return json.data?.users || []
 }
 
+// Query keys
+export const classKeys = {
+  all: ['class'] as const,
+  details: () => [...classKeys.all, 'detail'] as const,
+  detail: (id: string) => [...classKeys.details(), id] as const,
+}
+
 export function useClassDetail(classId: string) {
   return useQuery({
-    queryKey: ['class', classId],
+    queryKey: classKeys.detail(classId),
     queryFn: async () => {
       const classAllInfo = await fetchClassAllInfo(classId)
 
@@ -273,5 +291,146 @@ export function useMaterialsDetail(classId: number) {
 
       return materials_full_info
     },
+  })
+}
+
+/**
+ * Hook to create a new post or reply
+ */
+export function useCreatePost() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: CreatePostRequest) => PostsService.createPost(data),
+    onSuccess: () => {
+      // Invalidate class detail to refresh posts
+      queryClient.invalidateQueries({
+        queryKey: classKeys.details(),
+      })
+    },
+  })
+}
+
+/**
+ * Hook to upload materials/files
+ */
+export function useUploadMaterials() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: UploadMaterialsRequest) =>
+      PostsService.uploadMaterials(data),
+    onSuccess: (_, variables) => {
+      // Invalidate class detail to refresh materials
+      queryClient.invalidateQueries({
+        queryKey: classKeys.details(),
+      })
+      // Also invalidate materials if classId is available
+      if (variables.classId) {
+        queryClient.invalidateQueries({
+          queryKey: ['materials', variables.classId],
+        })
+      }
+    },
+  })
+}
+
+/**
+ * Hook to add members to class
+ */
+export function useAddMembers() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: AddMemberRequest) => ClassService.addMembers(data),
+    onSuccess: (_, variables) => {
+      // Invalidate class detail to refresh members
+      queryClient.invalidateQueries({
+        queryKey: classKeys.detail(variables.classId.toString()),
+      })
+    },
+  })
+}
+
+/**
+ * Hook to update class info
+ */
+export function useUpdateClass() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      classId,
+      data,
+    }: {
+      classId: number
+      data: UpdateClassRequest
+    }) => ClassService.updateClass(classId, data),
+    onSuccess: (_, variables) => {
+      // Invalidate class detail to refresh info
+      queryClient.invalidateQueries({
+        queryKey: classKeys.detail(variables.classId.toString()),
+      })
+    },
+  })
+}
+
+/**
+ * Hook to delete class
+ */
+export function useDeleteClass() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (classId: number) => ClassService.deleteClass(classId),
+    onSuccess: () => {
+      // Invalidate all class queries
+      queryClient.invalidateQueries({
+        queryKey: classKeys.all,
+      })
+    },
+  })
+}
+
+/**
+ * Hook to archive class
+ */
+export function useArchiveClass() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (classId: number) => ClassService.archiveClass(classId),
+    onSuccess: (_, classId) => {
+      // Invalidate class detail
+      queryClient.invalidateQueries({
+        queryKey: classKeys.detail(classId.toString()),
+      })
+    },
+  })
+}
+
+/**
+ * Hook to join class by code
+ */
+export function useJoinClass() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: JoinClassRequest) => ClassService.joinClass(data),
+    onSuccess: () => {
+      // Invalidate all class queries to show new class
+      queryClient.invalidateQueries({
+        queryKey: classKeys.all,
+      })
+    },
+  })
+}
+
+/**
+ * Hook to get users by emails
+ */
+export function useGetUsersByEmails() {
+  return useMutation({
+    mutationFn: (emails: string[]) => ClassService.getUsersByEmails(emails),
   })
 }

@@ -43,6 +43,7 @@ import {
   useUpdateQuestion,
   useDeleteQuestion,
   useQuestion,
+  useQuestionsTranslation,
 } from '../hooks'
 import { userPermissionsSelector, currentUserState } from '@/global/recoil/user'
 import { userRoleSelector } from '@/global/recoil/user/userSelector'
@@ -50,9 +51,11 @@ import type { Question, QuestionFilterParams } from '@/types/question'
 import type { QuestionFormValues, SearchFormValues } from '../schemas/question-schema'
 import { useNavigate } from '@tanstack/react-router'
 import { cn } from '@/libs/utils'
+import { toast } from '@/libs'
 
 export function QuestionsPage() {
   const navigate = useNavigate()
+  const { t } = useQuestionsTranslation()
   
   // ============================================
   // ALL STATE AND HOOKS MUST BE DECLARED FIRST
@@ -80,7 +83,7 @@ export function QuestionsPage() {
   const userPermissions = useRecoilValue(userPermissionsSelector)
   const userRole = useRecoilValue(userRoleSelector)
   
-  // API Hooks - MUST be called unconditionally
+  // API Hooks
   const { data: categoriesData } = useCategories()
   const categories = categoriesData || []
   
@@ -111,7 +114,7 @@ export function QuestionsPage() {
   const canCreateQuestion = userPermissions.some(
     p => p.resource === 'questions' && p.action === 'create'
   )
-  const questions = questionsData?.value || questionsData?.data || []
+  const questions = questionsData?.data || []
   const totalPages = questionsData?.meta.totalPages || 1
   const totalQuestions = questionsData?.meta.total || 0
   
@@ -126,7 +129,7 @@ export function QuestionsPage() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="text-4xl mb-4">⏳</div>
-            <p className="text-muted-foreground">Đang kiểm tra quyền truy cập...</p>
+            <p className="text-muted-foreground">{t('page.checkingAccess')}</p>
           </div>
         </div>
       </div>
@@ -140,12 +143,12 @@ export function QuestionsPage() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="text-4xl mb-4">🚫</div>
-            <h2 className="text-xl font-semibold mb-2">Không có quyền truy cập</h2>
+            <h2 className="text-xl font-semibold mb-2">{t('page.noAccess')}</h2>
             <p className="text-muted-foreground mb-4">
-              Chỉ admin và giáo viên mới có thể quản lý câu hỏi.
+              {t('page.noAccessMessage')}
             </p>
             <Button onClick={() => navigate({ to: '/dashboard' })}>
-              Quay về Dashboard
+              {t('actions.backToDashboard')}
             </Button>
           </div>
         </div>
@@ -177,10 +180,16 @@ export function QuestionsPage() {
 
   const handleSubmitForm = async (values: QuestionFormValues) => {
     try {
+      // Validate user authentication
+      if (!currentUser?.user_id) {
+        toast.error('Bạn cần đăng nhập để thực hiện thao tác này')
+        return
+      }
+
       const submitData = {
         ...values,
         category_id: values.category_id ?? undefined,
-        created_by: currentUser?.user_id, // Add user ID to request
+        created_by: currentUser.user_id, // Add user ID to request
       }
       
       if (editingQuestion) {
@@ -222,10 +231,10 @@ export function QuestionsPage() {
         {/* Page title */}
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
-            Ngân hàng câu hỏi
+            {t('title')}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Quản lý câu hỏi và danh mục của bạn
+            {t('subtitle')}
           </p>
         </div>
 
@@ -233,16 +242,16 @@ export function QuestionsPage() {
         <div className="flex gap-3">
           <Button variant="outline" size="lg" onClick={() => setIsImportDialogOpen(true)}>
             <Upload className="h-5 w-5 mr-2" />
-            Import
+            {t('actions.import')}
           </Button>
           <Button variant="outline" size="lg">
             <Download className="h-5 w-5 mr-2" />
-            Export
+            {t('actions.export')}
           </Button>
           {canCreateQuestion && (
             <Button onClick={() => handleOpenForm()} size="lg">
               <Plus className="h-5 w-5 mr-2" />
-              Tạo câu hỏi
+              {t('createQuestion')}
             </Button>
           )}
         </div>
@@ -280,10 +289,13 @@ export function QuestionsPage() {
           <div className="bg-card rounded-lg border p-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold">Danh sách câu hỏi</h2>
+                <h2 className="text-xl font-bold">{t('page.questionList')}</h2>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Hiển thị {questions.length > 0 ? (currentPage - 1) * limit + 1 : 0} đến{' '}
-                  {Math.min(currentPage * limit, totalQuestions)} trong tổng số {totalQuestions} câu hỏi
+                  {t('view.showing', { 
+                    from: questions.length > 0 ? (currentPage - 1) * limit + 1 : 0,
+                    to: Math.min(currentPage * limit, totalQuestions),
+                    total: totalQuestions
+                  })}
                 </p>
               </div>
               
@@ -295,7 +307,7 @@ export function QuestionsPage() {
                   className={cn(viewMode === 'grid' && 'shadow-sm')}
                 >
                   <Grid3x3 className="h-4 w-4 mr-2" />
-                  Grid
+                  {t('view.grid')}
                 </Button>
                 <Button
                   variant={viewMode === 'list' ? 'default' : 'ghost'}
@@ -304,7 +316,7 @@ export function QuestionsPage() {
                   className={cn(viewMode === 'list' && 'shadow-sm')}
                 >
                   <List className="h-4 w-4 mr-2" />
-                  List
+                  {t('view.list')}
                 </Button>
               </div>
             </div>
@@ -314,7 +326,7 @@ export function QuestionsPage() {
           {isLoading ? (
             <div className="bg-card rounded-lg border p-12 text-center text-muted-foreground">
               <div className="text-4xl mb-4">⏳</div>
-              Đang tải danh sách câu hỏi...
+              {t('loading')}
             </div>
           ) : viewMode === 'grid' ? (
             <QuestionGrid
@@ -387,12 +399,12 @@ export function QuestionsPage() {
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingQuestion ? 'Edit Question' : 'Create New Question'}
+              {editingQuestion ? t('dialog.editTitle') : t('dialog.createTitle')}
             </DialogTitle>
           </DialogHeader>
           {categories.length === 0 ? (
             <div className="p-4 text-center text-muted-foreground">
-              Loading categories...
+              {t('dialog.loadingCategories')}
             </div>
           ) : (
             <QuestionForm
@@ -423,22 +435,22 @@ export function QuestionsPage() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>{t('dialog.deleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Do you want to delete this question?
+              {t('dialog.deleteDescription')}
               {questionToDelete && (
                 <div className="mt-2 p-3 bg-muted rounded-md text-sm">
                   "{questionToDelete.content.substring(0, 100)}
                   {questionToDelete.content.length > 100 ? '...' : ''}"
                 </div>
               )}
-              This action cannot be undone.
+              {t('dialog.deleteDescriptionDetail')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setQuestionToDelete(null)}>
-                Cancel
+                {t('actions.cancel')}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>
@@ -446,7 +458,7 @@ export function QuestionsPage() {
                 onClick={confirmDelete} 
                 className="bg-destructive text-white hover:bg-destructive/90"
               >
-                Delete
+                {t('actions.delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>
