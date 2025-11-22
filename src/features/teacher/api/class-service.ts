@@ -26,6 +26,12 @@ export interface Class {
   description: string | null
   teacher_id: number
   created_at: string
+  enrollments?: Array<{
+    enrollment_id: number
+    class_id: number
+    student_id: number
+    enrolled_at: string
+  }>
 }
 
 export interface GetClassesResponse {

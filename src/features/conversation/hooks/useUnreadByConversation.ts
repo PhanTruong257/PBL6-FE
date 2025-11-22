@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
-import { useGlobalSocket } from '@/global/providers/socket-provider'
+import { useSocket } from '@/global/hooks'
 import { ConversationService } from '../api/conversation-service'
 import { SOCKET_EVENTS } from '../types/socket-events'
 
@@ -9,7 +9,7 @@ import { SOCKET_EVENTS } from '../types/socket-events'
  * Updates in real-time via socket listeners
  */
 export function useUnreadByConversation(userId: number | undefined) {
-  const { socket } = useGlobalSocket()
+  const { socket } = useSocket()
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['unread-by-conversation', userId],
@@ -67,13 +67,13 @@ export function useUnreadByConversation(userId: number | undefined) {
 
     socket.on(SOCKET_EVENTS.MESSAGE_RECEIVED, handleMessageReceived)
     socket.on(SOCKET_EVENTS.MESSAGE_STATUS_UPDATED, handleMessageStatus)
-    socket.on('messages:read', handleMessagesRead)
+    socket.on(SOCKET_EVENTS.MESSAGES_READ, handleMessagesRead)
 
     return () => {
       console.log('🧹 [UNREAD_BY_CONVERSATION] Cleaning up socket listeners')
       socket.off(SOCKET_EVENTS.MESSAGE_RECEIVED, handleMessageReceived)
       socket.off(SOCKET_EVENTS.MESSAGE_STATUS_UPDATED, handleMessageStatus)
-      socket.off('messages:read', handleMessagesRead)
+      socket.off(SOCKET_EVENTS.MESSAGES_READ, handleMessagesRead)
     }
   }, [socket, userId, refetch])
 

@@ -39,7 +39,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         
         {/* Page Content */}
         <main className={cn(
-          "flex-1 space-y-4 p-4 md:p-8",
+          "flex-1 space-y-4 py-2 px-4",
           "bg-muted/40"
         )}>
           <div className="mx-auto w-full max-w-7xl">

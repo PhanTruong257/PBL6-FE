@@ -12,7 +12,7 @@ import {
   type MessageStatusUpdatedResponse,
   type ConversationJoinedResponse,
 } from '../types/socket-events'
-import type { TypedSocket } from './useSocketManager'
+import type { TypedSocket } from '@/global/recoil/socket'
 import { conversationKeys, useMessages } from './use-conversation'
 import { ConversationService } from '../api'
 import type { Message } from '../types'
@@ -47,11 +47,7 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
   )
 
   // Fetch initial messages from API
-  const {
-    data: messagesData,
-    isLoading: isLoadingMessages,
-    error: messagesError,
-  } = useMessages(
+  const { data: messagesData, isLoading: isLoadingMessages } = useMessages(
     { conversation_id: conversationId, page: 1, limit: 50 },
     enabled && conversationId > 0,
   )
@@ -94,7 +90,15 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
    * 2. Call REST API to save to DB (async, in background)
    */
   const sendMessage = useCallback(
-    async (content: string, messageType: MessageType = MessageType.TEXT) => {
+    async (
+      content: string,
+      messageType: MessageType = MessageType.TEXT,
+      fileMetadata?: {
+        file_url?: string
+        file_name?: string
+        file_size?: number
+      },
+    ) => {
       if (!socket?.connected || !content.trim()) {
         console.warn('⚠️ Cannot send message:', {
           socketConnected: socket?.connected,
@@ -116,6 +120,11 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
         timestamp: new Date().toISOString(),
         status: MessageStatus.SENDING,
         client_id: clientId,
+        ...(fileMetadata && {
+          file_url: fileMetadata.file_url,
+          file_name: fileMetadata.file_name,
+          file_size: fileMetadata.file_size,
+        }),
       }
 
       // Add to pending messages
@@ -157,6 +166,11 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
         conversation_id: conversationId,
         content: content.trim(),
         message_type: messageType as any, // Type cast for enum compatibility
+        ...(fileMetadata && {
+          file_url: fileMetadata.file_url,
+          file_name: fileMetadata.file_name,
+          file_size: fileMetadata.file_size,
+        }),
       })
         .then((response) => {
           // Update cache with real DB ID

@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { currentUserState } from '@/global/recoil/user'
-import { useGlobalSocket } from '@/global/providers/socket-provider'
+import { useSocket } from '@/global/hooks'
 import {
   POST_SOCKET_EVENTS,
   type PostCreatedResponse,
@@ -25,7 +25,7 @@ export function useClassSocket({
   onPostCreated,
   onReplyCreated,
 }: UseClassSocketOptions) {
-  const { socket, isConnected } = useGlobalSocket()
+  const { socket, isConnected } = useSocket()
   const currentUser = useRecoilValue(currentUserState)
   const queryClient = useQueryClient()
   const hasJoinedRef = useRef(false)

@@ -8,9 +8,13 @@ interface StickyPostButtonProps {
     class_id: number
     class_name: string
   }
+  onPostCreated?: () => void
 }
 
-export function StickyPostButton({ classInfo }: StickyPostButtonProps) {
+export function StickyPostButton({
+  classInfo,
+  onPostCreated,
+}: StickyPostButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
@@ -32,6 +36,7 @@ export function StickyPostButton({ classInfo }: StickyPostButtonProps) {
         isOpen={isModalOpen}
         onOpenChange={setIsModalOpen}
         classInfo={classInfo}
+        onPostCreated={onPostCreated}
       />
     </>
   )

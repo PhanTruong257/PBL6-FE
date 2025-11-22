@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { useGlobalSocket } from '@/global/providers/socket-provider'
+import { useSocket } from '@/global/hooks'
 import { useEffect } from 'react'
 import { ConversationService } from '../api/conversation-service'
+import { SOCKET_EVENTS } from '../types/socket-events'
 
 /**
  * Hook để đếm số CUỘC TRÒ CHUYỆN có tin nhắn chưa đọc
@@ -9,17 +10,24 @@ import { ConversationService } from '../api/conversation-service'
  * - Query từ API
  * - Update real-time qua Socket.IO
  */
-export function useUnreadConversationsCount(userId: number | undefined, enabled = true) {
-  const { socket, isConnected } = useGlobalSocket()
+export function useUnreadConversationsCount(
+  userId: number | undefined,
+  enabled = true,
+) {
+  const { socket, isConnected } = useSocket()
 
   // Query unread conversations count
   const query = useQuery({
     queryKey: ['unread-conversations-count', userId],
     queryFn: async () => {
-      const response = await ConversationService.getUnreadCountByConversation(userId!)
+      const response = await ConversationService.getUnreadCountByConversation(
+        userId!,
+      )
       // Đếm số lượng conversations có tin nhắn chưa đọc
       const conversations = response.data || []
-      const count = conversations.filter((conv: any) => conv.unread_count > 0).length
+      const count = conversations.filter(
+        (conv: any) => conv.unread_count > 0,
+      ).length
       return { count }
     },
     enabled: enabled && !!userId,
@@ -31,7 +39,10 @@ export function useUnreadConversationsCount(userId: number | undefined, enabled 
   useEffect(() => {
     if (!socket || !isConnected || !userId) return
 
-    console.log('🔔 [UNREAD_CONVERSATIONS] Setting up real-time listeners for user:', userId)
+    console.log(
+      '🔔 [UNREAD_CONVERSATIONS] Setting up real-time listeners for user:',
+      userId,
+    )
 
     // Refetch count when new message received (from others)
     const handleMessageReceived = (data: any) => {
@@ -40,7 +51,9 @@ export function useUnreadConversationsCount(userId: number | undefined, enabled 
       if (data.sender_id !== userId) {
         // Small delay to ensure DB has been updated
         setTimeout(() => {
-          console.log('🔔 [UNREAD_CONVERSATIONS] Refetching unread conversations count...')
+          console.log(
+            '🔔 [UNREAD_CONVERSATIONS] Refetching unread conversations count...',
+          )
           query.refetch()
         }, 300)
       }
@@ -62,12 +75,12 @@ export function useUnreadConversationsCount(userId: number | undefined, enabled 
 
     socket.on('message:received', handleMessageReceived)
     socket.on('message:status', handleMessageStatusUpdated)
-    socket.on('messages:read', handleMessagesRead)
+    socket.on(SOCKET_EVENTS.MESSAGES_READ, handleMessagesRead)
 
     return () => {
       socket.off('message:received', handleMessageReceived)
       socket.off('message:status', handleMessageStatusUpdated)
-      socket.off('messages:read', handleMessagesRead)
+      socket.off(SOCKET_EVENTS.MESSAGES_READ, handleMessagesRead)
     }
   }, [socket, isConnected, userId, query])
 

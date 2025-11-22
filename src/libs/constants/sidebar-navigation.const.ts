@@ -113,7 +113,7 @@ export const TEACHER_SIDEBAR_NAV: SidebarNavigation = {
     },
     {
       title: 'Lớp học của tôi',
-      href: '/dashboard',
+      href: '/classes',
       icon: BookMarked,
     },
     {
@@ -178,7 +178,7 @@ export const STUDENT_SIDEBAR_NAV: SidebarNavigation = {
     },
     {
       title: 'Lớp học của tôi',
-      href: '/dashboard',
+      href: '/classes',
       icon: BookMarked,
     },
     {

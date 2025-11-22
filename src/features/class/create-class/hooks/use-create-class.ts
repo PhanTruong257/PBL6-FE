@@ -1,10 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
-import {
-  ClassService,
-  type CreateClassRequest,
-} from '@/features/teacher/api/class-service'
+import { ClassService, type CreateClassRequest } from '../../api/class-service'
 
 export function useCreateClass() {
   const navigate = useNavigate()
