@@ -211,3 +211,39 @@ export interface StudentExamsResponse {
     totalPages: number
   }
 }
+
+// Submission types
+export enum SubmissionStatus {
+  IN_PROGRESS = 'in_progress',
+  SUBMITTED = 'submitted',
+  CANCELLED = 'cancelled',
+  GRADED = 'graded',
+}
+
+export interface SubmissionWithDetails extends Submission {
+  status: SubmissionStatus
+  current_question_order?: number
+  remaining_time?: number
+  answers: Array<SubmissionAnswer & {
+    question: Question
+  }>
+  exam: Exam
+}
+
+export interface SubmissionsListResponse {
+  data: SubmissionWithDetails[]
+  pagination: {
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+  }
+}
+
+export interface GetSubmissionsQuery {
+  exam_id?: number
+  student_id?: number
+  status?: SubmissionStatus
+  page?: number
+  limit?: number
+}

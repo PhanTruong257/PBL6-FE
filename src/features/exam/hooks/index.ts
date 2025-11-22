@@ -15,3 +15,5 @@ export {
 
 export { useExamList } from './use-exam-list'
 export { useExamTaking } from './use-exam-taking'
+export { useSubmissionsList } from './use-submissions-list'
+export { useSubmissionDetail } from './use-submission-detail'
