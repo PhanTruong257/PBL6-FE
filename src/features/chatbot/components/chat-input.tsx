@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ArrowUp } from 'lucide-react'
+import { FileUploadButton } from './file-upload-button'
 
 interface ChatInputProps {
   value: string
@@ -8,13 +9,26 @@ interface ChatInputProps {
   onSend: () => void
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
   disabled?: boolean
+  onFilesSelected?: (files: File[]) => void
+  hasFiles?: boolean
 }
 
-export function ChatInput({ value, onChange, onSend, onKeyDown, disabled = false }: ChatInputProps) {
-  const canSend = value.trim().length > 0 && !disabled
-
+export function ChatInput({ 
+  value, 
+  onChange, 
+  onSend, 
+  onKeyDown, 
+  disabled = false,
+  onFilesSelected,
+  hasFiles = false
+}: ChatInputProps) {
+  const canSend = (value.trim().length > 0 || hasFiles) && !disabled
+  
   return (
     <div className="flex items-center w-full max-w-2xl mx-auto p-1.5 border-0 rounded-full bg-white shadow-sm sticky bottom-0">
+      {onFilesSelected && (
+        <FileUploadButton onFilesSelected={onFilesSelected} />
+      )}
       <Input
         type="text"
         placeholder="Enter your message ..."

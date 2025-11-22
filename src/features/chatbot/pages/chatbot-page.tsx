@@ -4,9 +4,12 @@ import {
   ChatInput, 
   LoadingSpinner, 
   WelcomeScreen, 
-  StreamingResponse 
+  StreamingResponse,
+  FileDisplay
 } from '../components'
+import { cookieStorage } from '@/libs/utils'
 import '../styles/chat.css'
+import type { User } from '@/types'
 export function ChatbotPage() {
   const {
     messages,
@@ -14,14 +17,20 @@ export function ChatbotPage() {
     currentResponse,
     isProcessing,
     isStarting,
+    isFileVisibility,
     endUserRef,
     endAiRef,
     spinnerRef,
+    uploadedFiles,
     sendMessage,
     handleInputChange,
     handleKeyDown,
+    addFile,
+    removeFile,
+    handleFilesSelected,
   } = useChatbot()
-
+  const userData = cookieStorage.getUser() as User
+  
   return (
     <div className="chatbot-container flex flex-col">
       {isStarting ? (
@@ -51,12 +60,26 @@ export function ChatbotPage() {
       )}
 
       <div className="flex-shrink-0 p-4">
+        {/* Display uploaded files */}
+        {uploadedFiles.length > 0 && (
+          <div className="mb-4 max-w-2xl mx-auto">
+            <FileDisplay
+              files={uploadedFiles}
+              onRemoveFile={removeFile}
+              isFileVisibility={isFileVisibility}
+              disabled={isProcessing}
+            />
+          </div>
+        )}
+
         <ChatInput
           value={currentMessage}
           onChange={handleInputChange}
-          onSend={sendMessage}
+          onSend={()=>sendMessage(userData.user_id, userData.role)}
           onKeyDown={handleKeyDown}
           disabled={isProcessing}
+          onFilesSelected={handleFilesSelected}
+          hasFiles={uploadedFiles.length > 0}
         />
       </div>
     </div>

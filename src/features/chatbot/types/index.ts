@@ -3,6 +3,7 @@ export interface ChatMessage {
   content: string
   role: 'user' | 'ai'
   timestamp?: Date
+  files?: UploadedFile[]
 }
 
 export interface ChatSession {
@@ -12,6 +13,14 @@ export interface ChatSession {
   lastActiveAt: Date
 }
 
+export interface UploadedFile {
+  file: File
+  id: string
+  name: string
+  size: number
+  type: string
+}
+
 export interface ChatbotState {
   messages: ChatMessage[]
   currentMessage: string
@@ -19,11 +28,15 @@ export interface ChatbotState {
   threadID: string | null
   isProcessing: boolean
   isStarting: boolean
+  uploadedFiles: UploadedFile[]
 }
 
 export interface SendMessageRequest {
   userMessage: string
   threadID: string
+  files?: File[]
+  user_id: number
+  user_role: string
 }
 
 export interface SendMessageResponse {

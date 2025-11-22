@@ -10,15 +10,24 @@ export class ChatbotApi {
    */
   static async sendMessage(request: SendMessageRequest): Promise<Response> {
     try {
+      const formData = new FormData()
+      
+      // Add text fields
+      formData.append('userMessage', request.userMessage)
+      formData.append('threadID', request.threadID)
+      formData.append('user_id', request.user_id.toString())
+      formData.append('user_role', request.user_role)
+      
+      // Add files if any
+      if (request.files && request.files.length > 0) {
+        request.files.forEach((file) => {
+          formData.append(`files`, file)
+        })
+      }
+
       const response = await fetch(`${this.baseUrl}/chat`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userMessage: request.userMessage,
-          threadID: request.threadID,
-        }),
+        body: formData,
       })
 
       if (!response.ok) {
