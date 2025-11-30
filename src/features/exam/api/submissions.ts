@@ -60,13 +60,27 @@ export async function updateAnswerGrades(
   submissionId: number,
   answers: Array<{
     answer_id: number
-    points_earned?: string
+    points_earned?: number
     comment?: string
   }>
 ): Promise<SubmissionWithDetails> {
   const response = await httpClient.put(
     `/submissions/${submissionId}/answers`,
     { answers }
+  )
+  return response.data.data
+}
+
+/**
+ * Confirm grading (change status to graded without modifying answers)
+ */
+export async function confirmGrading(
+  submissionId: number,
+  graded_by?: number
+): Promise<SubmissionWithDetails> {
+  const response = await httpClient.put(
+    `/submissions/${submissionId}/confirm-grading`,
+    { graded_by }
   )
   return response.data.data
 }

@@ -1,16 +1,14 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
-import { getSubmissionById, updateAnswerGrades } from '../api/submissions'
+import { getSubmissionById, updateAnswerGrades, confirmGrading } from '../api/submissions'
 
 interface AnswerEdit {
   answer_id: number
-  points_earned?: string
+  points_earned?: number
   comment?: string
 }
 
-// Toggle this to use mock API instead of real API
-const USE_MOCK_API = true
 
 /**
  * Hook to manage submission detail view
@@ -36,17 +34,12 @@ export function useSubmissionDetail(
   // Mock API mutation for updating submission grades
   const updateGradesMutation = useMutation({
     mutationFn: async (data: { submissionId: number; answers: AnswerEdit[] }) => {
-      if (USE_MOCK_API) {
-        // Mock implementation (for testing)
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        console.log('Mock: Submitting grades for submission:', data.submissionId)
-        console.log('Mock: Updated answers:', data.answers)
-        return { success: true, data: {} } as any
-      } else {
-        // Use the actual API call
-        // Note: The API endpoint might need adjustment based on your backend implementation
-        return updateAnswerGrades(data.submissionId, data.answers)
-      }
+      if (data.answers.length > 0) {
+          return updateAnswerGrades(data.submissionId, data.answers)
+        } else {
+          // If no changes, just confirm grading
+          return confirmGrading(data.submissionId)
+        }
     },
     onSuccess: () => {
       // Navigate back to submissions list after successful update
@@ -81,7 +74,7 @@ export function useSubmissionDetail(
         ...prev,
         [answerId]: {
           answer_id: answerId,
-          points_earned: currentPoints,
+          points_earned: parseFloat(currentPoints) || 0,
           comment: currentComment,
         }
       }))
@@ -95,7 +88,7 @@ export function useSubmissionDetail(
       [answerId]: {
         ...prev[answerId],
         answer_id: answerId,
-        points_earned: points,
+        points_earned: parseFloat(points) || 0,
       }
     }))
   }
@@ -128,7 +121,7 @@ export function useSubmissionDetail(
 
   // Submit all changes
   const handleSubmitGrades = async () => {
-    if (!submissionId || Object.keys(editedAnswers).length === 0) {
+    if (!submissionId) {
       return
     }
 
@@ -173,6 +166,7 @@ export function useSubmissionDetail(
     
     // Computed
     hasEdits: Object.keys(editedAnswers).length > 0,
+    canSubmit: true, // Always allow submit - even without edits to confirm grading
     
     // Actions
     refetch,

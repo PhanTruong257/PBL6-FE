@@ -52,7 +52,7 @@ export function useSubmissionsList(examId: string | undefined) {
 
   return {
     // Data
-    submissions: data?.value || [],
+    submissions: data?.data || [],
     pagination: data?.pagination || {
       total: 0,
       page: 1,

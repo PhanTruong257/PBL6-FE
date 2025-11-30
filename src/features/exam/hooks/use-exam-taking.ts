@@ -92,7 +92,7 @@ export function useExamTaking({ examId }: UseExamTakingProps): UseExamTakingRetu
   // Update current answer when question data changes
   useEffect(() => {
     if (questionData?.existing_answer?.answer_content) {
-      setCurrentAnswer(questionData.existing_answer.answer_content)
+      setCurrentAnswer(questionData.existing_answer.answer_content.toString())
     } else {
       setCurrentAnswer('')
     }
@@ -158,7 +158,7 @@ export function useExamTaking({ examId }: UseExamTakingProps): UseExamTakingRetu
 
       return SubmissionService.submitAnswer(submission.submission_id, {
         question_id: questionData.question.question_id,
-        answer_content: currentAnswer,
+        answer_content: currentAnswer.toString(),
       })
     },
     onSuccess: (_, variables) => {
