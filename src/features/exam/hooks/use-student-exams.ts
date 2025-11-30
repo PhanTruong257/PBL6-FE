@@ -37,7 +37,7 @@ export function useStudentExams() {
       if (endDate) query.end_time = new Date(endDate).toISOString()
 
       const response = await ExamService.getStudentExams(query)
-      setExams(response.data.value)
+      setExams(response.data.data ?? [])
       setMeta(response.data.pagination)
     } catch (error) {
       console.error('Error fetching student exams:', error)

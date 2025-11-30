@@ -54,9 +54,8 @@ export const ExamService = {
       
       // Backend returns: { success, message, data: { data: questions[], meta: { total, page, limit } } }
       const result = response.data.data
-      
       // Transform backend questions to frontend format
-      const transformedQuestions = (result.value || []).map((q: any) => {
+      const transformedQuestions = (result.data || []).map((q: any) => {
         const question: Question = {
           question_id: q.question_id,
           content: q.content,
@@ -67,13 +66,9 @@ export const ExamService = {
           created_at: q.created_at,
         }
         // For multiple_choice questions, transform answers array to options array
-        if (q.type === 'multiple_choice' && q.options.answers && Array.isArray(q.options.answers)) {
-          question.options = q.options.answers.map((answer: any) => answer.text)
+        if (q.type === 'multiple_choice' && q.options && Array.isArray(q.options)) {
+          question.options = q.options.map((answer: any) => answer.text.substring(1))
           // // Find the correct answer
-          const correctAnswer = q.options.answers.find((answer: any) => answer.is_correct)
-          if (correctAnswer) {
-            question.correct_answer = correctAnswer.text
-          }
         }
 
         return question
@@ -165,7 +160,7 @@ export const ExamService = {
       const result = response.data.data
       
       // Transform backend exams to frontend format
-      const exams = (result.value || []).map((exam: any) => ({
+      const exams = (result.data || []).map((exam: any) => ({
         exam_id: exam.exam_id,
         class_id: exam.class_id,
         title: exam.title,
@@ -194,7 +189,6 @@ export const ExamService = {
             : undefined,
         })) || [],
       }))
-
 
       return {
         data: exams,

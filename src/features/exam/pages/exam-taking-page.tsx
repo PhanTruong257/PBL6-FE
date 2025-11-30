@@ -63,16 +63,12 @@ export function ExamTakingPage() {
       return
     }
 
-    // // Clear previous timer
-    // if (autoSaveTimerRef.current) {
-    //   clearTimeout(autoSaveTimerRef.current)
-    // }
 
-    // Set new timer for 2 seconds
+    // Set new timer for 0.5 seconds
     autoSaveTimerRef.current = setTimeout(() => {
       console.log('Auto-saving answer...')
       saveAnswer(true) // silent save (no toast)
-    }, 2000)
+    }, 500)
 
     return () => {
       if (autoSaveTimerRef.current) {
@@ -126,17 +122,16 @@ export function ExamTakingPage() {
       if (opts.answers && Array.isArray(opts.answers)) {
         optionsArray = opts.answers.map((ans: any) => ({
           id: ans.id || String(ans.text),
-          text: ans.text || ans.content || String(ans),
+          text: ans.text.substring(1) || '' // Remove leading letter (e.g., "A. ")
         }))
       } else {
         // Try to convert object to array
         optionsArray = Object.entries(opts).map(([key, value]: [string, any]) => ({
           id: key,
-          text: typeof value === 'string' ? value : value.text || value.content || String(value),
+          text: value.text.substring(1) || '',
         }))
       }
     }
-
     if (optionsArray.length === 0) {
       return (
         <div className="p-4 border border-amber-200 bg-amber-50 rounded-lg">
@@ -201,7 +196,7 @@ export function ExamTakingPage() {
                   className="flex-1 text-base leading-relaxed pt-0.5"
                   onClick={(e) => e.preventDefault()}
                 >
-                  {option.text}
+                  {option.text.substring(1)}
                 </Label>
                 
                 {/* Checkmark indicator */}
@@ -221,7 +216,10 @@ export function ExamTakingPage() {
           className="space-y-3"
         >
           {optionsArray.map((option, index) => {
-            const isSelected = currentAnswer === option.id
+            const isSelected = currentAnswer === (option.id.toString())
+            console.log('current answer:', currentAnswer)
+            console.log('option id', option.id)
+            console.log('isSelected', isSelected)
             const optionLabel = String.fromCharCode(65 + index) // A, B, C, D...
             
             return (
@@ -255,7 +253,7 @@ export function ExamTakingPage() {
                 {/* Radio Button */}
                 <div className="pt-0.5">
                   <RadioGroupItem 
-                    value={option.id} 
+                    value={option.id.toString()} 
                     id={option.id}
                     className="w-5 h-5 border-2"
                   />
@@ -266,7 +264,7 @@ export function ExamTakingPage() {
                   htmlFor={option.id}
                   className="flex-1 cursor-pointer text-base leading-relaxed pt-0.5"
                 >
-                  {option.text}
+                  {option.text.substring(1)}
                 </Label>
                 
                 {/* Checkmark indicator */}
@@ -283,8 +281,8 @@ export function ExamTakingPage() {
 
   // Render essay textarea
   const renderEssay = () => {
-    const wordCount = currentAnswer ? currentAnswer.trim().split(/\s+/).filter(Boolean).length : 0
-    
+    const wordCount = currentAnswer ? currentAnswer.toString().trim().split(/\s+/).filter(Boolean).length : 0
+
     return (
       <div className="space-y-3">
         <div className="flex items-center justify-between text-sm">
@@ -332,9 +330,9 @@ export function ExamTakingPage() {
   
   // Helper to check if a question has been answered
   const isQuestionAnswered = (questionNum: number) => {
-    // Current question is considered answered if currentAnswer is not empty
+    // Current question is considered answered if curre ntAnswer is not empty
     if (questionNum === currentQuestion.order) {
-      return currentAnswer && currentAnswer.trim() !== ''
+      return currentAnswer && currentAnswer.toString().trim() !== ''
     }
     // For other questions, we don't have the data in the current implementation
     // This would need to be fetched from the backend or cached
