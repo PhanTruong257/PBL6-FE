@@ -8,10 +8,17 @@ export interface MainLayoutProps {
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const storedValue = localStorage.getItem('isSidebarCollapsed')
+      return storedValue ? JSON.parse(storedValue) : false
+    }
+    return false
+  })
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed)
+    localStorage.setItem('isSidebarCollapsed', JSON.stringify(!isSidebarCollapsed))
   }
 
   return (
@@ -42,7 +49,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           "flex-1 space-y-4 py-2 px-4",
           "bg-muted/40"
         )}>
-          <div className="mx-auto w-full max-w-7xl">
+          <div className="mx-auto w-full px-4 py-2">
             {children}
           </div>
         </main>

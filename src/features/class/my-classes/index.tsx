@@ -62,7 +62,7 @@ function TeacherClassesView({ user, navigate }: { user: User; navigate: any }) {
   }
 
   return (
-    <div className="space-y-6   ">
+    <div className="space-y-6 ">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">
@@ -90,7 +90,7 @@ function TeacherClassesView({ user, navigate }: { user: User; navigate: any }) {
             </p>
           </div>
         ) : classes.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {classes.map((classItem) => (
               <StyledClassCard
                 key={classItem.class_id}
