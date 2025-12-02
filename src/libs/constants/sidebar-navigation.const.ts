@@ -1,16 +1,10 @@
 import {
-  Home,
-  BookOpen,
   Users,
   Settings,
   Calendar,
-  GraduationCap,
-  BarChart3,
   HelpCircle,
-  LayoutDashboard,
   BookMarked,
   ClipboardList,
-  Bell,
   MessageSquare,
   Library,
   Bot,
@@ -37,11 +31,6 @@ export interface SidebarNavigation {
 export const ADMIN_SIDEBAR_NAV: SidebarNavigation = {
   main: [
     {
-      title: 'Dashboard',
-      href: '/admin/dashboard',
-      icon: LayoutDashboard,
-    },
-    {
       title: 'Quản lý người dùng',
       href: '/admin/manage-users',
       icon: Users,
@@ -50,31 +39,6 @@ export const ADMIN_SIDEBAR_NAV: SidebarNavigation = {
       title: 'Phân quyền',
       href: '/admin/permissions',
       icon: Shield,
-    },
-    {
-      title: 'Quản lý khóa học',
-      href: '/admin/courses',
-      icon: BookOpen,
-    },
-    {
-      title: 'Quản lý giáo viên',
-      href: '/admin/teachers',
-      icon: GraduationCap,
-    },
-    {
-      title: 'Quản lý sinh viên',
-      href: '/admin/students',
-      icon: Users,
-    },
-    {
-      title: 'Thống kê & Báo cáo',
-      href: '/admin/reports',
-      icon: BarChart3,
-    },
-    {
-      title: 'Thông báo',
-      href: '/admin/notifications',
-      icon: Bell,
     },
     {
       title: 'Tin nhắn',
@@ -107,11 +71,6 @@ export const ADMIN_SIDEBAR_NAV: SidebarNavigation = {
 export const TEACHER_SIDEBAR_NAV: SidebarNavigation = {
   main: [
     {
-      title: 'Dashboard',
-      href: '/dashboard',
-      icon: LayoutDashboard,
-    },
-    {
       title: 'Lớp học của tôi',
       href: '/classes',
       icon: BookMarked,
@@ -127,19 +86,9 @@ export const TEACHER_SIDEBAR_NAV: SidebarNavigation = {
       icon: ClipboardList,
     },
     {
-      title: 'Sinh viên của tôi',
-      href: '/dashboard',
-      icon: Users,
-    },
-    {
-      title: 'Lịch giảng dạy',
+      title: 'Lịch kiểm tra',
       href: '/calendar',
       icon: Calendar,
-    },
-    {
-      title: 'Thống kê',
-      href: '/dashboard',
-      icon: BarChart3,
     },
     {
       title: 'Tin nhắn',
@@ -172,29 +121,19 @@ export const TEACHER_SIDEBAR_NAV: SidebarNavigation = {
 export const STUDENT_SIDEBAR_NAV: SidebarNavigation = {
   main: [
     {
-      title: 'Teams',
-      href: '/dashboard',
-      icon: Home,
-    },
-    {
       title: 'Lớp học của tôi',
       href: '/classes',
       icon: BookMarked,
     },
     {
-      title: 'Quản lý bài kiểm tra',
+      title: 'Làm bài kiểm tra',
       href: '/exam/student',
       icon: ClipboardList,
     },
     {
-      title: 'Lịch giảng dạy',
+      title: 'Lịch kiểm tra',
       href: '/calendar',
       icon: Calendar,
-    },
-    {
-      title: 'Thống kê',
-      href: '/dashboard',
-      icon: BarChart3,
     },
     {
       title: 'Tin nhắn',

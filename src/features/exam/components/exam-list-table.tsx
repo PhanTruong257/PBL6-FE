@@ -133,7 +133,7 @@ export function ExamListTable({
                   >
                     <Users className="w-4 h-4" />
                   </Button>
-                  <Button
+                  {/* <Button
                     variant="ghost"
                     size="icon"
                     className="text-blue-600 hover:bg-blue-50"
@@ -142,7 +142,7 @@ export function ExamListTable({
                     title="Copy"
                   >
                     <Copy className="w-4 h-4" />
-                  </Button>
+                  </Button> */}
                   <Button
                     variant="ghost"
                     size="icon"

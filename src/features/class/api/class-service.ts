@@ -142,8 +142,8 @@ export class ClassService {
    */
   static async addMembers(data: AddMemberRequest): Promise<any> {
     const response = await httpClient.post(
-      `/classes/${data.classId}/add-student`,
-      { students: data.students },
+        `/classes/add-students`,
+      { students: data.students, class_id: data.classId },
     )
     return response.data
   }

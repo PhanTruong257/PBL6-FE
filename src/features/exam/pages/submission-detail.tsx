@@ -153,7 +153,7 @@ export function SubmissionDetailPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <p className="text-sm text-gray-500">Học sinh</p>
-              <p className="font-medium">Học sinh #{submission.student_id}</p>
+              <p className="font-medium">{submission.student_name}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Bài kiểm tra</p>

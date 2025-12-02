@@ -53,6 +53,7 @@ export function Sidebar({ className, isCollapsed = false, onToggleCollapse }: Si
 
   const mainMenuItems = filterByPermission(navigation.main)
   const bottomItems = filterByPermission(navigation.bottom)
+  const currentRoute = window.location.pathname
 
   return (
     <div className={cn(
@@ -86,8 +87,9 @@ export function Sidebar({ className, isCollapsed = false, onToggleCollapse }: Si
                 key={`main-${index}-${item.title}`}
                 variant="ghost"
                 className={cn(
-                  "justify-start gap-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                  isCollapsed && "justify-center px-2"
+                  "justify-start gap-2 hover:bg-gray-200",
+                  isCollapsed && "justify-center px-2",
+                  currentRoute.startsWith(item.href) && "bg-gray-300 text-sidebar-accent-foreground font-bold"
                 )}
                 asChild
               >

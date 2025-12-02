@@ -62,6 +62,9 @@ export function useLogin() {
         console.log(
           `✅ Loaded ${userData.roles?.length || 0} roles and ${userData.permissions?.length || 0} permissions`,
         )
+
+        const redirectPath = userData.role === 'admin' ? '/admin/manage-users' : '/classes'
+        navigate({ to: redirectPath as any })
       } catch (error) {
         console.error('❌ Failed to fetch user data from /users/me:', error)
         // Fallback: Set basic user info from login response
@@ -69,9 +72,6 @@ export function useLogin() {
         queryClient.setQueryData(authKeys.user(), user)
       }
 
-      // Navigate to unified dashboard
-      const redirectPath = '/dashboard'
-      navigate({ to: redirectPath as any })
     },
     onError: (error) => {
       console.log('🚨 Login failed:', error)

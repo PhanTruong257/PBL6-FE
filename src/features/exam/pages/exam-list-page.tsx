@@ -49,7 +49,7 @@ export function ExamListPage() {
   }
 
   return (
-    <div className="container mx-auto">
+    <div className="w-full mx-auto mt-4 px-4">
       <ExamListHeader
         search={search}
         onSearchChange={setSearch}
