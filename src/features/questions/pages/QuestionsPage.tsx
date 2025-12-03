@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useRecoilValue } from 'recoil'
-import { Plus, Grid3x3, List, Download, Upload } from 'lucide-react'
+import { Plus, Grid3x3, List, Download, Upload, FileText, FileSpreadsheet, FileType } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import {
   Dialog,
   DialogContent,
@@ -45,6 +51,7 @@ import {
   useQuestion,
   useQuestionsTranslation,
 } from '../hooks'
+import { questionsApi } from '../apis/questions-service'
 import { userPermissionsSelector, currentUserState } from '@/global/recoil/user'
 import { userRoleSelector } from '@/global/recoil/user/userSelector'
 import type { Question, QuestionFilterParams } from '@/types/question'
@@ -61,7 +68,6 @@ export function QuestionsPage() {
   // ALL STATE AND HOOKS MUST BE DECLARED FIRST
   // BEFORE ANY CONDITIONAL RETURNS (React Rules of Hooks)
   // ============================================
-  
   // Local State
   const [selectedCategoryId, setSelectedCategoryId] = useState<number>()
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null)
@@ -121,7 +127,6 @@ export function QuestionsPage() {
   // ============================================
   // CONDITIONAL RETURNS (After all hooks)
   // ============================================
-  
   // Show loading while checking access
   if (isCheckingAccess) {
     return (
@@ -159,7 +164,6 @@ export function QuestionsPage() {
   // ============================================
   // EVENT HANDLERS
   // ============================================
-  
   const handleSearch = (values: SearchFormValues) => {
     setFilters({
       ...values,
@@ -224,6 +228,28 @@ export function QuestionsPage() {
     setViewingQuestionId(question.question_id)
   }
 
+  const handleExport = async (format: 'excel' | 'text' | 'docx') => {
+    try {
+      const exportParams = {
+        ...filters,
+        category_id: selectedCategoryId,
+      }
+
+      if (format === 'excel') {
+        await questionsApi.exportToExcel(exportParams)
+        toast.success(t('messages.exportSuccess', { format: 'Excel' }))
+      } else if (format === 'text') {
+        await questionsApi.exportToText(exportParams)
+        toast.success(t('messages.exportSuccess', { format: 'Text' }))
+      } else {
+        await questionsApi.exportToDocx(exportParams)
+        toast.success(t('messages.exportSuccess', { format: 'Word' }))
+      }
+    } catch (error: any) {
+      toast.error(error?.message || t('messages.exportError', { format }))
+    }
+  }
+
   return (
     <div className="container mx-auto max-w-[1800px]">
       {/* Header */}
@@ -244,10 +270,30 @@ export function QuestionsPage() {
             <Upload className="h-5 w-5 mr-2" />
             {t('actions.import')}
           </Button>
-          <Button variant="outline" size="lg">
-            <Download className="h-5 w-5 mr-2" />
-            {t('actions.export')}
-          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="lg">
+                <Download className="h-5 w-5 mr-2" />
+                {t('actions.export')}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleExport('excel')}>
+                <FileSpreadsheet className="h-4 w-4 mr-2" />
+                {t('export.excel')}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport('text')}>
+                <FileText className="h-4 w-4 mr-2" />
+                {t('export.text')}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport('docx')}>
+                <FileType className="h-4 w-4 mr-2" />
+                {t('export.word')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
           {canCreateQuestion && (
             <Button onClick={() => handleOpenForm()} size="lg">
               <Plus className="h-5 w-5 mr-2" />

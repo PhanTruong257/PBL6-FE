@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/layout/main-layout'
 import { QuestionsPage } from '@/features/questions'
 import { useRecoilValue } from 'recoil'
 import { currentUserState, userPermissionsSelector } from '@/global/recoil/user'
+import { Loader2 } from 'lucide-react'
 
 /**
  * Questions route - Accessible by users with 'view questions' permission
@@ -23,21 +24,20 @@ function QuestionsPageRoute() {
   console.log('Questions route - user:', user)
   console.log('Questions route - permissions:', userPermissions)
 
-  // Check if user is authenticated
+  // Wait for Recoil state to sync (RequireAuth ensures user exists, but Recoil might lag)
   if (!user) {
-    console.log('No user - redirecting to login')
-    return <Navigate to='/auth/login' />
+    console.log('⏳ Waiting for user data to sync to Recoil...')
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
   }
   console.log('Authenticated user:', user)
   const isTeacherOrAdmin = user.role === 'teacher' || user.role === 'admin'
   const canViewQuestions = userPermissions.some(
     p => p.resource === 'questions' && p.action === 'view'
   )
-  
-  // if (!isTeacherOrAdmin || !canViewQuestions) {
-  //   console.log('Access denied - role:', user.role, 'hasPermission:', canViewQuestions)
-  //   return <Navigate to='/dashboard' />
-  // }
 
   return (
     <MainLayout>

@@ -125,6 +125,13 @@ export interface CategoryListResponse {
 
 // ============================================================
 // IMPORT EXCEL INTERFACES
+// Structure: 8 pairs of (option_text, checkbox)
+// Columns:
+// - A->E (question info)
+// - F-G (options A), H-I (B), J-K (C), L-M (D), 
+// - N-O (E), P-Q (F), R-S (G), T-U (H)
+// - V (is_public)
+// - W-X (json/status)
 // ============================================================
 export interface ExcelQuestionRow {
   content: string
@@ -132,18 +139,33 @@ export interface ExcelQuestionRow {
   category_name?: string
   difficulty?: string
   is_multiple_answer?: string
-  A?: string
-  B?: string
-  C?: string
-  D?: string
-  E?: string
-  F?: string
-  G?: string
-  H?: string
-  I?: string
-  J?: string
-  correct_answers?: string
+  // Option A
+  F?: string // Option A text
+  G?: string // Option A is correct? (true/false/1/0)
+  // Option B
+  H?: string // Option B text
+  I?: string // Option B is correct?
+  // Option C
+  J?: string // Option C text
+  K?: string // Option C is correct?
+  // Option D
+  L?: string // Option D text
+  M?: string // Option D is correct?
+  // Option E
+  N?: string // Option E text
+  O?: string // Option E is correct?
+  // Option F
+  P?: string // Option F text
+  Q?: string // Option F is correct?
+  // Option G
+  R?: string // Option G text
+  S?: string // Option G is correct?
+  // Option H
+  T?: string // Option H text
+  U?: string // Option H is correct?
+  // Other fields
   is_public?: string
+  options_json?: string
   status?: string
 }
 
@@ -166,4 +188,3 @@ export interface PreviewExcelResult {
   preview: ExcelQuestionRow[]
   headers: string[]
 }
-

@@ -18,11 +18,13 @@ import type {
 // ============================================================
 export const categoriesApi = {
   /**
-   * Get all question categories
+   * Get all question categories.
    */
   getAll: async (): Promise<QuestionCategory[]> => {
     const response = await httpClient.get<IApiResponse<QuestionCategory[]>>('/question-categories')
+    console.log('Response: ', response)
     const categories = response.data.data
+    console.log('Categories: ', categories)
     return categories
   },
 
@@ -146,7 +148,7 @@ export const questionsApi = {
     formData.append('file', file)
     
     const response = await httpClient.post<IApiResponse<ImportQuestionResult>>(
-      '/questions/import/execute',
+      '/questions/import',
       formData,
       {
         headers: {
@@ -158,13 +160,78 @@ export const questionsApi = {
   },
 
   /**
-   * Download Excel template
+   * Download Excel template from frontend public folder
    */
   downloadTemplate: () => {
-    // This will be handled by direct link to template file
+    // Create a temporary <a> tag to trigger download
     const link = document.createElement('a')
-    link.href = '/templates/TemplateImportQuestions.xlsx'
+
+    // Set attributes of the link
+    link.href = '/templates/excels/TemplateImportQuestions.xlsx'
     link.download = 'TemplateImportQuestions.xlsx'
+    link.target = '_blank'
+
+    // Append to body, trigger click, and remove
+    document.body.appendChild(link)
     link.click()
+    document.body.removeChild(link)
+  },
+
+  /**
+   * Export questions to Excel
+   */
+  exportToExcel: async (params?: QuestionFilterParams): Promise<void> => {
+    const response = await httpClient.get('/questions/export/excel', {
+      params,
+      responseType: 'blob',
+    })
+    
+    const blob = new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `questions_export_${new Date().toISOString().split('T')[0]}.xlsx`
+    link.click()
+    window.URL.revokeObjectURL(url)
+  },
+
+  /**
+   * Export questions to text file
+   */
+  exportToText: async (params?: QuestionFilterParams): Promise<void> => {
+    const response = await httpClient.get('/questions/export/text', {
+      params,
+      responseType: 'blob',
+    })
+    
+    const blob = new Blob([response.data], { type: 'text/plain' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `questions_export_${new Date().toISOString().split('T')[0]}.txt`
+    link.click()
+    window.URL.revokeObjectURL(url)
+  },
+
+  /**
+   * Export questions to Word document
+   */
+  exportToDocx: async (params?: QuestionFilterParams): Promise<void> => {
+    const response = await httpClient.get('/questions/export/docx', {
+      params,
+      responseType: 'blob',
+    })
+    
+    const blob = new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `questions_export_${new Date().toISOString().split('T')[0]}.docx`
+    link.click()
+    window.URL.revokeObjectURL(url)
   },
 }

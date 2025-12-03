@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { Upload, FileSpreadsheet, Download, AlertCircle, CheckCircle, XCircle } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from '@/libs/toast'
+import { useQuestionsTranslation } from '../hooks'
 
 import {
   Dialog,
@@ -40,6 +41,7 @@ interface ImportExcelDialogProps {
 }
 
 export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps) {
+  const { t } = useQuestionsTranslation()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<PreviewExcelResult | null>(null)
   const [importResult, setImportResult] = useState<ImportQuestionResult | null>(null)
@@ -60,10 +62,10 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
       setTimeout(() => {
         dialogContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
       }, 100)
-      toast.success('Preview loaded successfully')
+      toast.success(t('import.toastPreviewSuccess'))
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to preview file')
+      toast.error(error.response?.data?.message || t('import.toastPreviewError'))
     },
   })
 
@@ -79,7 +81,7 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
       }, 100)
       
       if (data.success) {
-        toast.success(`Successfully imported ${data.imported} questions`)
+        toast.success(t('import.toastImportSuccess', { count: data.imported }))
         queryClient.invalidateQueries({ queryKey: ['questions'] })
         queryClient.invalidateQueries({ queryKey: ['categories'] })
       } else {
@@ -87,7 +89,7 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
       }
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to import file')
+      toast.error(error.response?.data?.message || t('import.toastImportError'))
     },
   })
 
@@ -101,13 +103,13 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
       ]
       
       if (!validTypes.includes(uploadedFile.type)) {
-        toast.error('Please select a valid Excel file (.xlsx or .xls)')
+        toast.error(t('import.toastInvalidFile'))
         return
       }
 
       // Validate file size (max 10MB)
       if (uploadedFile.size > 10 * 1024 * 1024) {
-        toast.error('File size must be less than 10MB')
+        toast.error(t('import.toastFileTooLarge'))
         return
       }
 
@@ -132,7 +134,7 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
 
   const handleDownloadTemplate = () => {
     questionsApi.downloadTemplate()
-    toast.success('Template downloaded')
+    toast.success(t('import.toastTemplateDownloaded'))
   }
 
   const handleClose = () => {
@@ -165,19 +167,53 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
   }
 
   const renderPreviewRow = (row: ExcelQuestionRow, index: number) => {
-    const options = [row.A, row.B, row.C, row.D, row.E, row.F, row.G, row.H, row.I, row.J]
-      .filter(Boolean)
+    // Parse options from 8 pairs (F-G, H-I, J-K, L-M, N-O, P-Q, R-S, T-U)
+    const optionsData = [
+      { text: row.F, correct: row.G, label: 'A' },
+      { text: row.H, correct: row.I, label: 'B' },
+      { text: row.J, correct: row.K, label: 'C' },
+      { text: row.L, correct: row.M, label: 'D' },
+      { text: row.N, correct: row.O, label: 'E' },
+      { text: row.P, correct: row.Q, label: 'F' },
+      { text: row.R, correct: row.S, label: 'G' },
+      { text: row.T, correct: row.U, label: 'H' },
+    ].filter((opt) => opt.text && opt.text.trim() !== '')
+
+    const optionsDisplay = optionsData.map((opt) => {
+      const isCorrect = opt.correct === 'true' || opt.correct === 'TRUE' || opt.correct === '1'
+      return (
+        <div key={opt.label} className={`inline-block px-2 py-1 rounded mr-2 mb-1 ${isCorrect ? 'bg-green-100 text-green-800 font-semibold' : 'bg-gray-100'}`}>
+          {opt.label}: {opt.text}
+        </div>
+      )
+    })
+
+    const correctAnswers = optionsData
+      .filter((opt) => opt.correct === 'true' || opt.correct === 'TRUE' || opt.correct === '1')
+      .map((opt) => opt.label)
       .join(', ')
 
+    // Check if row has errors (from status field)
+    const hasError = row.status && row.status.trim() !== ''
+
     return (
-      <TableRow key={index}>
+      <TableRow key={index} className={hasError ? 'bg-red-50 hover:bg-red-100' : ''}>
         <TableCell className="font-medium">{index + 1}</TableCell>
-        <TableCell className="whitespace-normal">{row.content}</TableCell>
+        <TableCell className="whitespace-normal max-w-[300px]">{row.content}</TableCell>
         <TableCell>{getTypeBadge(row.type)}</TableCell>
         <TableCell className="whitespace-normal">{row.category_name || '-'}</TableCell>
         <TableCell>{getDifficultyBadge(row.difficulty)}</TableCell>
-        <TableCell className="text-sm whitespace-normal">{options || '-'}</TableCell>
-        <TableCell className="whitespace-normal">{row.correct_answers || '-'}</TableCell>
+        <TableCell className="text-sm whitespace-normal max-w-[400px]">
+          <div className="flex flex-wrap">{optionsDisplay}</div>
+        </TableCell>
+        <TableCell className="whitespace-normal">
+          {correctAnswers || '-'}
+        </TableCell>
+        {hasError && (
+          <TableCell className="text-red-600 text-sm whitespace-normal max-w-[250px]">
+            {row.status}
+          </TableCell>
+        )}
       </TableRow>
     )
   }
@@ -188,18 +224,18 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileSpreadsheet className="h-5 w-5" />
-            Import Questions from Excel
+            {t('import.title')}
           </DialogTitle>
           <DialogDescription>
-            Upload an Excel file to import multiple questions at once
+            {t('import.description')}
           </DialogDescription>
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full flex-1 flex flex-col overflow-hidden">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="upload">Upload</TabsTrigger>
-            <TabsTrigger value="preview" disabled={!preview}>Preview</TabsTrigger>
-            <TabsTrigger value="result" disabled={!importResult}>Result</TabsTrigger>
+            <TabsTrigger value="upload">{t('import.upload')}</TabsTrigger>
+            <TabsTrigger value="preview" disabled={!preview}>{t('import.preview')}</TabsTrigger>
+            <TabsTrigger value="result" disabled={!importResult}>{t('import.result')}</TabsTrigger>
           </TabsList>
 
           {/* Upload Tab */}
@@ -207,7 +243,7 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                Download the template, fill it with your questions, then upload it here
+                {t('import.alertTemplate')}
               </AlertDescription>
             </Alert>
 
@@ -218,7 +254,7 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
                 className="gap-2"
               >
                 <Download className="h-4 w-4" />
-                Download Template
+                {t('import.downloadTemplate')}
               </Button>
             </div>
 
@@ -243,7 +279,7 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
                   
                   {/* Preview limit control */}
                   <div className="flex items-center justify-center gap-2">
-                    <Label htmlFor="preview-limit">Preview rows:</Label>
+                    <Label htmlFor="preview-limit">{t('import.previewRows')}</Label>
                     <Select
                       value={previewLimit.toString()}
                       onValueChange={(v) => setPreviewLimit(Number(v))}
@@ -266,14 +302,14 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
                       onClick={() => document.getElementById('excel-file')?.click()}
                       variant="outline"
                     >
-                      Change File
+                      {t('import.changeFile')}
                     </Button>
                     <Button
                       onClick={handlePreview}
                       disabled={previewMutation.isPending}
                       className="gap-2"
                     >
-                      {previewMutation.isPending ? 'Loading...' : 'Preview'}
+                      {previewMutation.isPending ? t('import.loading') : t('import.preview')}
                     </Button>
                   </div>
                 </div>
@@ -281,13 +317,13 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
                 <div className="space-y-4">
                   <Upload className="h-16 w-16 mx-auto text-muted-foreground" />
                   <div>
-                    <p className="font-medium">Click to upload or drag and drop</p>
+                    <p className="font-medium">{t('import.dragDrop')}</p>
                     <p className="text-sm text-muted-foreground">
-                      Excel files only (.xlsx, .xls)
+                      {t('import.excelFilesOnly')}
                     </p>
                   </div>
                   <Button onClick={() => document.getElementById('excel-file')?.click()}>
-                    Select File
+                    {t('import.selectFile')}
                   </Button>
                 </div>
               )}
@@ -302,8 +338,8 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
                     {preview.preview.length === preview.total 
-                      ? `Showing all ${preview.total} rows`
-                      : `Showing ${preview.preview.length} of ${preview.total} total rows`
+                      ? t('import.alertPreviewAll', { total: preview.total })
+                      : t('import.alertPreviewPartial', { shown: preview.preview.length, total: preview.total })
                     }
                   </AlertDescription>
                 </Alert>
@@ -313,12 +349,13 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
                     <TableHeader className="sticky top-0 bg-background z-10 shadow-sm">
                       <TableRow>
                         <TableHead className="w-12 whitespace-nowrap border-r">#</TableHead>
-                        <TableHead className="min-w-[300px] whitespace-nowrap border-r">Content</TableHead>
-                        <TableHead className="min-w-[150px] whitespace-nowrap border-r">Type</TableHead>
-                        <TableHead className="min-w-[150px] whitespace-nowrap border-r">Category</TableHead>
-                        <TableHead className="min-w-[120px] whitespace-nowrap border-r">Difficulty</TableHead>
-                        <TableHead className="min-w-[400px] whitespace-nowrap border-r">Options</TableHead>
-                        <TableHead className="min-w-[100px] whitespace-nowrap">Correct</TableHead>
+                        <TableHead className="min-w-[300px] whitespace-nowrap border-r">{t('import.tableContent')}</TableHead>
+                        <TableHead className="min-w-[150px] whitespace-nowrap border-r">{t('import.tableType')}</TableHead>
+                        <TableHead className="min-w-[150px] whitespace-nowrap border-r">{t('import.tableCategory')}</TableHead>
+                        <TableHead className="min-w-[120px] whitespace-nowrap border-r">{t('import.tableDifficulty')}</TableHead>
+                        <TableHead className="min-w-[400px] whitespace-nowrap border-r">{t('import.tableOptions')}</TableHead>
+                        <TableHead className="min-w-[100px] whitespace-nowrap border-r">{t('import.tableCorrect')}</TableHead>
+                        <TableHead className="min-w-[250px] whitespace-nowrap">{t('import.tableStatus')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -331,14 +368,14 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
 
                 <div className="flex justify-end gap-2 pt-2 border-t">
                   <Button variant="outline" onClick={() => setActiveTab('upload')}>
-                    Back
+                    {t('import.back')}
                   </Button>
                   <Button
                     onClick={handleImport}
                     disabled={importMutation.isPending}
                     className="gap-2"
                   >
-                    {importMutation.isPending ? 'Importing...' : 'Import All'}
+                    {importMutation.isPending ? t('import.importing') : t('import.importAll')}
                   </Button>
                 </div>
               </>
@@ -353,7 +390,7 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
                   <Alert>
                     <CheckCircle className="h-4 w-4 text-green-500" />
                     <AlertDescription>
-                      <div className="font-medium">Imported</div>
+                      <div className="font-medium">{t('import.resultImported')}</div>
                       <div className="text-2xl font-bold">{importResult.imported}</div>
                     </AlertDescription>
                   </Alert>
@@ -361,7 +398,7 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
                   <Alert variant={importResult.failed > 0 ? 'destructive' : 'default'}>
                     <XCircle className="h-4 w-4" />
                     <AlertDescription>
-                      <div className="font-medium">Failed</div>
+                      <div className="font-medium">{t('import.resultFailed')}</div>
                       <div className="text-2xl font-bold">{importResult.failed}</div>
                     </AlertDescription>
                   </Alert>
@@ -369,7 +406,7 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
                   <Alert>
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
-                      <div className="font-medium">Total</div>
+                      <div className="font-medium">{t('import.resultTotal')}</div>
                       <div className="text-2xl font-bold">{importResult.total}</div>
                     </AlertDescription>
                   </Alert>
@@ -377,14 +414,14 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
 
                 {importResult.errors.length > 0 && (
                   <>
-                    <h4 className="font-medium">Errors:</h4>
+                    <h4 className="font-medium">{t('import.resultErrors')}</h4>
                     <div className="flex-1 overflow-auto rounded-md border">
                       <div className="p-4 space-y-3">
                         {importResult.errors.map((error, index) => (
                           <Alert key={index} variant="destructive">
                             <AlertDescription>
                               <div className="font-medium mb-1">
-                                Row {error.row}: {error.content}
+                                {t('import.resultRow')} {error.row}: {error.content}
                               </div>
                               <ul className="list-disc list-inside text-sm">
                                 {error.errors.map((err, i) => (
@@ -400,7 +437,7 @@ export function ImportExcelDialog({ open, onOpenChange }: ImportExcelDialogProps
                 )}
 
                 <div className="flex justify-end pt-2 border-t">
-                  <Button onClick={handleClose}>Close</Button>
+                  <Button onClick={handleClose}>{t('import.close')}</Button>
                 </div>
               </>
             )}
