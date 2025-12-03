@@ -197,6 +197,78 @@ export interface ReconnectedResponse {
   timestamp: string
 }
 
+// ==================== Class/Post Events ====================
+
+/**
+ * Class Socket Event Names
+ */
+export const CLASS_SOCKET_EVENTS = {
+  // Client -> Server
+  JOIN_CLASS: 'class:join',
+  LEAVE_CLASS: 'class:leave',
+  CREATE_POST: 'post:create',
+  CREATE_REPLY: 'reply:create',
+
+  // Server -> Client
+  CLASS_JOINED: 'class:joined',
+  POST_CREATED: 'post:created',
+  REPLY_CREATED: 'reply:created',
+} as const
+
+/**
+ * Class Event Payloads
+ */
+export interface JoinClassPayload {
+  class_id: number
+  user_id: number
+}
+
+export interface LeaveClassPayload {
+  class_id: number
+}
+
+export interface CreatePostPayload {
+  class_id: number
+  sender_id: number
+  title?: string
+  message: string
+}
+
+export interface CreateReplyPayload {
+  class_id: number
+  parent_id: number
+  sender_id: number
+  message: string
+}
+
+/**
+ * Class Event Responses
+ */
+export interface ClassJoinedResponse {
+  class_id: number
+  success: boolean
+  members_count: number
+}
+
+export interface PostCreatedResponse {
+  id: number
+  class_id: number
+  sender_id: number
+  title?: string
+  message: string
+  created_at: string
+  parent_id?: number | null
+}
+
+export interface ReplyCreatedResponse {
+  id: number
+  class_id: number
+  sender_id: number
+  message: string
+  parent_id: number
+  created_at: string
+}
+
 /**
  * Type-safe event map for Socket.IO
  */
@@ -218,6 +290,10 @@ export interface ServerToClientEvents {
   [SOCKET_EVENTS.PRESENCE_LIST]: (data: PresenceListResponse[]) => void
   [SOCKET_EVENTS.ERROR]: (data: ErrorResponse) => void
   [SOCKET_EVENTS.RECONNECTED]: (data: ReconnectedResponse) => void
+  // Class events
+  [CLASS_SOCKET_EVENTS.CLASS_JOINED]: (data: ClassJoinedResponse) => void
+  [CLASS_SOCKET_EVENTS.POST_CREATED]: (data: PostCreatedResponse) => void
+  [CLASS_SOCKET_EVENTS.REPLY_CREATED]: (data: ReplyCreatedResponse) => void
 }
 
 export interface ClientToServerEvents {
@@ -232,4 +308,9 @@ export interface ClientToServerEvents {
   [SOCKET_EVENTS.MESSAGE_READ]: (payload: MessageReadPayload) => void
   [SOCKET_EVENTS.PRESENCE_UPDATE]: (payload: PresenceUpdatePayload) => void
   [SOCKET_EVENTS.REQUEST_PRESENCE]: (payload: RequestPresencePayload) => void
+  // Class events
+  [CLASS_SOCKET_EVENTS.JOIN_CLASS]: (payload: JoinClassPayload) => void
+  [CLASS_SOCKET_EVENTS.LEAVE_CLASS]: (payload: LeaveClassPayload) => void
+  [CLASS_SOCKET_EVENTS.CREATE_POST]: (payload: CreatePostPayload) => void
+  [CLASS_SOCKET_EVENTS.CREATE_REPLY]: (payload: CreateReplyPayload) => void
 }
