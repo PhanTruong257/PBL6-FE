@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { useGlobalSocket } from '@/global/providers/socket-provider'
+import { useSocket } from '@/global/hooks'
 import { useEffect } from 'react'
 import { ConversationService } from '../api/conversation-service'
+import { SOCKET_EVENTS } from '../types/socket-events'
 
 /**
  * Hook để lấy số lượng tin nhắn chưa đọc
@@ -9,7 +10,7 @@ import { ConversationService } from '../api/conversation-service'
  * - Update real-time qua Socket.IO
  */
 export function useUnreadCount(userId: number | undefined, enabled = true) {
-  const { socket, isConnected } = useGlobalSocket()
+  const { socket, isConnected } = useSocket()
 
   // Query unread count
   const query = useQuery({
@@ -27,7 +28,10 @@ export function useUnreadCount(userId: number | undefined, enabled = true) {
   useEffect(() => {
     if (!socket || !isConnected || !userId) return
 
-    console.log('🔔 [UNREAD_COUNT] Setting up real-time listeners for user:', userId)
+    console.log(
+      '🔔 [UNREAD_COUNT] Setting up real-time listeners for user:',
+      userId,
+    )
 
     // Refetch count when new message received (from others)
     const handleMessageReceived = (data: any) => {
@@ -58,12 +62,12 @@ export function useUnreadCount(userId: number | undefined, enabled = true) {
 
     socket.on('message:received', handleMessageReceived)
     socket.on('message:status', handleMessageStatusUpdated)
-    socket.on('messages:read', handleMessagesRead)
+    socket.on(SOCKET_EVENTS.MESSAGES_READ, handleMessagesRead)
 
     return () => {
       socket.off('message:received', handleMessageReceived)
       socket.off('message:status', handleMessageStatusUpdated)
-      socket.off('messages:read', handleMessagesRead)
+      socket.off(SOCKET_EVENTS.MESSAGES_READ, handleMessagesRead)
     }
   }, [socket, isConnected, userId, query])
 

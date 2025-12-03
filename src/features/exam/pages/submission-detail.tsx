@@ -47,6 +47,7 @@ export function SubmissionDetailPage() {
     isLoading,
     isSubmitting,
     hasEdits,
+    canSubmit,
     editingAnswerId,
     editedAnswers,
     handleBack,
@@ -64,8 +65,6 @@ export function SubmissionDetailPage() {
   const [commentDialogOpen, setCommentDialogOpen] = useState(false)
   const [currentCommentAnswerId, setCurrentCommentAnswerId] = useState<number | null>(null)
   const [tempComment, setTempComment] = useState('')
-
-  console.log("submission", submission)
 
   const handleOpenCommentDialog = (answerId: number, currentComment?: string) => {
     setCurrentCommentAnswerId(answerId)
@@ -121,8 +120,8 @@ export function SubmissionDetailPage() {
           </div>
         </div>
         
-        {/* Submit button */}
-        {hasEdits && (
+        {/* Submit button - show always when status is not 'graded' */}
+        {submission.status !== 'graded' && (
           <Button
             onClick={handleSubmitGrades}
             disabled={isSubmitting}
@@ -136,7 +135,9 @@ export function SubmissionDetailPage() {
             ) : (
               <>
                 <Save className="w-4 h-4 mr-2" />
-                Xác nhận kết quả ({Object.keys(editedAnswers).length} thay đổi)
+                {hasEdits
+                  ? `Xác nhận kết quả (${Object.keys(editedAnswers).length} thay đổi)`
+                  : 'Xác nhận kết quả'}
               </>
             )}
           </Button>
@@ -152,7 +153,7 @@ export function SubmissionDetailPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <p className="text-sm text-gray-500">Học sinh</p>
-              <p className="font-medium">Học sinh #{submission.student_id}</p>
+              <p className="font-medium">{submission.student_name}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Bài kiểm tra</p>
@@ -238,6 +239,7 @@ export function SubmissionDetailPage() {
           ) : (
             <div className="space-y-6">
               {submission.answers.map((answer, index) => {
+                console.log('answer object', answer)
                 const isEssay = answer.question.type === 'essay'
                 const isMultipleChoice = answer.question.type === 'multiple_choice'
                 const isMultipleAnswer = answer.question.is_multiple_answer
@@ -287,10 +289,12 @@ export function SubmissionDetailPage() {
                               Các lựa chọn:
                             </p>
                             <ul className="space-y-2">
-                              {options.answers.map((option) => {
-                                const isStudentAnswer = answer.answer_content?.split(',').map(s => s.trim()).includes(option.id)
-                                const isCorrectAnswer = option.is_correct
-                                
+                              {options.map((option) => {
+                                const parsed = JSON.parse(answer.answer_content || '[]');
+                                const questionAnswer = Array.isArray(parsed) ? parsed : [parsed];
+                                const isStudentAnswer = questionAnswer.includes(option.id);
+                                const isCorrectAnswer = option.text.startsWith('=')
+
                                 return (
                                   <li
                                     key={option.id}
@@ -308,7 +312,7 @@ export function SubmissionDetailPage() {
                                       {option.id})
                                     </span>
                                     <span className="text-gray-700 flex-1">
-                                      {option.text}
+                                      {option.text.substring(1)}
                                     </span>
                                     {isStudentAnswer && (
                                       <Badge variant="secondary" className="text-xs">
@@ -371,8 +375,7 @@ export function SubmissionDetailPage() {
                           </div>
                         )}
                       </div>
-
-                      <div className="ml-4 text-right min-w-[100px]">
+                      {submission.status != 'graded' && (<div className="ml-4 text-right min-w-[100px]">
                         <p className="text-sm text-gray-500 mb-1">Điểm</p>
                         {(isEssay || isMultipleAnswer) && isCurrentlyEditing ? (
                           <div className="flex flex-col gap-2">
@@ -421,7 +424,8 @@ export function SubmissionDetailPage() {
                             )}
                           </div>
                         )}
-                      </div>
+                      </div>) }
+                     {submission.status == 'graded' && ( <span className="text-blue-700 font-bold">{currentPoints}</span>)} 
                     </div>
                   </div>
                 )

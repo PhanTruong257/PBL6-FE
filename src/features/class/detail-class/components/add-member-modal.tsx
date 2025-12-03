@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -9,11 +9,11 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import type { ClassBasicInfo } from '@/types/class'
-import { type User } from '@/types'
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
-import { cookieStorage } from '@/libs/utils/cookie'
-import { useQueryClient } from '@tanstack/react-query'
-
+import { useRecoilValue } from 'recoil'
+import { currentUserState } from '@/global/recoil/user'
+import { useAllUsers, useSearchUsers } from '@/global/hooks'
+import { useAddMembers, useGetUsersByEmails } from '../hooks/use-class-detail'
 
 interface AddMemberModalProps {
   isOpen: boolean
@@ -21,201 +21,102 @@ interface AddMemberModalProps {
   classInfo: ClassBasicInfo
 }
 
-// const users: User[]=[{
-//   user_id: '1',
-//   role: 'teacher',
-//   fullName: 'abc',
-//   email:"abc@gmail.com",
-//   isEmailVerified:true,
-//   status:'active',
-//   createdAt: '',
-//   updatedAt: '',
-// },
-// {
-//   user_id: '2',
-//   role: 'teacher',
-//   fullName: 'abc',
-//   email:"abc123@gmail.com",
-//   isEmailVerified:true,
-//   status:'active',
-//   createdAt: '',
-//   updatedAt: '',
-// },
-// {
-//   user_id: '3',
-//   role: 'teacher',
-//   fullName: 'abc',
-//   email:"abc789@gmail.com",
-//   isEmailVerified:true,
-//   status:'active',
-//   createdAt: '',
-//   updatedAt: '',
-// }]
-
-export function AddMemberModal({ 
-  isOpen, 
-  onOpenChange, 
-  classInfo
+export function AddMemberModal({
+  isOpen,
+  onOpenChange,
+  classInfo,
 }: AddMemberModalProps) {
-  const [lastMemberEmail, setLastMemberEmail] = useState<string>('');
-  const [matchedUserList, setMatchedUserList] = useState<Array<User>>([]);
-  const [openMatchedList, setOpenMatchedList] = useState<boolean>(false);
-  const [textInput, setTextInput] = useState<string>('');
-  const queryClient = useQueryClient();
+  const [searchText, setSearchText] = useState<string>('')
+  const [openMatchedList, setOpenMatchedList] = useState<boolean>(false)
+  const [selectedEmails, setSelectedEmails] = useState<string[]>([])
+  const currentUser = useRecoilValue(currentUserState)
 
-  const fetchUserProfileFromEmail = async(emails: string[]) => {
-    try {
-      const token = cookieStorage.getAccessToken()
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/get-list-profile-by-emails`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          userEmails: emails
-        })
-      })
-      
-      if (!res.ok) {
-        throw new Error('Failed to fetch user profiles')
-      }
-      
-      const json = await res.json()
-      // Backend returns { data: { users: [...] } }
-      return json.data?.users || []
-    } catch (error) {
-      console.error('Error fetching user profiles:', error)
-      return []
-    }
-  }
+  // Fetch all users once and cache
+  const { isLoading: isLoadingUsers } = useAllUsers({ enabled: true })
+
+  // Mutation hooks
+  const getUsersByEmailsMutation = useGetUsersByEmails()
+  const addMembersMutation = useAddMembers()
+
+  // Client-side search from cached users
+  const { users: matchedUserList } = useSearchUsers(
+    searchText,
+    currentUser?.user_id,
+  )
 
   const handleAddMember = async () => {
-    if (textInput.length > 0) {
-      try {
-        const emailList = textInput.trim().split(/\s+/)
-        const users = await fetchUserProfileFromEmail(emailList)
-        
-        if (users.length === 0) {
-          alert('Không tìm thấy người dùng nào với email đã nhập')
-          return
-        }
+    if (selectedEmails.length === 0) {
+      alert('Vui lòng chọn ít nhất một sinh viên')
+      return
+    }
 
-        // Map users to required format for API (UserInfoDto)
-        const students = users.map((user: any) => {
-          // Split full_name into firstName and lastName
-          const nameParts = (user.full_name || '').trim().split(' ')
-          const firstName = nameParts[0] || ''
-          const lastName = nameParts.slice(1).join(' ') || ''
-          
-          return {
-            id: user.user_id,
-            email: user.email,
-            firstName: firstName,
-            lastName: lastName
-          }
-        })
+    try {
+      // Use mutation to get users by emails
+      const users = await getUsersByEmailsMutation.mutateAsync(selectedEmails)
 
-        const token = cookieStorage.getAccessToken()
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/classes/add-students`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            students: students,
-            class_id: classInfo.class_id,
-          })
-        })
-
-        if (!res.ok) {
-          throw new Error('Failed to add students')
-        }
-
-        const json = await res.json()
-        console.log('Response:', json)
-        
-        if (json.success) {
-          // Invalidate queries to refresh student count and list
-          queryClient.invalidateQueries({ queryKey: ['class-students', classInfo.class_id] })
-          queryClient.invalidateQueries({ queryKey: ['class-students-count', classInfo.class_id] })
-          
-          alert('Đã thêm học sinh thành công!')
-          handleClose()
-        } else {
-          alert('Có lỗi xảy ra: ' + (json.message || 'Unknown error'))
-        }
-      } catch (error) {
-        console.error('Error adding members:', error)
-        alert('Có lỗi xảy ra khi thêm học sinh')
+      if (users.length === 0) {
+        alert('Không tìm thấy người dùng nào với email đã chọn')
+        return
       }
+
+      // Map users to required format for API (UserInfoDto)
+      const students = users.map((user: any) => {
+        // Split full_name into firstName and lastName
+        const nameParts = (user.full_name || '').trim().split(' ')
+        const firstName = nameParts[0] || ''
+        const lastName = nameParts.slice(1).join(' ') || ''
+
+        return {
+          id: user.user_id,
+          email: user.email,
+          firstName: firstName,
+          lastName: lastName,
+        }
+      })
+
+      // Use mutation to add members
+      await addMembersMutation.mutateAsync({
+        classId: classInfo.class_id,
+        students,
+      })
+
+      alert(`Đã thêm ${students.length} sinh viên thành công!`)
+      handleClose()
+    } catch (error) {
+      console.error('Error adding members:', error)
+      alert('Có lỗi xảy ra khi thêm học sinh')
     }
   }
 
   const handleClose = () => {
     onOpenChange(false)
-    setTextInput('')
+    setSearchText('')
+    setSelectedEmails([])
+    setOpenMatchedList(false)
   }
 
-  const searchUserMatchEmailPattern = async (emailPattern: string) => {
-    try {
-      const token = cookieStorage.getAccessToken()
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/get-list-profile-match-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          emailPattern,
-        }),
-      })
-      
-      if (!res.ok) {
-        throw new Error('Failed to search users')
-      }
-      
-      const json = await res.json()
-      // Backend returns { data: { users: [...] } }
-      return json.data?.users || []
-    } catch (error) {
-      console.error('Error searching users:', error)
-      return []
-    }
-  }
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setSearchText(value)
 
-
-  const handleOnChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
-    setTextInput(e.target.value)
-    if (!e.target.value || e.target.value[e.target.value.length-1]===' '){
+    if (!value.trim()) {
       setOpenMatchedList(false)
-      return;
+    } else {
+      setOpenMatchedList(true)
     }
-    setOpenMatchedList(true);
-    const emailList = e.target.value.trim().split(/\s+/);
-    const lastEmail = emailList[emailList.length - 1];
-    if (lastEmail === lastMemberEmail) return;
-    setLastMemberEmail(lastEmail);
   }
 
-  useEffect(()=>{
-    if (!lastMemberEmail.trim()) return;
+  const handleChooseUserClick = (user: any) => {
+    // Add email to selected list if not already added
+    if (!selectedEmails.includes(user.email)) {
+      setSelectedEmails([...selectedEmails, user.email])
+    }
+    setSearchText('')
+    setOpenMatchedList(false)
+  }
 
-    const timer = setTimeout(async ()=>{
-      const userList:User[] = await searchUserMatchEmailPattern(lastMemberEmail.trim());
-      setMatchedUserList(userList);
-    }, 2000);    
-
-    return ()=>clearTimeout(timer);
-
-  },[lastMemberEmail])
-
-  const handleChooseUserClick = async (email:string)=>{
-    const emailList = textInput.trim().split(/\s+/);
-    emailList[emailList.length-1]=email
-    setTextInput(emailList.join(' '));
-    setOpenMatchedList(false);
+  const handleRemoveSelectedEmail = (emailToRemove: string) => {
+    setSelectedEmails(selectedEmails.filter((email) => email !== emailToRemove))
   }
 
   return (
@@ -226,60 +127,149 @@ export function AddMemberModal({
             Add members to {classInfo.class_name}
           </DialogTitle>
         </DialogHeader>
-        <div className="py-4">
-          <p className="text-sm text-gray-600 mb-4">
-            Start typing a name to add to your team. You can also 
-            add people outside your organisation as guests by typing their email addresses. People 
-            outside your org will get an email letting them know they've been added.
+        <div className="py-4 space-y-4">
+          <p className="text-sm text-gray-600">
+            Gõ tên hoặc email sinh viên để tìm kiếm và thêm vào lớp học.
           </p>
-          <div className="relative w-full max-w-xs">
-            <Input
-              placeholder="Type a name or email"
-              value={textInput}
-              onChange={(e)=> handleOnChange(e)}
-              className="w-full"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && textInput.trim()) {
-                  handleAddMember()
-                }
-              }}
-              onBlur={() => setTimeout(() => setOpenMatchedList(false), 100)}
-            />
-            {openMatchedList && matchedUserList.length > 0 && (
-              <div className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
-                {matchedUserList.map(user => (
+
+          {/* Selected emails display */}
+          {selectedEmails.length > 0 && (
+            <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg border">
+              {selectedEmails.map((email) => (
+                <div
+                  key={email}
+                  className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"
+                >
+                  <span>{email}</span>
                   <button
-                    key={user.user_id}
-                    id={user.email}
                     type="button"
-                    className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 text-left"
-                    onMouseDown={e => e.preventDefault()}
-                    onClick={()=>handleChooseUserClick(user.email)}
+                    onClick={() => handleRemoveSelectedEmail(email)}
+                    className="ml-1 hover:bg-blue-200 rounded-full p-0.5"
                   >
-                    <Avatar className="w-6 h-6">
-                      <AvatarImage src={user.avatar ?? '/placeholder-avatar.jpg'} />
-                      <AvatarFallback className="bg-gray-400 text-white text-xs">{user.email.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <span className="font-medium text-gray-900 text-sm">{user.email}</span>
-                    <span className="text-xs text-gray-500 ml-2">{user.email}</span>
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
                   </button>
-                ))}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="relative">
+            <Input
+              placeholder="Gõ tên hoặc email sinh viên (ví dụ: 'anh', 'nguyen'...)"
+              value={searchText}
+              onChange={handleOnChange}
+              className="w-full"
+              onBlur={() => setTimeout(() => setOpenMatchedList(false), 200)}
+              onFocus={() => searchText.trim() && setOpenMatchedList(true)}
+            />
+
+            {openMatchedList && (
+              <div className="absolute z-10 mt-1 w-full bg-white border rounded-lg shadow-lg max-h-80 overflow-auto">
+                {isLoadingUsers ? (
+                  <div className="flex items-center justify-center py-8 text-gray-500">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-2"></div>
+                    <span>Đang tải danh sách...</span>
+                  </div>
+                ) : matchedUserList.length > 0 ? (
+                  <div className="py-1">
+                    {matchedUserList.map((user) => {
+                      const isSelected = selectedEmails.includes(user.email)
+                      return (
+                        <button
+                          key={user.user_id}
+                          type="button"
+                          disabled={isSelected}
+                          className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
+                            isSelected
+                              ? 'bg-gray-100 cursor-not-allowed opacity-60'
+                              : 'hover:bg-blue-50 focus:bg-blue-50'
+                          }`}
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() =>
+                            !isSelected && handleChooseUserClick(user)
+                          }
+                        >
+                          <Avatar className="w-10 h-10 flex-shrink-0">
+                            <AvatarImage
+                              src={user.avatar ?? '/placeholder-avatar.jpg'}
+                              className="rounded-full object-cover w-full h-full"
+                            />
+                            <AvatarFallback className="bg-blue-500 text-white font-semibold rounded-full flex items-center justify-center w-full h-full">
+                              {(user.full_name || user.email)
+                                .charAt(0)
+                                .toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-gray-900 truncate">
+                              {user.full_name || 'Chưa có tên'}
+                            </div>
+                            <div className="text-sm text-gray-500 truncate">
+                              {user.email}
+                            </div>
+                          </div>
+                          {isSelected && (
+                            <svg
+                              className="w-5 h-5 text-green-600 flex-shrink-0"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                        </button>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="py-8 text-center text-gray-500">
+                    <svg
+                      className="w-12 h-12 mx-auto mb-2 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                    <p>Không tìm thấy sinh viên nào</p>
+                    <p className="text-xs mt-1">Thử tìm với từ khóa khác</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
         </div>
         <DialogFooter className="flex justify-end space-x-2">
-          <Button 
-            variant="outline" 
-            onClick={handleClose}
-          >
-            Cancel
+          <Button variant="outline" onClick={handleClose}>
+            Hủy
           </Button>
-          <Button 
-            disabled={!textInput.trim()}
+          <Button
+            disabled={selectedEmails.length === 0}
             onClick={handleAddMember}
+            className="bg-blue-600 hover:bg-blue-700"
           >
-            Add
+            Thêm {selectedEmails.length > 0 && `(${selectedEmails.length})`}
           </Button>
         </DialogFooter>
       </DialogContent>

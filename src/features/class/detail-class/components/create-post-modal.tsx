@@ -1,14 +1,26 @@
 import { useState, useRef } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { AtSign, Hash, MoreHorizontal, Paperclip, Smile, X, FileText } from 'lucide-react'
+import {
+  AtSign,
+  Hash,
+  MoreHorizontal,
+  Paperclip,
+  Smile,
+  X,
+  FileText,
+} from 'lucide-react'
 import { AvatarHoverCard } from './avatar-hover-card'
 import { useRecoilValue } from 'recoil'
 import { currentUserState } from '@/global/recoil/user'
-import { cookieStorage } from '@/libs/utils/cookie'
-
+import { useCreatePost, useUploadMaterials } from '../hooks/use-class-detail'
 
 interface CreatePostModalProps {
   isOpen: boolean
@@ -17,53 +29,91 @@ interface CreatePostModalProps {
     class_id: number
     class_name: string
   }
+  onPostCreated?: () => void
 }
 
-export function CreatePostModal({ isOpen, onOpenChange, classInfo }: CreatePostModalProps) {
-
-  const user = useRecoilValue(currentUserState);
+export function CreatePostModal({
+  isOpen,
+  onOpenChange,
+  classInfo,
+  onPostCreated,
+}: CreatePostModalProps) {
+  const user = useRecoilValue(currentUserState)
+  const createPostMutation = useCreatePost()
+  const uploadMaterialsMutation = useUploadMaterials()
 
   const [title, setTitle] = useState('')
   const [message, setMessage] = useState('')
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const uploadFileToServer = async (): Promise<string> => {
-    const formData = new FormData()
-    for (let file of uploadedFiles) formData.append('files', file);
-    formData.append('uploader_id', user?.user_id?.toString() || '');
-    formData.append('title', title);
-    formData.append('message', message);
-    
-    // Get token from cookies
-    const accessToken = cookieStorage.getAccessToken()
-    const refreshToken = cookieStorage.getRefreshToken()
-    
-    const headers: HeadersInit = {}
-    if (accessToken) {
-      headers['Authorization'] = `Bearer ${accessToken}`
+  const isSubmitting =
+    createPostMutation.isPending || uploadMaterialsMutation.isPending
+
+  const handleSubmit = async () => {
+    // Allow submission if either message exists OR files are attached
+    if ((!message.trim() && uploadedFiles.length === 0) || !user) {
+      alert('Please enter a message or attach files')
+      return
     }
-    if (refreshToken) {
-      headers['x-refresh-token'] = refreshToken
-    }
-    
+
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/classes/${classInfo.class_id}/upload-post-with-files`, {
-        method: 'POST',
-        body: formData,
-        credentials: 'include', // Gửi cookies
-        headers, // Thêm Authorization header
-      })
-      
-      if (!response.ok) {
-        throw new Error('Upload failed')
+      // First create the post
+      const postMessage =
+        message.trim() ||
+        (uploadedFiles.length > 0
+          ? `Uploaded ${uploadedFiles.length} file(s)`
+          : '')
+      const postTitle = title.trim() || ''
+
+      const requestBody = {
+        class_id: classInfo.class_id,
+        message: postMessage,
+        title: postTitle,
+        sender_id: user.user_id,
       }
-      
-      const result = await response.json()
-      return result.url || result.path
+
+      console.log(
+        'Creating post with data:',
+        JSON.stringify(requestBody, null, 2),
+      )
+
+      // Create post using mutation
+      const result = await createPostMutation.mutateAsync(requestBody)
+      const newPostId = result.data.id
+
+      console.log('Create post result:', result)
+
+      // If there are files, upload them
+      if (uploadedFiles.length > 0) {
+        const uploadResult = await uploadMaterialsMutation.mutateAsync({
+          classId: classInfo.class_id,
+          files: uploadedFiles,
+          uploaderId: user.user_id,
+          title: postTitle || postMessage || 'File attachment',
+          postId: newPostId,
+        })
+        console.log('Upload materials result:', uploadResult)
+      }
+
+      setTitle('')
+      setMessage('')
+      setUploadedFiles([])
+
+      // Wait for materials to be saved before closing
+      if (uploadedFiles.length > 0) {
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+      }
+
+      // Trigger refresh (mutations already invalidate queries)
+      if (onPostCreated) {
+        onPostCreated()
+      }
+
+      onOpenChange(false)
     } catch (error) {
-      console.error('File upload error:', error)
-      throw error
+      console.error('Error creating post:', error)
+      alert('Failed to create post. Please try again.')
     }
   }
 
@@ -71,15 +121,16 @@ export function CreatePostModal({ isOpen, onOpenChange, classInfo }: CreatePostM
     fileInputRef.current?.click()
   }
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const files = event.target.files
     if (!files) return
 
     for (const file of Array.from(files)) {
       // Add file to state with uploading status
-      
-      
-      setUploadedFiles(prev => [...prev, file])
+
+      setUploadedFiles((prev) => [...prev, file])
     }
 
     // Reset input
@@ -89,15 +140,7 @@ export function CreatePostModal({ isOpen, onOpenChange, classInfo }: CreatePostM
   }
 
   const removeFile = (fileToRemove: File) => {
-    setUploadedFiles(prev => prev.filter(f => f !== fileToRemove))
-  }
-
-  const handleSubmit = async () => {
-    setTitle('')
-    setMessage('')
-    await uploadFileToServer();
-    setUploadedFiles([])
-    onOpenChange(false)
+    setUploadedFiles((prev) => prev.filter((f) => f !== fileToRemove))
   }
 
   const handleClose = () => {
@@ -113,9 +156,16 @@ export function CreatePostModal({ isOpen, onOpenChange, classInfo }: CreatePostM
         <DialogHeader className="p-4 pb-0 border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              {user && <AvatarHoverCard user={user} placeHolder='/placeholder-avatar.jpg'/>}
+              {user && (
+                <AvatarHoverCard
+                  user={user}
+                  placeHolder="/placeholder-avatar.jpg"
+                />
+              )}
               <div>
-                <DialogTitle className="text-lg font-medium">{user?.full_name || 'Unknown User'}</DialogTitle>
+                <DialogTitle className="text-lg font-medium">
+                  {user?.full_name || 'Unknown User'}
+                </DialogTitle>
               </div>
             </div>
             <Button
@@ -123,12 +173,10 @@ export function CreatePostModal({ isOpen, onOpenChange, classInfo }: CreatePostM
               size="icon"
               onClick={handleClose}
               className="h-8 w-8 hover:bg-gray-100"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            ></Button>
           </div>
         </DialogHeader>
-        
+
         <div className="p-4 space-y-3">
           {/* Subject Input */}
           <div>
@@ -137,6 +185,7 @@ export function CreatePostModal({ isOpen, onOpenChange, classInfo }: CreatePostM
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="text-base border-0 border-b border-gray-200 rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-gray-400 bg-transparent"
+              disabled={isSubmitting}
             />
           </div>
 
@@ -147,24 +196,33 @@ export function CreatePostModal({ isOpen, onOpenChange, classInfo }: CreatePostM
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               className="min-h-[100px] border-0 resize-none p-0 focus-visible:ring-0 bg-transparent placeholder:text-gray-400"
+              disabled={isSubmitting}
             />
           </div>
 
           {/* Uploaded Files Display */}
           {uploadedFiles.length > 0 && (
             <div className="space-y-2 p-3 bg-gray-50 rounded-lg">
-              <div className="text-sm font-medium text-gray-700">Attached Files:</div>
+              <div className="text-sm font-medium text-gray-700">
+                Attached Files:
+              </div>
               {uploadedFiles.map((uploadedFile, index) => (
-                <div key={index} className="flex items-center justify-between p-2 bg-white rounded border">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-2 bg-white rounded border"
+                >
                   <div className="flex items-center space-x-2">
                     <FileText className="h-4 w-4 text-blue-600" />
-                    <span className="text-sm text-gray-700">{uploadedFile.name}</span>
+                    <span className="text-sm text-gray-700">
+                      {uploadedFile.name}
+                    </span>
                   </div>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => removeFile(uploadedFile)}
                     className="h-6 w-6 p-0 hover:bg-red-100"
+                    disabled={isSubmitting}
                   >
                     <X className="h-3 w-3 text-red-600" />
                   </Button>
@@ -187,34 +245,57 @@ export function CreatePostModal({ isOpen, onOpenChange, classInfo }: CreatePostM
         {/* Footer with actions */}
         <div className="flex items-center justify-between p-4 border-t bg-gray-50">
           <div className="flex items-center space-x-1">
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="text-gray-600 hover:text-gray-900 hover:bg-gray-200"
               onClick={handleOpenFileModal}
+              disabled={isSubmitting}
             >
               <Paperclip className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-200">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+              disabled={isSubmitting}
+            >
               <Smile className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-200">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+              disabled={isSubmitting}
+            >
               <AtSign className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-200">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+              disabled={isSubmitting}
+            >
               <Hash className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-200">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+              disabled={isSubmitting}
+            >
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </div>
-          
-          <Button 
+
+          <Button
             onClick={handleSubmit}
-            disabled={!message.trim() && uploadedFiles.length === 0}
+            disabled={
+              isSubmitting || (!message.trim() && uploadedFiles.length === 0)
+            }
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 disabled:bg-gray-300 disabled:text-gray-500"
           >
-            Post
+            {isSubmitting ? '⏳' : 'Post'}
           </Button>
         </div>
       </DialogContent>

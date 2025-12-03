@@ -96,8 +96,8 @@ export function SubmissionsListPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Mã bài nộp</TableHead>
-                      <TableHead>Học sinh</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Tên học sinh</TableHead>
                       <TableHead className="text-center">Trạng thái</TableHead>
                       <TableHead className="text-center">Điểm</TableHead>
                       <TableHead className="text-center">
@@ -116,10 +116,10 @@ export function SubmissionsListPage() {
                         className="hover:bg-gray-50"
                       >
                         <TableCell className="font-medium">
-                          #{submission.submission_id}
+                          {submission.student_email}
                         </TableCell>
                         <TableCell>
-                          Học sinh #{submission.student_id}
+                         {submission.student_name}
                         </TableCell>
                         <TableCell className="text-center">
                           <Badge
