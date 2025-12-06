@@ -2,18 +2,22 @@ import {
   ClassSettings,
   ClassMainContent,
   AddMemberModal,
+  ImportStudentsExcelDialog,
   StickyPostButton,
 } from '../components'
 import { ClassDetailHeader } from '../components'
 import { useClassDetailPage } from '../hooks'
 import { useClassSocket } from '../hooks/use-class-socket'
 import { useSearch } from '@tanstack/react-router'
+import { useState } from 'react'
 
 export function ClassDetailPage() {
   // Get classId from URL search params
   const searchParams = useSearch({ from: '/classes/detail-class' })
   const classId = searchParams.id?.toString() || ''
   const numericClassId = classId ? parseInt(classId, 10) : null
+
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false)
 
   const {
     classInfo,
@@ -60,6 +64,7 @@ export function ClassDetailPage() {
         classInfo={classInfo}
         isTeacher={isTeacher}
         onAddMember={() => setIsAddMemberModalOpen(true)}
+        onImportStudents={() => setIsImportDialogOpen(true)}
         onToggleSettings={() => setShowSettings(!showSettings)}
       />
 
@@ -89,6 +94,14 @@ export function ClassDetailPage() {
         isOpen={isAddMemberModalOpen}
         onOpenChange={setIsAddMemberModalOpen}
         classInfo={classInfo}
+      />
+
+      {/* Import Students Excel Dialog */}
+      <ImportStudentsExcelDialog
+        open={isImportDialogOpen}
+        onOpenChange={setIsImportDialogOpen}
+        classInfo={classInfo}
+        onImportSuccess={() => refetch?.()}
       />
 
       {/* Sticky Post Button - Only show when not in settings and in posts tab */}
