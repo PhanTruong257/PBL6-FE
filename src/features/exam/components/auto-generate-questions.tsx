@@ -61,8 +61,6 @@ export function AutoGenerateQuestions({ onGenerate, isGenerating = false }: Auto
 
   const { data: categories = [], isLoading: isLoadingCategories } = useQuestionCategories(searchQuery)
 
-  console.log('Fetched categories:', categories)
-
   // Create a map for quick category lookup and validation
   const categoryMap = useMemo(() => {
     const map = new Map<number, QuestionCategory>()

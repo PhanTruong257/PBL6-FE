@@ -101,9 +101,6 @@ export function ExamListHeader({
               <SelectItem value="all">Tất cả trạng thái</SelectItem>
               <SelectItem value="draft">Nháp</SelectItem>
               <SelectItem value="published">Công khai</SelectItem>
-              <SelectItem value="in_progress">Đang diễn ra</SelectItem>
-              <SelectItem value="completed">Đã hoàn thành</SelectItem>
-              <SelectItem value="cancelled">Đã hủy</SelectItem>
             </SelectContent>
           </Select>
         </div>

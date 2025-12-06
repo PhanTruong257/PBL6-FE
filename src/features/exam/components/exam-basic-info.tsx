@@ -19,6 +19,7 @@ interface ExamBasicInfoProps {
     show_results?: boolean
     shuffle_questions?: boolean
     allow_review?: boolean
+    password?: string
   }
   onChange: (info: any) => void
 }
@@ -57,7 +58,7 @@ export function ExamBasicInfo({ basicInfo, onChange }: ExamBasicInfoProps) {
           <div className="space-y-6 p-6">
             {/* Row 1: Title, Code, Duration */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
-              <div className="space-y-2 md:col-span-6">
+              <div className="space-y-2 md:col-span-4">
                 <Label htmlFor="title" className="text-sm font-medium flex items-center gap-1">
                   Tiêu đề bài kiểm tra <span className="text-destructive">*</span>
                 </Label>
@@ -70,9 +71,7 @@ export function ExamBasicInfo({ basicInfo, onChange }: ExamBasicInfoProps) {
                 />
               </div>
 
-
-
-              <div className="space-y-2 md:col-span-6">
+              <div className="space-y-2 md:col-span-4">
                 <Label htmlFor="duration" className="text-sm font-medium">Thời gian (phút)</Label>
                 <Input
                   id="duration"
@@ -80,6 +79,17 @@ export function ExamBasicInfo({ basicInfo, onChange }: ExamBasicInfoProps) {
                   placeholder="45"
                   value={basicInfo.duration}
                   onChange={(e) => handleChange('duration', parseInt(e.target.value) || 0)}
+                  className="h-11"
+                />
+              </div>
+
+              <div className="space-y-2 md:col-span-4">
+                <Label htmlFor="duration" className="text-sm font-medium">Mật khẩu</Label>
+                <Input
+                  id="password"
+                  type="text"
+                  value={basicInfo.password}
+                  onChange={(e) => handleChange('password', e.target.value)}
                   className="h-11"
                 />
               </div>

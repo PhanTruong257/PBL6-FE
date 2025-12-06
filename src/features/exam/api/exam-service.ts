@@ -232,6 +232,7 @@ export const ExamService = {
         start_time: result.start_time,
         end_time: result.end_time,
         status: result.status,
+        password: result.password,
         created_by: result.created_by,
         created_at: result.created_at,
         questions: result.question_exams?.map((qe: any) => ({
@@ -273,8 +274,9 @@ export const ExamService = {
         start_time: data.start_time,
         end_time: data.end_time,
         total_time: data.duration || 45, // duration in minutes
-        status: 'draft',
+        status: data.status,
         created_by: 1,
+        password: data.password,
         questions: data.questions.map((q, index) => ({
           question_id: q.question_id,
           points: q.points,
@@ -338,6 +340,7 @@ export const ExamService = {
         end_time: data.end_time,
         total_time: data.duration,
         status: data.status,
+        password: data.password,
       }
 
       // Add questions if provided
@@ -464,9 +467,8 @@ export const ExamService = {
       const response = await httpClient.post('/questions/random', request)
       
       // Transform questions if needed
-      console.log('Raw random questions response from API:', response.data)
-      const questions = response.data.data.value || []
-      const transformedQuestions = questions.map((q: any) => {
+      const questions = response.data.data || []
+      const transformedQuestions = questions.data.map((q: any) => {
         const question: Question = {
           question_id: q.question_id,
           content: q.content,

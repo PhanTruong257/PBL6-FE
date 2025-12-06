@@ -136,3 +136,13 @@ export interface UpdateRemainingTimeResponse {
   remaining_time: number
   message: string
 }
+
+export interface VerifyExamPasswordRequest {
+  password: string
+}
+
+export interface VerifyExamPasswordResponse {
+  success: boolean
+  message: string
+  has_password: boolean
+}

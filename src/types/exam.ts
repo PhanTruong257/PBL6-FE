@@ -61,6 +61,7 @@ export interface Exam {
   created_by: number
   created_at: string
   total_points?: number // Added field
+  password?: string // Added field for exam password
 }
 
 export interface ExamWithQuestions extends Exam {
@@ -101,6 +102,8 @@ export interface CreateExamRequest {
   total_points?: number
   allow_review?: boolean
   create_by?: number
+  status?: ExamStatus
+  password?: string
   questions: Array<{
     question_id: number
     points: number
