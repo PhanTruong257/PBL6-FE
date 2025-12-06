@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import type { Question } from '@/types/question'
 import { userPermissionsSelector } from '@/global/recoil/user/userSelectorFamily'
 import { cn } from '@/libs/utils'
+import { useQuestionsTranslation } from '../hooks'
 
 interface QuestionGridProps {
   questions: Question[]
@@ -21,6 +22,8 @@ export function QuestionGrid({
   onView,
   onDuplicate,
 }: QuestionGridProps) {
+  const { t } = useQuestionsTranslation()
+  
   // Get user permissions
   const userPermissions = useRecoilValue(userPermissionsSelector)
 
@@ -56,39 +59,15 @@ export function QuestionGrid({
     }
   }
 
-  const getTypeLabel = (type: string) => {
-    switch (type) {
-      case 'multiple_choice':
-        return '📝 Trắc nghiệm'
-      case 'essay':
-        return '✍️ Tự luận'
-      default:
-        return type
-    }
-  }
-
-  const getDifficultyLabel = (difficulty: string) => {
-    switch (difficulty) {
-      case 'easy':
-        return 'Dễ'
-      case 'medium':
-        return 'Trung bình'
-      case 'hard':
-        return 'Khó'
-      default:
-        return difficulty
-    }
-  }
-
   if (questions.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="text-6xl mb-4">🔍</div>
         <h3 className="text-xl font-semibold text-gray-600 mb-2">
-          Không tìm thấy câu hỏi
+          {t('grid.noQuestions')}
         </h3>
         <p className="text-gray-500">
-          Thử thay đổi bộ lọc hoặc tạo câu hỏi mới
+          {t('grid.noQuestionsHint')}
         </p>
       </div>
     )
@@ -113,13 +92,13 @@ export function QuestionGrid({
             </span>
             <div className="flex gap-2 flex-wrap justify-end">
               <Badge className={getTypeColor(question.type)} variant="secondary">
-                {getTypeLabel(question.type)}
+                {question.type === 'multiple_choice' ? `📝 ${t('types.multipleChoice')}` : `✍️ ${t('types.essay')}`}
               </Badge>
               <Badge
                 className={getDifficultyColor(question.difficulty)}
                 variant="secondary"
               >
-                {getDifficultyLabel(question.difficulty)}
+                {t(`difficulty.${question.difficulty}`)}
               </Badge>
             </div>
           </div>
@@ -138,11 +117,11 @@ export function QuestionGrid({
             )}
             {question.is_public ? (
               <span className="text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-3 py-1 rounded-full font-semibold">
-                🌐 Public
+                🌐 {t('visibility.public')}
               </span>
             ) : (
               <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full font-semibold">
-                🔒 Private
+                🔒 {t('visibility.private')}
               </span>
             )}
           </div>
@@ -159,7 +138,7 @@ export function QuestionGrid({
               onClick={() => onView(question)}
             >
               <Eye className="h-3 w-3 mr-1" />
-              Xem
+              {t('actions.view')}
             </Button>
             {canUpdateQuestion && (
               <Button
@@ -169,7 +148,7 @@ export function QuestionGrid({
                 onClick={() => onEdit(question)}
               >
                 <Edit className="h-3 w-3 mr-1" />
-                Sửa
+                {t('actions.edit')}
               </Button>
             )}
             {onDuplicate && (
@@ -178,7 +157,7 @@ export function QuestionGrid({
                 size="sm"
                 className="text-xs"
                 onClick={() => onDuplicate(question)}
-                title="Nhân bản"
+                title={t('actions.duplicate')}
               >
                 <Copy className="h-3 w-3" />
               </Button>
@@ -189,7 +168,7 @@ export function QuestionGrid({
                 size="sm"
                 className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
                 onClick={() => onDelete(question)}
-                title="Xóa"
+                title={t('actions.delete')}
               >
                 <Trash2 className="h-3 w-3" />
               </Button>

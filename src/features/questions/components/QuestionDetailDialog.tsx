@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import type { Question } from '@/types/question'
 import { formatDate } from '@/libs/utils'
+import { useQuestionsTranslation } from '../hooks'
 
 interface QuestionDetailDialogProps {
   open: boolean
@@ -21,6 +22,8 @@ export function QuestionDetailDialog({
   onClose,
   question,
 }: QuestionDetailDialogProps) {
+  const { t } = useQuestionsTranslation()
+
   if (!question) return null
 
   const getDifficultyColor = (difficulty: string) => {
@@ -36,53 +39,42 @@ export function QuestionDetailDialog({
     }
   }
 
-  const getTypeLabel = (type: string) => {
-    switch (type) {
-      case 'multiple_choice':
-        return 'Multiple Choice'
-      case 'essay':
-        return 'Essay'
-      default:
-        return type
-    }
-  }
-
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Question Details</DialogTitle>
+          <DialogTitle>{t('dialog.detailTitle')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Question Info */}
           <div className="space-y-4">
             <div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-2">Question</h3>
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">{t('dialog.questionLabel')}</h3>
               <p className="text-base leading-relaxed">{question.content}</p>
             </div>
 
             <div className="flex flex-wrap gap-4">
               <div>
-                <span className="text-sm text-muted-foreground">Type: </span>
-                <Badge variant="outline">{getTypeLabel(question.type)}</Badge>
+                <span className="text-sm text-muted-foreground">{t('form.type')}: </span>
+                <Badge variant="outline">{t(`types.${question.type === 'multiple_choice' ? 'multipleChoice' : 'essay'}`)}</Badge>
               </div>
               <div>
-                <span className="text-sm text-muted-foreground">Difficulty: </span>
+                <span className="text-sm text-muted-foreground">{t('form.difficulty')}: </span>
                 <Badge className={getDifficultyColor(question.difficulty)}>
-                  {question.difficulty}
+                  {t(`difficulty.${question.difficulty}`)}
                 </Badge>
               </div>
               {question.category && (
                 <div>
-                  <span className="text-sm text-muted-foreground">Category: </span>
+                  <span className="text-sm text-muted-foreground">{t('form.category')}: </span>
                   <Badge variant="secondary">{question.category.name}</Badge>
                 </div>
               )}
               <div>
-                <span className="text-sm text-muted-foreground">Visibility: </span>
+                <span className="text-sm text-muted-foreground">{t('visibility.public')}: </span>
                 <Badge variant={question.is_public ? 'default' : 'secondary'}>
-                  {question.is_public ? 'Public' : 'Private'}
+                  {question.is_public ? t('visibility.public') : t('visibility.private')}
                 </Badge>
               </div>
             </div>
@@ -94,9 +86,9 @@ export function QuestionDetailDialog({
           {question.type === 'multiple_choice' && question.options && (
             <div className="space-y-3">
               <h3 className="text-sm font-medium text-muted-foreground">
-                Answer Options
+                {t('dialog.answerOptions')}
                 {question.is_multiple_answer && (
-                  <span className="ml-2 text-xs">(Multiple answers allowed)</span>
+                  <span className="ml-2 text-xs">{t('dialog.multipleAnswersAllowed')}</span>
                 )}
               </h3>
               <div className="space-y-2">
@@ -135,7 +127,7 @@ export function QuestionDetailDialog({
             <>
               <div className="space-y-3">
                 <h3 className="text-sm font-medium text-muted-foreground">
-                  Used in Exams ({question.question_exams.length})
+                  {t('dialog.usedInExams', { count: question.question_exams.length })}
                 </h3>
                 <div className="space-y-2">
                   {question.question_exams.map((qe) => (
@@ -146,10 +138,10 @@ export function QuestionDetailDialog({
                       <div>
                         <p className="font-medium">{qe.exam.title}</p>
                         <p className="text-sm text-muted-foreground">
-                          Status: {qe.exam.status}
+                          {t('dialog.status')}: {qe.exam.status}
                         </p>
                       </div>
-                      <Badge variant="outline">{qe.points} points</Badge>
+                      <Badge variant="outline">{t('dialog.points', { points: qe.points })}</Badge>
                     </div>
                   ))}
                 </div>
@@ -161,19 +153,19 @@ export function QuestionDetailDialog({
           {/* Metadata */}
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-muted-foreground">Created: </span>
+              <span className="text-muted-foreground">{t('dialog.created')}: </span>
               <span>{formatDate(question.created_at)}</span>
             </div>
             <div>
-              <span className="text-muted-foreground">Last Updated: </span>
+              <span className="text-muted-foreground">{t('dialog.lastUpdated')}: </span>
               <span>{formatDate(question.updated_at)}</span>
             </div>
             <div>
-              <span className="text-muted-foreground">Question ID: </span>
+              <span className="text-muted-foreground">{t('dialog.questionId')}: </span>
               <span className="font-mono">#{question.question_id}</span>
             </div>
             <div>
-              <span className="text-muted-foreground">Creator ID: </span>
+              <span className="text-muted-foreground">{t('dialog.creatorId')}: </span>
               <span className="font-mono">#{question.created_by}</span>
             </div>
           </div>

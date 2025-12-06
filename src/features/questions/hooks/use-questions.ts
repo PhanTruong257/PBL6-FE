@@ -13,14 +13,20 @@ import type {
 export const useCategories = () => {
   return useQuery({
     queryKey: ['question-categories'],
-    queryFn: () => categoriesApi.getAll(),
+    queryFn: async () => {
+      const response = await categoriesApi.getAll()
+      return response.data
+    },
   })
 }
 
 export const useCategory = (id: number) => {
   return useQuery({
     queryKey: ['question-categories', id],
-    queryFn: () => categoriesApi.getById(id),
+    queryFn: async () => {
+      const response = await categoriesApi.getById(id)
+      return response.data
+    },
     enabled: !!id,
   })
 }
@@ -79,14 +85,20 @@ export const useDeleteCategory = () => {
 export const useQuestions = (params?: QuestionFilterParams) => {
   return useQuery({
     queryKey: ['questions', params],
-    queryFn: () => questionsApi.getAll(params),
+    queryFn: async () => {
+      const response = await questionsApi.getAll(params)
+      return response.data
+    },
   })
 }
 
 export const useQuestion = (id: number) => {
   return useQuery({
     queryKey: ['questions', id],
-    queryFn: () => questionsApi.getById(id),
+    queryFn: async () => {
+      const response = await questionsApi.getById(id)
+      return response.data
+    },
     enabled: !!id,
   })
 }

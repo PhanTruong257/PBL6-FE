@@ -18,11 +18,11 @@ httpClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const accessToken = cookieStorage.getAccessToken()
     const refreshToken = cookieStorage.getRefreshToken()
-    
+
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`
     }
-    
+
     // Add refresh token header for backend
     if (refreshToken) {
       config.headers['x-refresh-token'] = refreshToken

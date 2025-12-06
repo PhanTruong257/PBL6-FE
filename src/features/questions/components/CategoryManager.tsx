@@ -1,7 +1,3 @@
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useRecoilValue } from 'recoil'
 import { Plus, Pencil, Trash2, Folder } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -31,9 +27,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { categorySchema, type CategoryFormValues } from '../schemas/question-schema'
-import { useCreateCategory, useUpdateCategory, useDeleteCategory } from '../hooks'
-import { userPermissionsSelector, currentUserState } from '@/global/recoil/user'
+import { useCategoryManager, useQuestionsTranslation } from '../hooks'
 import type { QuestionCategory } from '@/types/question'
 
 interface CategoryManagerProps {
@@ -49,190 +43,130 @@ export function CategoryManager({
   selectedCategoryId,
   onSelectCategory,
 }: CategoryManagerProps) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [editingCategory, setEditingCategory] = useState<QuestionCategory | null>(null)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [categoryToDelete, setCategoryToDelete] = useState<QuestionCategory | null>(null)
+  const { t } = useQuestionsTranslation()
+  const {
+    // Form
+    form,
 
-  // Get current user and permissions from recoil
-  const currentUser = useRecoilValue(currentUserState)
-  const userPermissions = useRecoilValue(userPermissionsSelector)
+    // State
+    isDialogOpen,
+    setIsDialogOpen,
+    editingCategory,
+    deleteDialogOpen,
+    setDeleteDialogOpen,
+    categoryToDelete,
 
-  // Check permissions
-  const canCreateCategory = userPermissions.some(
-    p => p.resource === 'question-categories' && p.action === 'create'
-  )
-  const canUpdateCategory = userPermissions.some(
-    p => p.resource === 'question-categories' && p.action === 'update'
-  )
-  const canDeleteCategory = userPermissions.some(
-    p => p.resource === 'question-categories' && p.action === 'delete'
-  )
+    // Permissions
+    canCreateCategory,
+    canUpdateCategory,
+    canDeleteCategory,
 
-  const createMutation = useCreateCategory()
-  const updateMutation = useUpdateCategory()
-  const deleteMutation = useDeleteCategory()
-
-  const form = useForm<CategoryFormValues>({
-    resolver: zodResolver(categorySchema),
-    defaultValues: {
-      name: '',
-      description: '',
-    },
+    // Handlers
+    handleOpenDialog,
+    handleCloseDialog,
+    handleSubmit,
+    handleDelete,
+    confirmDelete,
+    cancelDelete,
+    handleSelectAll,
+    handleSelectCategory,
+  } = useCategoryManager({
+    onCategoriesChange,
+    selectedCategoryId,
+    onSelectCategory,
   })
 
-  const handleOpenDialog = (category?: QuestionCategory) => {
-    if (category) {
-      setEditingCategory(category)
-      form.reset({
-        name: category.name,
-        description: category.description || '',
-      })
-    } else {
-      setEditingCategory(null)
-      form.reset({
-        name: '',
-        description: '',
-      })
-    }
-    setIsDialogOpen(true)
-  }
+  // ============================================
+  // COMPUTED VALUES
+  // ============================================
+  const totalQuestionsCount = categories.reduce((sum, cat) => sum + (cat.question_count || 0), 0)
 
-  const handleSubmit = async (values: CategoryFormValues) => {
-    try {
-      if (editingCategory) {
-        await updateMutation.mutateAsync({ id: editingCategory.category_id, data: values })
-      } else {
-        // Add created_by from current user
-        if (!currentUser?.user_id) {
-          console.error('User not authenticated')
-          return
-        }
-        await createMutation.mutateAsync({
-          ...values,
-          created_by: currentUser.user_id,
-        })
-      }
-      setIsDialogOpen(false)
-      onCategoriesChange()
-    } catch (error) {
-      // Error handled by hook
-    }
-  }
-
-  const handleDelete = (category: QuestionCategory) => {
-    setCategoryToDelete(category)
-    setDeleteDialogOpen(true)
-  }
-
-  const confirmDelete = async () => {
-    if (!categoryToDelete) return
-
-    try {
-      await deleteMutation.mutateAsync(categoryToDelete.category_id)
-      if (selectedCategoryId === categoryToDelete.category_id) {
-        onSelectCategory(undefined)
-      }
-      onCategoriesChange()
-    } catch (error) {
-      // Error handled by hook
-    } finally {
-      setDeleteDialogOpen(false)
-      setCategoryToDelete(null)
-    }
-  }
-
+  // ============================================
+  // MAIN RENDER
+  // ============================================
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold flex items-center gap-2">
           <Folder className="h-5 w-5" />
-          Categories
+          {t('category.title')}
         </h3>
         {canCreateCategory && (
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button size="sm" onClick={() => handleOpenDialog()}>
                 <Plus className="h-4 w-4 mr-2" />
-                New Category
+                {t('category.newCategory')}
               </Button>
             </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {editingCategory ? 'Edit Category' : 'Create Category'}
-              </DialogTitle>
-            </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name *</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., Mathematics" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Optional description..."
-                          {...field}
-                          rows={3}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="flex justify-end gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsDialogOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit">
-                    {editingCategory ? 'Update' : 'Create'}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {editingCategory ? t('category.edit') : t('category.create')}
+                </DialogTitle>
+              </DialogHeader>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('category.name')} *</FormLabel>
+                        <FormControl>
+                          <Input placeholder={t('category.namePlaceholder')} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('category.description')}</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder={t('category.descriptionPlaceholder')} {...field} rows={3} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex justify-end gap-2">
+                    <Button type="button" variant="outline" onClick={handleCloseDialog}>
+                      {t('actions.cancel')}
+                    </Button>
+                    <Button type="submit">{editingCategory ? t('actions.update') : t('actions.create')}</Button>
+                  </div>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
         )}
       </div>
 
       <div className="space-y-2">
+        {/* All Questions Button */}
         <button
           className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
-            !selectedCategoryId
-              ? 'bg-primary text-primary-foreground'
-              : 'hover:bg-accent'
+            !selectedCategoryId ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
           }`}
-          onClick={() => onSelectCategory(undefined)}
+          onClick={handleSelectAll}
         >
           <div className="flex items-center justify-between">
-            <span className="font-medium">All Questions</span>
-            <span className={`text-sm font-semibold ${
-              !selectedCategoryId ? 'text-primary-foreground' : 'text-muted-foreground'
-            }`}>
-              {categories.reduce((sum, cat) => sum + (cat.question_count || 0), 0)}
+            <span className="font-medium">{t('category.allQuestions')}</span>
+            <span
+              className={`text-sm font-semibold ${
+                !selectedCategoryId ? 'text-primary-foreground' : 'text-muted-foreground'
+              }`}
+            >
+              {totalQuestionsCount}
             </span>
           </div>
         </button>
 
+        {/* Category List */}
         {categories.map((category) => (
           <div
             key={category.category_id}
@@ -244,15 +178,17 @@ export function CategoryManager({
           >
             <button
               className="flex-1 text-left"
-              onClick={() => onSelectCategory(category.category_id)}
+              onClick={() => handleSelectCategory(category.category_id)}
             >
               <div className="flex items-center justify-between">
                 <span className="font-medium">{category.name}</span>
-                <span className={`text-sm font-semibold ml-2 ${
-                  selectedCategoryId === category.category_id 
-                    ? 'text-primary-foreground' 
-                    : 'text-muted-foreground'
-                }`}>
+                <span
+                  className={`text-sm font-semibold ml-2 ${
+                    selectedCategoryId === category.category_id
+                      ? 'text-primary-foreground'
+                      : 'text-muted-foreground'
+                  }`}
+                >
                   {category.question_count || 0}
                 </span>
               </div>
@@ -291,23 +227,23 @@ export function CategoryManager({
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>{t('category.deleteConfirmTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Do you want to delete the category "{categoryToDelete?.name}"? This action cannot be undone.
+              {t('category.deleteConfirmDescription', { name: categoryToDelete?.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
-              <Button variant="outline" onClick={() => setCategoryToDelete(null)}>
-                Cancel
+              <Button variant="outline" onClick={cancelDelete}>
+                {t('actions.cancel')}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>
-              <Button 
-                onClick={confirmDelete} 
+              <Button
+                onClick={confirmDelete}
                 className="bg-destructive hover:bg-destructive/90 text-white"
               >
-                Delete
+                {t('actions.delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

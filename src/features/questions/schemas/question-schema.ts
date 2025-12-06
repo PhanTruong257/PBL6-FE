@@ -35,7 +35,7 @@ export const questionSchema = z
     content: z
       .string()
       .min(10, 'Question content must be at least 10 characters')
-      .max(2000, 'Question content must not exceed 2000 characters')
+      .max(10000, 'Question content must not exceed 10000 characters')
       .refine((val) => val.trim().length >= 10, {
         message: 'Question content cannot be only whitespace',
       }),
@@ -54,7 +54,7 @@ export const questionSchema = z
     if (data.type === 'multiple_choice') {
       // Validate ALL options must have text with valid prefix (no empty options allowed)
       const hasEmptyOption = data.options.some((opt) => opt.text.trim().length <= 1)
-      
+
       if (hasEmptyOption) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -63,7 +63,7 @@ export const questionSchema = z
         })
         return // Stop validation early
       }
-      
+
       // Check minimum options (at least 2)
       if (data.options.length < 2) {
         ctx.addIssue({
@@ -76,7 +76,7 @@ export const questionSchema = z
 
       // Check for correct answers (prefix with =)
       const correctAnswers = data.options.filter((opt) => opt.text.startsWith('='))
-      
+
       if (correctAnswers.length === 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
