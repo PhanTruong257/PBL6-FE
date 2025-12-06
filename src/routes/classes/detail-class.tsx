@@ -12,8 +12,9 @@ export const Route = createFileRoute('/classes/detail-class')({
   validateSearch: classDetailSearchSchema,
   component: () => (
     <MainLayout>
-      <ClassDetailPage />
+      <div className="h-full overflow-hidden">
+        <ClassDetailPage />
+      </div>
     </MainLayout>
   ),
 })
-

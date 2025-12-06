@@ -141,10 +141,10 @@ export class ClassService {
    * Add members to class
    */
   static async addMembers(data: AddMemberRequest): Promise<any> {
-    const response = await httpClient.post(
-        `/classes/add-students`,
-      { students: data.students, class_id: data.classId },
-    )
+    const response = await httpClient.post(`/classes/add-students`, {
+      students: data.students,
+      class_id: data.classId,
+    })
     return response.data
   }
 
@@ -192,5 +192,15 @@ export class ClassService {
       { userEmails: emails },
     )
     return response.data.data?.users || []
+  }
+
+  /**
+   * Remove student from class
+   */
+  static async removeStudent(classId: number, userId: number): Promise<any> {
+    const response = await httpClient.delete(
+      `/classes/${classId}/students/${userId}`,
+    )
+    return response.data
   }
 }
