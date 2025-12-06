@@ -8,6 +8,8 @@ import type {
   SubmitExamResponse,
   UpdateRemainingTimeRequest,
   UpdateRemainingTimeResponse,
+  VerifyExamPasswordRequest,
+  VerifyExamPasswordResponse,
 } from '@/types/submission'
 
 /**
@@ -15,10 +17,29 @@ import type {
  */
 export const SubmissionService = {
   /**
+   * Verify exam password before starting
+   */
+  async verifyExamPassword(
+    examId: number,
+    data: VerifyExamPasswordRequest
+  ): Promise<VerifyExamPasswordResponse> {
+    const response = await httpClient.post(
+      `/exams/${examId}/verify-password`,
+      data
+    )
+    return response.data.data
+  },
+
+  /**
    * Start an exam or get existing submission
    */
-  async startExam(examId: number): Promise<StartExamResponse> {
-    const response = await httpClient.post(`/exams/${examId}/start`)
+  async startExam(
+    examId: number,
+    password?: string
+  ): Promise<StartExamResponse> {
+    const response = await httpClient.post(`/exams/${examId}/start`, {
+      password,
+    })
     return response.data.data
   },
 

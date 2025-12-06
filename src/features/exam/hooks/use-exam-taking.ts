@@ -10,6 +10,7 @@ import { useNavigate } from '@tanstack/react-router'
 
 interface UseExamTakingProps {
   examId: number
+  password?: string
 }
 
 interface UseExamTakingReturn {
@@ -21,6 +22,9 @@ interface UseExamTakingReturn {
   isSavingAnswer: boolean
   isSubmittingExam: boolean
   remainingTime: number
+  passwordRequired: boolean
+  passwordError: string | null
+  isVerifyingPassword: boolean
   
   // Actions
   setCurrentAnswer: (answer: string) => void
@@ -29,6 +33,7 @@ interface UseExamTakingReturn {
   goToPrevQuestion: () => void
   saveAnswer: (silent?: boolean) => void
   submitExam: () => void
+  verifyPassword: (password: string) => Promise<boolean>
   
   // Computed
   canGoNext: boolean
@@ -37,25 +42,109 @@ interface UseExamTakingReturn {
 
 const TIME_SYNC_INTERVAL = 5000
 
-export function useExamTaking({ examId }: UseExamTakingProps): UseExamTakingReturn {
+export function useExamTaking({ examId, password }: UseExamTakingProps): UseExamTakingReturn {
   const queryClient = useQueryClient()
   const [currentQuestionOrder, setCurrentQuestionOrder] = useState(1)
   const [currentAnswer, setCurrentAnswer] = useState('')
   const [remainingTime, setRemainingTime] = useState(0)
+  const [passwordRequired, setPasswordRequired] = useState(false)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
+  const [isVerifyingPassword, setIsVerifyingPassword] = useState(false)
+  const [isPasswordVerified, setIsPasswordVerified] = useState(false)
+  const [examHasPassword, setExamHasPassword] = useState<boolean | null>(null)
   const remainingTimeRef = useRef(0) // Store latest remainingTime value
   const lastSyncTimeRef = useRef<number>(Date.now())
   const timeSyncIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const hasInitializedQuestionOrder = useRef(false)
+  const hasCheckedPassword = useRef(false)
   const navigate = useNavigate()
-  // Start exam query
+  
+  // Check if exam requires password on mount
+  useEffect(() => {
+    const checkExamPassword = async () => {
+      if (hasCheckedPassword.current) return
+      hasCheckedPassword.current = true
+      
+      try {
+        // Try to verify with empty password to check if exam has password
+        const result = await SubmissionService.verifyExamPassword(examId, { password: '' })
+        
+        if (result.has_password) {
+          // Exam requires password
+          setExamHasPassword(true)
+          setPasswordRequired(true)
+          setIsPasswordVerified(false)
+        } else {
+          // Exam doesn't require password
+          setExamHasPassword(false)
+          setPasswordRequired(false)
+          setIsPasswordVerified(true)
+        }
+      } catch (error) {
+        console.error('Failed to check exam password requirement:', error)
+        // On error, assume no password required and let backend handle it
+        setExamHasPassword(false)
+        setPasswordRequired(false)
+        setIsPasswordVerified(true)
+      }
+    }
+    
+    checkExamPassword()
+  }, [examId])
+  
+  // Start exam query - only enabled after password is verified
   const {
     data: submission,
     isLoading: isStartingExam,
+    error: startExamError,
   } = useQuery({
-    queryKey: ['exam-submission', examId],
-    queryFn: () => SubmissionService.startExam(examId),
+    queryKey: ['exam-submission', examId, password],
+    queryFn: () => SubmissionService.startExam(examId, password),
+    enabled: isPasswordVerified && examHasPassword !== null,
     refetchOnWindowFocus: false,
+    retry: false,
   })
+  
+  // Handle start exam errors
+  useEffect(() => {
+    if (startExamError) {
+      const error = startExamError as any
+      const errorMessage = error?.response?.data?.message || ''
+      
+      if (error?.response?.status === 400 && errorMessage.includes('password')) {
+        // Password error from backend
+        setPasswordRequired(true)
+        setIsPasswordVerified(false)
+        setPasswordError('Mật khẩu không chính xác')
+      }
+    }
+  }, [startExamError])
+  
+  // Verify password function
+  const verifyPassword = useCallback(async (pwd: string): Promise<boolean> => {
+    setIsVerifyingPassword(true)
+    setPasswordError(null)
+    
+    try {
+      const result = await SubmissionService.verifyExamPassword(examId, { password: pwd })
+      
+      if (result.success) {
+        setIsPasswordVerified(true)
+        setPasswordRequired(false)
+        setPasswordError(null)
+        return true
+      } else {
+        setPasswordError(result.message || 'Mật khẩu không chính xác')
+        return false
+      }
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || 'Không thể xác thực mật khẩu'
+      setPasswordError(errorMessage)
+      return false
+    } finally {
+      setIsVerifyingPassword(false)
+    }
+  }, [examId])
 
     // Initialize current question order from API response
   useEffect(() => {
@@ -254,6 +343,9 @@ export function useExamTaking({ examId }: UseExamTakingProps): UseExamTakingRetu
     isSavingAnswer: saveAnswerMutation.isPending,
     isSubmittingExam: submitExamMutation.isPending,
     remainingTime,
+    passwordRequired,
+    passwordError,
+    isVerifyingPassword,
     
     // Actions
     setCurrentAnswer,
@@ -262,6 +354,7 @@ export function useExamTaking({ examId }: UseExamTakingProps): UseExamTakingRetu
     goToPrevQuestion,
     saveAnswer,
     submitExam,
+    verifyPassword,
     
     // Computed
     canGoNext,

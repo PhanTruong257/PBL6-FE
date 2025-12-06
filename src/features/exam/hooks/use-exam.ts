@@ -191,6 +191,7 @@ export function useEditExam(examId: number) {
       duration?: number
       start_time: string
       end_time: string
+      password: string  
       total_points?: number
       status?: ExamStatus
     }
@@ -206,6 +207,7 @@ export function useEditExam(examId: number) {
       end_time: data.basicInfo.end_time,
       total_points: data.basicInfo.total_points,
       status: data.basicInfo.status,
+      password: data.basicInfo.password,
       questions: data.questions.map((q) => ({
         question_id: q.question_id,
         points: Number(q.points),

@@ -41,6 +41,7 @@ interface CreateExamFormProps {
       end_time: string
       total_points?: number
       status?: ExamStatus
+      password?: string
     }
     questions: SelectedQuestion[]
   }) => Promise<void>
@@ -81,6 +82,7 @@ export function CreateExamForm({
     end_time: initialData?.end_time ? formatDateTimeLocal(initialData.end_time) : '',
     status: initialData?.status || 'draft',
     total_points: initialData?.total_points || 0,
+    password: initialData?.password || '',
   })
 
   const [selectedQuestions, setSelectedQuestions] = useState<SelectedQuestion[]>(
@@ -104,6 +106,7 @@ export function CreateExamForm({
         end_time: formatDateTimeLocal(initialData.end_time),
         status: initialData.status || 'draft',
         total_points: initialData.total_points || 0,
+        password: initialData.password || '',
       })
       
       if (initialData.questions) {
@@ -302,6 +305,7 @@ export function CreateExamForm({
         start_time: basicInfo.start_time,
         end_time: basicInfo.end_time,
         status: basicInfo.status as ExamStatus,
+        password: basicInfo.password,
         total_points,
       },
       questions: selectedQuestions,
@@ -326,6 +330,7 @@ export function CreateExamForm({
           start_time: basicInfo.start_time,
           end_time: basicInfo.end_time,
           total_time: basicInfo.duration || 45,
+          password: basicInfo.password,
           total_points,
           allow_review: true,
           created_by: currentUser.user_id,

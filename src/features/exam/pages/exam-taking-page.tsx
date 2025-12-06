@@ -1,6 +1,7 @@
-import { useParams } from '@tanstack/react-router'
-import { useEffect, useRef } from 'react'
+import { useParams, useNavigate } from '@tanstack/react-router'
+import { useEffect, useRef, useState } from 'react'
 import { useExamTaking } from '../hooks'
+import { ExamPasswordDialog } from '../components/exam-password-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -27,7 +28,9 @@ import { cn } from '@/libs/utils/cn'
 
 export function ExamTakingPage() {
   const params = useParams({ strict: false })
+  const navigate = useNavigate()
   const examId = Number(params.examId)
+  const [examPassword, setExamPassword] = useState<string | undefined>(undefined)
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const {
@@ -38,15 +41,32 @@ export function ExamTakingPage() {
     isSavingAnswer,
     isSubmittingExam,
     remainingTime,
+    passwordRequired,
+    passwordError,
+    isVerifyingPassword,
     setCurrentAnswer,
     goToQuestion,
     goToNextQuestion,
     goToPrevQuestion,
     saveAnswer,
     submitExam,
+    verifyPassword,
     canGoNext,
     canGoPrev,
-  } = useExamTaking({ examId })
+  } = useExamTaking({ examId, password: examPassword })
+  
+  // Handle password verification
+  const handlePasswordSubmit = async (password: string) => {
+    const success = await verifyPassword(password)
+    if (success) {
+      setExamPassword(password)
+    }
+  }
+  
+  // Handle password dialog cancel
+  const handlePasswordCancel = () => {
+    navigate({ to: '/exam/student' })
+  }
 
   // Format remaining time as HH:MM:SS
   const formatTime = (seconds: number) => {
@@ -306,6 +326,28 @@ export function ExamTakingPage() {
           </p>
         )}
       </div>
+    )
+  }
+
+  // Show password dialog if required
+  if (passwordRequired) {
+    return (
+      <>
+        <ExamPasswordDialog
+          open={passwordRequired}
+          examTitle={submission?.exam_title || 'Bài thi'}
+          error={passwordError || undefined}
+          isVerifying={isVerifyingPassword}
+          onSubmit={handlePasswordSubmit}
+          onCancel={handlePasswordCancel}
+        />
+        <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[60vh]">
+          <div className="text-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
+            <p className="text-muted-foreground">Đang xác thực...</p>
+          </div>
+        </div>
+      </>
     )
   }
 

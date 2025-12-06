@@ -21,18 +21,12 @@ interface ExamListTableProps {
 
 const statusLabels: Record<string, string> = {
   draft: 'Bản nháp',
-  published: 'Công khai',
-  in_progress: 'Đang diễn ra',
-  completed: 'Đã hoàn thành',
-  cancelled: 'Đã hủy',
+  published: 'Công khai'
 }
 
 const statusColors: Record<string, string> = {
   draft: 'bg-gray-100 text-green-800',
-  published: 'bg-green-100 text-green-800',
-  in_progress: 'bg-blue-100 text-blue-800',
-  completed: 'bg-gray-100 text-gray-800',
-  cancelled: 'bg-red-100 text-red-800',
+  published: 'bg-green-100 text-green-800'
 }
 
 function formatDateTimeLocal(datetime: string): string {
