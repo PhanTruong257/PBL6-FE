@@ -20,34 +20,33 @@ export const categoriesApi = {
   /**
    * Get all question categories.
    */
-  getAll: async (): Promise<QuestionCategory[]> => {
+  getAll: async (): Promise<IApiResponse<QuestionCategory[]>> => {
     const response = await httpClient.get<IApiResponse<QuestionCategory[]>>('/question-categories')
-    const categories = response.data.data
-    return categories
+    return response.data
   },
 
   /**
    * Get category by ID
    */
-  getById: async (id: number): Promise<QuestionCategory> => {
+  getById: async (id: number): Promise<IApiResponse<QuestionCategory>> => {
     const response = await httpClient.get<IApiResponse<QuestionCategory>>(`/question-categories/${id}`)
-    return response.data.data
+    return response.data
   },
 
   /**
    * Create new category (teachers only)
    */
-  create: async (data: CreateQuestionCategoryRequest): Promise<QuestionCategory> => {
+  create: async (data: CreateQuestionCategoryRequest): Promise<IApiResponse<QuestionCategory>> => {
     const response = await httpClient.post<IApiResponse<QuestionCategory>>('/question-categories', data)
-    return response.data.data
+    return response.data
   },
 
   /**
    * Update category
    */
-  update: async (id: number, data: UpdateQuestionCategoryRequest): Promise<QuestionCategory> => {
+  update: async (id: number, data: UpdateQuestionCategoryRequest): Promise<IApiResponse<QuestionCategory>> => {
     const response = await httpClient.put<IApiResponse<QuestionCategory>>(`/question-categories/${id}`, data)
-    return response.data.data
+    return response.data
   },
 
   /**
@@ -65,35 +64,33 @@ export const questionsApi = {
   /**
    * Get all questions with filters and pagination
    */
-  getAll: async (params?: QuestionFilterParams): Promise<QuestionListResponse> => {
+  getAll: async (params?: QuestionFilterParams): Promise<IApiResponse<QuestionListResponse>> => {
     const response = await httpClient.get<IApiResponse<QuestionListResponse>>('/questions', { params })
-    // Backend returns {data: [], meta: {}}, ensure we have default values
-    const result = response.data.data
-    return result
+    return response.data
   },
 
   /**
    * Get question by ID with full details
    */
-  getById: async (id: number): Promise<Question> => {
+  getById: async (id: number): Promise<IApiResponse<Question>> => {
     const response = await httpClient.get<IApiResponse<Question>>(`/questions/${id}`)
-    return response.data.data
+    return response.data
   },
 
   /**
    * Create new question (teachers only)
    */
-  create: async (data: CreateQuestionRequest): Promise<Question> => {
+  create: async (data: CreateQuestionRequest): Promise<IApiResponse<Question>> => {
     const response = await httpClient.post<IApiResponse<Question>>('/questions', data)
-    return response.data.data
+    return response.data
   },
 
   /**
    * Update existing question (only creator can update)
    */
-  update: async (id: number, data: UpdateQuestionRequest): Promise<Question> => {
+  update: async (id: number, data: UpdateQuestionRequest): Promise<IApiResponse<Question>> => {
     const response = await httpClient.put<IApiResponse<Question>>(`/questions/${id}`, data)
-    return response.data.data
+    return response.data
   },
 
   /**
@@ -106,26 +103,25 @@ export const questionsApi = {
   /**
    * Search questions
    */
-  search: async (searchTerm: string, filters?: Omit<QuestionFilterParams, 'search'>): Promise<QuestionListResponse> => {
+  search: async (searchTerm: string, filters?: Omit<QuestionFilterParams, 'search'>): Promise<IApiResponse<QuestionListResponse>> => {
     const params = {
       ...filters,
       search: searchTerm,
     }
     const response = await httpClient.get<IApiResponse<QuestionListResponse>>('/questions', { params })
-    const result = response.data.data
-    return result
+    return response.data
   },
 
   /**
    * Preview Excel import
    */
-  previewImport: async (file: File, limit?: number): Promise<PreviewExcelResult> => {
+  previewImport: async (file: File, limit?: number): Promise<IApiResponse<PreviewExcelResult>> => {
     const formData = new FormData()
     formData.append('file', file)
-    
+
     // Build URL with query parameter
     const url = `/questions/import/preview${limit ? `?limit=${limit}` : ''}`
-    
+
     const response = await httpClient.post<IApiResponse<PreviewExcelResult>>(
       url,
       formData,
@@ -135,16 +131,16 @@ export const questionsApi = {
         },
       }
     )
-    return response.data.data
+    return response.data
   },
 
   /**
    * Import questions from Excel
    */
-  importExcel: async (file: File): Promise<ImportQuestionResult> => {
+  importExcel: async (file: File): Promise<IApiResponse<ImportQuestionResult>> => {
     const formData = new FormData()
     formData.append('file', file)
-    
+
     const response = await httpClient.post<IApiResponse<ImportQuestionResult>>(
       '/questions/import',
       formData,
@@ -154,7 +150,7 @@ export const questionsApi = {
         },
       }
     )
-    return response.data.data
+    return response.data
   },
 
   /**
@@ -183,7 +179,7 @@ export const questionsApi = {
       params,
       responseType: 'blob',
     })
-    
+
     const blob = new Blob([response.data], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     })
@@ -203,7 +199,7 @@ export const questionsApi = {
       params,
       responseType: 'blob',
     })
-    
+
     const blob = new Blob([response.data], { type: 'text/plain' })
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -221,7 +217,7 @@ export const questionsApi = {
       params,
       responseType: 'blob',
     })
-    
+
     const blob = new Blob([response.data], {
       type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     })

@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react'
+﻿import { useEffect, useRef } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Trash2, GripVertical } from 'lucide-react'
@@ -198,6 +198,18 @@ export function QuestionForm({
       ])
     }
   }, [questionType, fields.length, append])
+
+  // Ref for validation timeout cleanup
+  const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (validationTimeoutRef.current) {
+        clearTimeout(validationTimeoutRef.current)
+      }
+    }
+  }, [])
 
   const handleAddOption = () => {
     const currentOptionsCount = fields.length
@@ -401,7 +413,10 @@ export function QuestionForm({
                       })
                     })
                     // Force re-validation after state update
-                    setTimeout(() => form.trigger('options'), 100)
+                    if (validationTimeoutRef.current) {
+                      clearTimeout(validationTimeoutRef.current)
+                    }
+                    validationTimeoutRef.current = setTimeout(() => form.trigger('options'), 100)
                   }}
                 >
                   <DndContext
@@ -423,7 +438,10 @@ export function QuestionForm({
                               shouldValidate: true,
                             })
                             // Trigger validation after text change
-                            setTimeout(() => form.trigger('options'), 50)
+                            if (validationTimeoutRef.current) {
+                              clearTimeout(validationTimeoutRef.current)
+                            }
+                            validationTimeoutRef.current = setTimeout(() => form.trigger('options'), 50)
                           }}
                           onRemove={() => handleRemoveOption(index)}
                           t={t}
@@ -452,7 +470,10 @@ export function QuestionForm({
                             shouldValidate: true,
                           })
                           // Trigger validation after text change
-                          setTimeout(() => form.trigger('options'), 50)
+                          if (validationTimeoutRef.current) {
+                            clearTimeout(validationTimeoutRef.current)
+                          }
+                          validationTimeoutRef.current = setTimeout(() => form.trigger('options'), 50)
                         }}
                         onRemove={() => handleRemoveOption(index)}
                         t={t}

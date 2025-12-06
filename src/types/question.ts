@@ -51,17 +51,17 @@ export interface Question {
   type: QuestionType
   difficulty: QuestionDifficulty
   category_id?: number
-  
+
   // Multiple choice specific
   is_multiple_answer: boolean
   options?: QuestionOption[]
-  
+
   // Metadata
   created_by: number
   is_public: boolean
   created_at: string
   updated_at: string
-  
+
   category?: QuestionCategory
   question_exams?: Array<{
     exam_id: number
@@ -99,6 +99,7 @@ export interface QuestionFilterParams {
   type?: QuestionType
   difficulty?: QuestionDifficulty
   category_id?: number
+  category_ids?: number[] // Support multiple categories
   page?: number
   limit?: number
   search?: string
@@ -179,6 +180,7 @@ export interface ImportQuestionResult {
   success: boolean
   total: number
   imported: number
+  updated: number
   failed: number
   errors: ImportQuestionError[]
 }

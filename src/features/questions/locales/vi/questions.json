@@ -10,7 +10,6 @@
   "tryChangingFilters": "Thử thay đổi bộ lọc hoặc tạo câu hỏi mới",
   "createFirstQuestion": "Tạo câu hỏi đầu tiên",
   "loading": "Đang tải danh sách câu hỏi...",
-  
   "stats": {
     "title": "Thống kê",
     "total": "Tổng câu hỏi",
@@ -22,18 +21,15 @@
     "medium": "Trung bình",
     "hard": "Khó"
   },
-  
   "types": {
     "multipleChoice": "Trắc nghiệm",
     "essay": "Tự luận"
   },
-  
   "difficulty": {
     "easy": "Dễ",
     "medium": "Trung bình",
     "hard": "Khó"
   },
-  
   "form": {
     "content": "Nội dung câu hỏi",
     "contentPlaceholder": "Nhập nội dung câu hỏi...",
@@ -51,22 +47,23 @@
     "markCorrectAnswer": "Đánh dấu đáp án đúng",
     "optionPlaceholder": "Lựa chọn {{number}}"
   },
-  
   "category": {
     "title": "Danh mục",
     "manage": "Quản lý danh mục",
     "create": "Tạo danh mục",
     "edit": "Chỉnh sửa danh mục",
     "delete": "Xóa danh mục",
-    "name": "Tên danh mục",
-    "namePlaceholder": "Nhập tên danh mục...",
+    "newCategory": "Danh mục mới",
+    "allQuestions": "Tất cả câu hỏi",
+    "name": "Tên",
+    "namePlaceholder": "VD: Toán học",
     "description": "Mô tả",
-    "descriptionPlaceholder": "Nhập mô tả...",
+    "descriptionPlaceholder": "Mô tả tùy chọn...",
     "questionCount": "{{count}} câu hỏi",
-    "deleteConfirm": "Bạn có chắc chắn muốn xóa \"{{name}}\"?",
+    "deleteConfirmTitle": "Bạn có chắc chắn?",
+    "deleteConfirmDescription": "Bạn có muốn xóa danh mục \"{{name}}\"? Hành động này không thể hoàn tác.",
     "addNew": "Thêm mới..."
   },
-  
   "search": {
     "placeholder": "Tìm kiếm câu hỏi, nội dung, danh mục...",
     "filters": "Bộ lọc",
@@ -74,14 +71,12 @@
     "clearFilters": "Xóa tất cả bộ lọc",
     "search": "Tìm kiếm"
   },
-  
   "view": {
     "grid": "Dạng Lưới",
     "list": "Danh sách",
     "showing": "Hiển thị {{from}} đến {{to}} trong tổng số {{total}} câu hỏi",
     "page": "Trang {{current}} / {{total}}"
   },
-  
   "actions": {
     "import": "Nhập",
     "export": "Xuất",
@@ -97,7 +92,6 @@
     "saving": "Đang lưu...",
     "backToDashboard": "Quay về Dashboard"
   },
-  
   "page": {
     "checkingAccess": "Đang kiểm tra quyền truy cập...",
     "noAccess": "Không có quyền truy cập",
@@ -105,16 +99,41 @@
     "questionList": "Danh sách câu hỏi",
     "showingRange": "Hiển thị {{from}} đến {{to}} trong tổng số {{total}} câu hỏi"
   },
-  
   "dialog": {
     "createTitle": "Tạo câu hỏi mới",
     "editTitle": "Chỉnh sửa câu hỏi",
+    "detailTitle": "Chi tiết câu hỏi",
     "deleteTitle": "Bạn có chắc chắn?",
     "deleteDescription": "Bạn có muốn xóa câu hỏi này không?",
     "deleteDescriptionDetail": "Hành động này không thể hoàn tác.",
-    "loadingCategories": "Đang tải danh mục..."
+    "loadingCategories": "Đang tải danh mục...",
+    "questionLabel": "Câu hỏi",
+    "answerOptions": "Các lựa chọn trả lời",
+    "multipleAnswersAllowed": "(Được chọn nhiều đáp án)",
+    "usedInExams": "Được sử dụng trong bài thi ({{count}})",
+    "points": "{{points}} điểm",
+    "created": "Ngày tạo",
+    "lastUpdated": "Cập nhật lần cuối",
+    "questionId": "Mã câu hỏi",
+    "creatorId": "Mã người tạo",
+    "status": "Trạng thái"
   },
-  
+  "visibility": {
+    "public": "Công khai",
+    "private": "Riêng tư"
+  },
+  "grid": {
+    "noQuestions": "Không tìm thấy câu hỏi",
+    "noQuestionsHint": "Thử thay đổi bộ lọc hoặc tạo câu hỏi mới"
+  },
+  "filter": {
+    "selectCategories": "Chọn danh mục...",
+    "allCategories": "Tất cả danh mục",
+    "searchCategories": "Tìm danh mục...",
+    "noCategories": "Không tìm thấy danh mục",
+    "clearAll": "Xóa tất cả",
+    "questionsCount": "{{count}} câu hỏi"
+  },
   "import": {
     "title": "Nhập câu hỏi từ Excel",
     "description": "Tải lên file Excel để nhập nhiều câu hỏi cùng lúc",
@@ -155,13 +174,11 @@
     "toastFileTooLarge": "Kích thước file phải nhỏ hơn 10MB",
     "toastTemplateDownloaded": "Đã tải mẫu"
   },
-  
   "export": {
     "excel": "Xuất Excel",
     "text": "Xuất Text",
     "word": "Xuất Word"
   },
-  
   "messages": {
     "deleteConfirm": "Bạn có chắc chắn muốn xóa câu hỏi này?\n\n\"{{content}}\"",
     "createSuccess": "Tạo câu hỏi thành công!",
@@ -181,7 +198,6 @@
     "cannotRemove": "Không thể xóa",
     "minOptionsRequired": "Câu hỏi trắc nghiệm phải có ít nhất 2 lựa chọn"
   },
-  
   "validation": {
     "contentRequired": "Nội dung câu hỏi là bắt buộc",
     "contentMin": "Nội dung câu hỏi phải có ít nhất {{count}} ký tự",
