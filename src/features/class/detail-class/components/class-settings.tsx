@@ -85,7 +85,7 @@ export function ClassSettings({ onBack, classInfo }: ClassSettingsProps) {
       const json = await res.json()
 
       if (json.success) {
-         // Invalidate queries
+        // Invalidate queries
         queryClient.invalidateQueries({ queryKey: ['teacher-classes'] })
         queryClient.invalidateQueries({ queryKey: ['student-classes'] })
         // Navigate back to classes list
@@ -183,7 +183,7 @@ export function ClassSettings({ onBack, classInfo }: ClassSettingsProps) {
     <div className="flex-1 p-6 overflow-y-auto bg-white">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Class Information Section */}
-        <div className="bg-indigo-500 rounded-lg p-6 text-white">
+        <div className="bg-gray-500 rounded-lg p-6 text-white">
           <div className="flex items-center space-x-3 mb-4">
             <div className="w-8 h-8 bg-white bg-opacity-20 rounded flex items-center justify-center">
               <span className="text-sm font-semibold">📚</span>
