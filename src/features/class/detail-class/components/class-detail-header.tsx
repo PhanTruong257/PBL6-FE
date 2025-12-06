@@ -134,8 +134,8 @@ export function ClassDetailHeader({
           {isTeacher && (
             <Button variant="ghost" size="icon" onClick={onToggleSettings}>
               <Settings className="h-4 w-4" />
-            </Button>
-          )}
+            </Button>  
+          )} 
         </div>
       </div>
     </div>
