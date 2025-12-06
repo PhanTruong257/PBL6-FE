@@ -22,9 +22,7 @@ export const categoriesApi = {
    */
   getAll: async (): Promise<QuestionCategory[]> => {
     const response = await httpClient.get<IApiResponse<QuestionCategory[]>>('/question-categories')
-    console.log('Response: ', response)
     const categories = response.data.data
-    console.log('Categories: ', categories)
     return categories
   },
 
