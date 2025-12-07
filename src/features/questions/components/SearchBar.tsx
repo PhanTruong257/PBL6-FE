@@ -166,40 +166,6 @@ export function SearchBar({ categories, onSearch, defaultValues }: SearchBarProp
                   )}
                 />
 
-                {/* Category Filter */}
-                <FormField
-                  control={form.control}
-                  name="category_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Category</FormLabel>
-                      <Select
-                        onValueChange={(value) =>
-                          field.onChange(value === 'all' ? undefined : parseInt(value))
-                        }
-                        value={field.value?.toString() || 'all'}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="All categories" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="all">All categories</SelectItem>
-                          {categories.map((cat) => (
-                            <SelectItem
-                              key={cat.category_id}
-                              value={cat.category_id.toString()}
-                            >
-                              {cat.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-
                 {/* Visibility Filter */}
                 <FormField
                   control={form.control}

@@ -12,6 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { userPermissionsSelector } from '@/global/recoil/user/userSelectorFamily'
 import type { Question } from '@/types/question'
+import { useQuestionsTranslation } from '../hooks'
 
 interface QuestionListProps {
   questions: Question[]
@@ -21,6 +22,8 @@ interface QuestionListProps {
 }
 
 export function QuestionList({ questions, onEdit, onDelete, onView }: QuestionListProps) {
+  const { t } = useQuestionsTranslation()
+  
   // Get user permissions
   const userPermissions = useRecoilValue(userPermissionsSelector)
   
@@ -45,22 +48,11 @@ export function QuestionList({ questions, onEdit, onDelete, onView }: QuestionLi
     }
   }
 
-  const getTypeLabel = (type: string) => {
-    switch (type) {
-      case 'multiple_choice':
-        return 'Multiple Choice'
-      case 'essay':
-        return 'Essay'
-      default:
-        return type
-    }
-  }
-
   if (questions.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
-        <p>No questions found.</p>
-        <p className="text-sm mt-2">Create your first question to get started.</p>
+        <p>{t('grid.noQuestions')}</p>
+        <p className="text-sm mt-2">{t('grid.noQuestionsHint')}</p>
       </div>
     )
   }
@@ -71,12 +63,12 @@ export function QuestionList({ questions, onEdit, onDelete, onView }: QuestionLi
         <TableHeader>
           <TableRow>
             <TableHead className="w-[50px]">#</TableHead>
-            <TableHead className="min-w-[300px]">Question</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Difficulty</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Visibility</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="min-w-[300px]">{t('dialog.questionLabel')}</TableHead>
+            <TableHead>{t('form.type')}</TableHead>
+            <TableHead>{t('form.difficulty')}</TableHead>
+            <TableHead>{t('form.category')}</TableHead>
+            <TableHead>{t('visibility.public')}</TableHead>
+            <TableHead className="text-right">{t('actions.view')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -88,37 +80,39 @@ export function QuestionList({ questions, onEdit, onDelete, onView }: QuestionLi
                   <p className="line-clamp-2 font-medium">{question.content}</p>
                   {question.type === 'multiple_choice' && question.options && (
                     <p className="text-xs text-muted-foreground mt-1">
-                      {question.options.length} options
-                      {question.is_multiple_answer && ' • Multiple answers'}
+                      {question.options.length} {t('form.options').toLowerCase()}
+                      {question.is_multiple_answer && ` • ${t('form.isMultipleAnswer')}`}
                     </p>
                   )}
                 </div>
               </TableCell>
               <TableCell>
-                <Badge variant="outline">{getTypeLabel(question.type)}</Badge>
+                <Badge variant="outline">
+                  {t(`types.${question.type === 'multiple_choice' ? 'multipleChoice' : 'essay'}`)}
+                </Badge>
               </TableCell>
               <TableCell>
                 <Badge className={getDifficultyColor(question.difficulty)}>
-                  {question.difficulty}
+                  {t(`difficulty.${question.difficulty}`)}
                 </Badge>
               </TableCell>
               <TableCell>
                 {question.category ? (
                   <span className="text-sm">{question.category.name}</span>
                 ) : (
-                  <span className="text-sm text-muted-foreground">No category</span>
+                  <span className="text-sm text-muted-foreground">{t('form.noCategory')}</span>
                 )}
               </TableCell>
               <TableCell>
                 {question.is_public ? (
                   <div className="flex items-center gap-1 text-sm text-green-600">
                     <Unlock className="h-3 w-3" />
-                    Public
+                    {t('visibility.public')}
                   </div>
                 ) : (
                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     <Lock className="h-3 w-3" />
-                    Private
+                    {t('visibility.private')}
                   </div>
                 )}
               </TableCell>
@@ -128,7 +122,7 @@ export function QuestionList({ questions, onEdit, onDelete, onView }: QuestionLi
                     variant="ghost"
                     size="sm"
                     onClick={() => onView(question)}
-                    title="View details"
+                    title={t('actions.view')}
                   >
                     <Eye className="h-4 w-4" />
                   </Button>
@@ -137,7 +131,7 @@ export function QuestionList({ questions, onEdit, onDelete, onView }: QuestionLi
                       variant="ghost"
                       size="sm"
                       onClick={() => onEdit(question)}
-                      title="Edit question"
+                      title={t('actions.edit')}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -148,7 +142,7 @@ export function QuestionList({ questions, onEdit, onDelete, onView }: QuestionLi
                       size="sm"
                       onClick={() => onDelete(question)}
                       className="text-destructive hover:text-destructive"
-                      title="Delete question"
+                      title={t('actions.delete')}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

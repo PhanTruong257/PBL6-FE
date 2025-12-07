@@ -1,5 +1,7 @@
 export * from './CategoryManager'
 
+export * from './CategoryFilter'
+
 export * from './QuestionForm'
 
 export * from './QuestionList'
