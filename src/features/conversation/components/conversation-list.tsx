@@ -7,10 +7,9 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/libs/utils/cn'
 import {
   useConversations,
-  useUnreadByConversation,
-  useConversationRealtime,
+  useUnreadCounts,
   useConversationSearch,
-  useMessageFormatter,
+  useChatUtils,
 } from '../hooks'
 import { useSocket, useSearchUsers, usePresence } from '@/global/hooks'
 import { CreateConversationDialog } from './create-conversation-dialog'
@@ -33,22 +32,15 @@ export function ConversationList({
     isLoading,
     refetch: refetchConversations,
   } = useConversations({ userId: currentUserId })
-  const { unreadByConversation } = useUnreadByConversation(currentUserId)
+  const { unreadByConversation } = useUnreadCounts(currentUserId)
   const { socket } = useSocket()
   const { isUserOnline, requestPresence } = usePresence()
-  const { formatRelativeTime } = useMessageFormatter()
+  const { formatRelativeTime } = useChatUtils()
 
   const conversations =
     conversationsData?.data?.conversations ||
     conversationsData?.conversations ||
     (Array.isArray(conversationsData) ? conversationsData : [])
-
-  // Use custom hooks
-  useConversationRealtime({
-    socket,
-    currentUserId,
-    refetchConversations,
-  })
 
   const {
     searchQuery,
@@ -214,15 +206,9 @@ export function ConversationList({
                         {receiverName.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    {/* Online/Offline status indicator */}
-                    {isOnline ? (
+                    {/* Online status indicator - only show when online */}
+                    {isOnline && (
                       <div className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
-                    ) : (
-                      <div className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full bg-red-500 border-2 border-background" />
-                    )}
-                    {/* Unread indicator */}
-                    {hasUnread && (
-                      <div className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-destructive border-2 border-background" />
                     )}
                   </div>
 

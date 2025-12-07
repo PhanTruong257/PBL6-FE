@@ -1,6 +1,10 @@
 import { useEffect, useCallback } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { socketInstanceState, presenceMapState } from '@/global/recoil/socket'
+import {
+  socketInstanceState,
+  presenceMapState,
+  presenceInitializedState,
+} from '@/global/recoil/socket'
 import { currentUserState } from '@/global/recoil/user'
 import {
   SOCKET_EVENTS,
@@ -16,6 +20,9 @@ export function usePresence() {
   const socket = useRecoilValue(socketInstanceState)
   const currentUser = useRecoilValue(currentUserState)
   const [presenceMap, setPresenceMap] = useRecoilState(presenceMapState)
+  const [presenceInitialized, setPresenceInitialized] = useRecoilState(
+    presenceInitializedState,
+  )
 
   const userId = currentUser?.user_id
 
@@ -137,19 +144,73 @@ export function usePresence() {
   }, [updatePresence])
 
   /**
-   * Set online on mount, offline on unmount
+   * Set online when socket connects, offline on disconnect/unmount
    */
   useEffect(() => {
-    if (socket?.connected) {
-      updatePresence(PresenceStatus.ONLINE)
+    if (!socket || !userId) {
+      setPresenceInitialized(false)
+      return
     }
 
-    return () => {
-      if (socket?.connected) {
-        updatePresence(PresenceStatus.OFFLINE)
+    // Set online immediately if already connected and not yet initialized
+    if (socket.connected && !presenceInitialized) {
+      updatePresence(PresenceStatus.ONLINE)
+      setPresenceInitialized(true)
+    }
+
+    // Listen for connect event and set online
+    const handleConnect = () => {
+      if (!presenceInitialized) {
+        updatePresence(PresenceStatus.ONLINE)
+        setPresenceInitialized(true)
       }
     }
-  }, [socket, updatePresence])
+
+    const handleDisconnect = (reason: string) => {
+      setPresenceInitialized(false)
+      // Don't manually set offline here - backend will handle it
+    }
+
+    socket.on('connect', handleConnect)
+    socket.on('disconnect', handleDisconnect)
+
+    return () => {
+      socket.off('connect', handleConnect)
+      socket.off('disconnect', handleDisconnect)
+
+      // DON'T set offline on component unmount
+      // User is still logged in, just navigating to different tab
+      // Offline will be set when socket disconnects (logout/close app)
+    }
+  }, [
+    socket,
+    userId,
+    updatePresence,
+    presenceInitialized,
+    setPresenceInitialized,
+  ])
+
+  /**
+   * Set offline when user closes/refreshes the page
+   */
+  useEffect(() => {
+    if (!socket || !userId) return
+
+    const handleBeforeUnload = () => {
+      if (socket.connected) {
+        socket.emit(SOCKET_EVENTS.PRESENCE_UPDATE, {
+          user_id: userId,
+          status: PresenceStatus.OFFLINE,
+          last_seen: new Date().toISOString(),
+        })
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [socket, userId])
 
   return {
     presenceMap,

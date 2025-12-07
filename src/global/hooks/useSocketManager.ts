@@ -19,12 +19,7 @@ interface UseSocketManagerOptions {
  * Hook to manage Socket.IO connection with Recoil
  */
 export function useSocketManager(options: UseSocketManagerOptions) {
-  const {
-    url,
-    autoConnect = true,
-    reconnectionAttempts = 5,
-    reconnectionDelay = 1000,
-  } = options
+  const { url, reconnectionAttempts = 5, reconnectionDelay = 1000 } = options
 
   const currentUser = useRecoilValue(currentUserState)
   const setSocket = useSetRecoilState(socketInstanceState)
@@ -32,15 +27,10 @@ export function useSocketManager(options: UseSocketManagerOptions) {
 
   const connect = useCallback(() => {
     if (!currentUser?.user_id) {
-      console.log('🔌 [SOCKET] No user logged in, skipping connection')
       return null
     }
 
     const userId = currentUser.user_id
-
-    console.log('🔌 [SOCKET] Connecting to Socket.IO...')
-    console.log('   URL:', url)
-    console.log('   User ID:', userId)
 
     setConnectionState((prev) => ({ ...prev, isConnecting: true, error: null }))
 
@@ -56,7 +46,6 @@ export function useSocketManager(options: UseSocketManagerOptions) {
 
     // Connection event handlers
     socket.on('connect', () => {
-      console.log('✅ [SOCKET] Connected:', socket.id)
       setConnectionState({
         isConnected: true,
         isConnecting: false,
@@ -66,7 +55,6 @@ export function useSocketManager(options: UseSocketManagerOptions) {
     })
 
     socket.on('disconnect', (reason: string) => {
-      console.log('❌ [SOCKET] Disconnected:', reason)
       setConnectionState((prev) => ({
         ...prev,
         isConnected: false,
@@ -75,7 +63,6 @@ export function useSocketManager(options: UseSocketManagerOptions) {
     })
 
     socket.on('connect_error', (error: Error) => {
-      console.error('❌ [SOCKET] Connection error:', error)
       setConnectionState((prev) => ({
         ...prev,
         isConnected: false,
@@ -85,9 +72,6 @@ export function useSocketManager(options: UseSocketManagerOptions) {
     })
 
     socket.io.on('reconnect_attempt', (attempt: number) => {
-      console.log(
-        `🔄 [SOCKET] Reconnection attempt ${attempt}/${reconnectionAttempts}`,
-      )
       setConnectionState((prev) => ({
         ...prev,
         isConnecting: true,
@@ -96,7 +80,6 @@ export function useSocketManager(options: UseSocketManagerOptions) {
     })
 
     socket.io.on('reconnect_failed', () => {
-      console.error('❌ [SOCKET] Reconnection failed')
       setConnectionState((prev) => ({
         ...prev,
         isConnecting: false,
@@ -105,7 +88,6 @@ export function useSocketManager(options: UseSocketManagerOptions) {
     })
 
     socket.io.on('reconnect', (attempt: number) => {
-      console.log(`✅ [SOCKET] Reconnected after ${attempt} attempts`)
       setConnectionState({
         isConnected: true,
         isConnecting: false,
@@ -128,7 +110,6 @@ export function useSocketManager(options: UseSocketManagerOptions) {
   const disconnect = useCallback(() => {
     setSocket((currentSocket) => {
       if (currentSocket) {
-        console.log('🔌 [SOCKET] Disconnecting...')
         currentSocket.disconnect()
       }
       return null
@@ -146,26 +127,29 @@ export function useSocketManager(options: UseSocketManagerOptions) {
     setTimeout(() => connect(), 100)
   }, [connect, disconnect])
 
-  // Auto-connect on mount
+  // Auto-connect on mount and when user changes
   useEffect(() => {
-    if (autoConnect && currentUser?.user_id) {
-      const socket = connect()
+    if (!currentUser?.user_id) {
+      disconnect()
+      return
+    }
 
-      return () => {
-        if (socket) {
-          console.log('🔌 [SOCKET] Cleaning up connection')
-          socket.disconnect()
-          setSocket(null)
-          setConnectionState({
-            isConnected: false,
-            isConnecting: false,
-            error: null,
-            reconnectAttempt: 0,
-          })
-        }
+    const socket = connect()
+
+    return () => {
+      if (socket) {
+        socket.disconnect()
+        setSocket(null)
+        setConnectionState({
+          isConnected: false,
+          isConnecting: false,
+          error: null,
+          reconnectAttempt: 0,
+        })
       }
     }
-  }, [autoConnect, currentUser?.user_id])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser?.user_id])
 
   // Handle visibility change
   useEffect(() => {
@@ -176,7 +160,6 @@ export function useSocketManager(options: UseSocketManagerOptions) {
           currentSocket &&
           !currentSocket.connected
         ) {
-          console.log('🔄 [SOCKET] Tab visible, reconnecting...')
           reconnect()
         }
         return currentSocket

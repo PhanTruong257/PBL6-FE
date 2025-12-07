@@ -2,6 +2,7 @@ export {
   socketInstanceState,
   socketConnectionState,
   presenceMapState,
+  presenceInitializedState,
   isSocketReadyState,
   userOnlineStatusSelector,
   type TypedSocket,

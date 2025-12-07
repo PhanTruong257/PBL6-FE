@@ -51,6 +51,15 @@ export const presenceMapState = atom<PresenceMap>({
 })
 
 /**
+ * Flag to track if presence has been initialized
+ * Used to ensure we only set online once when socket connects
+ */
+export const presenceInitializedState = atom<boolean>({
+  key: 'presenceInitializedState',
+  default: false,
+})
+
+/**
  * Selector to check if socket is ready
  */
 export const isSocketReadyState = selector({

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react'
 import { useRecoilValue } from 'recoil'
 import { useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
 import { currentUserState } from '@/global/recoil/user'
 import { useSocket, useAllUsers } from '@/global/hooks'
 import {
@@ -89,14 +88,12 @@ export function useClassSocket({
 
     hasJoinedRef.current = true
 
+    // NOTE: Don't leave class on unmount
+    // Global notification hook (useClassNotifications) already handles joining/leaving all classes
+    // If we leave here, it will disconnect the global listener too
     return () => {
-      if (socket && classId) {
-        console.log('📚 [CLASS_SOCKET] Leaving class room:', classId)
-        socket.emit(CLASS_SOCKET_EVENTS.LEAVE_CLASS, {
-          class_id: classId,
-        })
-        hasJoinedRef.current = false
-      }
+      hasJoinedRef.current = false
+      // Removed socket.emit(LEAVE_CLASS) - let global hook manage it
     }
   }, [socket, isConnected, classId, currentUser?.user_id])
 
@@ -147,12 +144,7 @@ export function useClassSocket({
         return
       }
 
-      // Don't show notification for own posts
-      if (data.sender_id !== currentUser?.user_id) {
-        toast.info('Bài viết mới', {
-          description: data.title || data.message.substring(0, 50),
-        })
-      }
+      // Note: Toast notification removed - handled by global useClassNotifications hook
 
       // Optimistically update cache with new post
       const queryKey = classKeys.detail(classId.toString())
@@ -224,12 +216,7 @@ export function useClassSocket({
     const handleReplyCreated = (data: ReplyCreatedResponse) => {
       console.log('💬 [CLASS_SOCKET] New reply received:', data)
 
-      // Don't show notification for own replies
-      if (data.sender_id !== currentUser?.user_id) {
-        toast.info('Có trả lời mới', {
-          description: data.message.substring(0, 50),
-        })
-      }
+      // Note: Toast notification removed - handled by global useClassNotifications hook
 
       // Optimistically update cache with new reply
       const queryKey = classKeys.detail(classId.toString())

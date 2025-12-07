@@ -55,12 +55,7 @@ export function ConversationPage() {
     }
   }, [specificConversation, selectedConversation, initialConversationId])
 
-  useEffect(() => {
-    console.log(
-      '📋 [CONVERSATION_PAGE] Conversations data loaded:',
-      conversationsData,
-    )
-  }, [conversationsData])
+  useEffect(() => {}, [conversationsData])
 
   // Show loading or error if user not logged in
   if (!currentUser || !currentUserId) {
@@ -76,7 +71,6 @@ export function ConversationPage() {
   }
 
   const handleSelectConversation = (conversation: ConversationWithUser) => {
-    console.log('🎯 [CONVERSATION_PAGE] Conversation selected:', conversation)
     setSelectedConversation(conversation)
   }
 

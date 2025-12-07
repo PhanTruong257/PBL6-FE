@@ -13,7 +13,7 @@ import {
   type ConversationJoinedResponse,
 } from '../types/socket-events'
 import type { TypedSocket } from '@/global/recoil/socket'
-import { conversationKeys, useMessages } from './use-conversation'
+import { conversationKeys, useMessages } from './use-conversation-queries'
 import { ConversationService } from '../api'
 import type { Message } from '../types'
 
@@ -46,7 +46,7 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
     new Map(),
   )
 
-  // Fetch initial messages from API
+  // Fetch initial messages from API (will merge with cached real-time messages)
   const { data: messagesData, isLoading: isLoadingMessages } = useMessages(
     { conversation_id: conversationId, page: 1, limit: 50 },
     enabled && conversationId > 0,
@@ -254,6 +254,34 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
     (lastMessageId: number) => {
       if (!socket?.connected || !lastMessageId || lastMessageId <= 0) return
 
+      // Update local cache immediately (optimistic update)
+      queryClient.setQueryData<any>(
+        conversationKeys.messages(conversationId),
+        (old: any) => {
+          if (!old) return old
+
+          const currentMessages = old?.data?.messages || old?.messages || []
+          const updatedMessages = currentMessages.map((m: Message) => {
+            // Mark all messages up to lastMessageId as read (if they're from others)
+            if (m.id <= lastMessageId && m.sender_id !== userId) {
+              return { ...m, is_read: true }
+            }
+            return m
+          })
+
+          if (old?.data?.messages) {
+            return {
+              ...old,
+              data: { ...old.data, messages: updatedMessages },
+            }
+          } else if (old?.messages) {
+            return { ...old, messages: updatedMessages }
+          }
+          return old
+        },
+      )
+
+      // Emit socket event
       socket.emit(SOCKET_EVENTS.MESSAGE_READ, {
         conversation_id: conversationId,
         user_id: userId,
@@ -261,7 +289,7 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
         read_at: new Date().toISOString(),
       })
     },
-    [socket, conversationId, userId],
+    [socket, conversationId, userId, queryClient],
   )
 
   /**
@@ -271,13 +299,6 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
     if (!socket || !enabled) return
 
     const handleMessageReceived = (data: MessageReceivedResponse) => {
-      console.log('📨 [MESSAGE_RECEIVED]:', {
-        messageId: data.id,
-        senderId: data.sender_id,
-        conversationId: data.conversation_id,
-        currentUserId: userId,
-      })
-
       // Only process messages for this conversation
       if (data.conversation_id !== conversationId) {
         return
@@ -289,7 +310,6 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
         data.client_id &&
         pendingMessagesRef.current.has(data.client_id)
       ) {
-        console.log('⏭️ Skipping own message (optimistic update)')
         return
       }
 
@@ -316,13 +336,6 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
             // Add new message
             newMessages = [...currentMessages, data as unknown as Message]
           }
-
-          console.log(
-            '✅ Cache updated:',
-            currentMessages.length,
-            '→',
-            newMessages.length,
-          )
 
           // Preserve the original structure
           if (old?.data?.messages) {

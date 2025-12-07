@@ -124,6 +124,7 @@ export interface MessageReceivedResponse {
   message_type: MessageType
   timestamp: string
   status: MessageStatus
+  is_read?: boolean
   client_id?: string
   reply_to_id?: string
   edited_at?: string

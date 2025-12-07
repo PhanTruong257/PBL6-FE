@@ -12,12 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/libs/utils/cn'
 import { useSocket, usePresence } from '@/global/hooks'
-import {
-  useRealtimeChat,
-  useChatFile,
-  useChatMessages,
-  useMessageFormatter,
-} from '../hooks'
+import { useRealtimeChat, useChatUtils, useChatBehavior } from '../hooks'
 import { MessageType } from '../types/socket-events'
 import type { ConversationWithUser } from '../types'
 
@@ -31,7 +26,6 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
 
   const { socket, isConnected } = useSocket()
   const { isUserOnline, requestPresence } = usePresence()
-  const { formatTime, formatDate } = useMessageFormatter()
 
   const { messages, sendMessage, markAsRead, isLoading } = useRealtimeChat({
     socket,
@@ -50,9 +44,11 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
     downloadFile,
     uploadFile,
     setAttachedFile,
-  } = useChatFile()
+    formatTime,
+    formatDate,
+  } = useChatUtils()
 
-  const { messagesEndRef } = useChatMessages({
+  const { messagesEndRef } = useChatBehavior({
     conversationId: conversation?.id,
     currentUserId,
     messages,
@@ -122,11 +118,9 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
                 {conversation.receiver_name?.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            {/* Online/Offline status indicator */}
-            {isUserOnline(conversation.receiver_id) ? (
+            {/* Online status indicator - only show when online */}
+            {isUserOnline(conversation.receiver_id) && (
               <div className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
-            ) : (
-              <div className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full bg-red-500 border-2 border-background" />
             )}
           </div>
           <div>
@@ -191,15 +185,6 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
                 // Use client_id for optimistic messages, otherwise use id
                 const messageKey = msg.client_id || msg.id || `msg-${index}`
 
-                // Debug: Log all messages to see structure
-                console.log(`Message ${index}:`, {
-                  id: msg.id,
-                  message_type: msg.message_type,
-                  has_file_url: !!msg.file_url,
-                  file_name: msg.file_name,
-                  content: msg.content?.substring(0, 30),
-                })
-
                 return (
                   <div key={messageKey}>
                     {showDate && (
@@ -229,12 +214,20 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
 
                       <div
                         className={cn(
-                          'max-w-[70%] rounded-lg p-3 text-sm break-words',
+                          'max-w-[70%] rounded-lg p-3 text-sm break-words relative',
                           isCurrentUser
                             ? 'bg-primary text-primary-foreground'
                             : 'bg-muted',
+                          // Highlight unread messages from others
+                          // !isCurrentUser &&
+                          //   msg.is_read === false &&
+                          //   'ring-2 ring-blue-500/50',
                         )}
                       >
+                        {/* Unread indicator dot */}
+                        {/* {!isCurrentUser && msg.is_read === false && (
+                          <div className="absolute -left-1 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-blue-500" />
+                        )} */}
                         {msg.file_url ? (
                           <button
                             onClick={() =>

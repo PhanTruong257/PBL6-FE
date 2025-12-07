@@ -251,6 +251,9 @@ export function useClassDetail(classId: string) {
         })
       }
 
+      // Reverse order so newest posts are at the bottom (like chat)
+      formattedPostData.reverse()
+
       return { classInfo, formattedPostData }
     },
   })
