@@ -280,7 +280,7 @@ export const ExamService = {
         questions: data.questions.map((q, index) => ({
           question_id: q.question_id,
           points: q.points,
-          order: q.order !== undefined ? q.order : index,
+          order: q.order !== undefined ? q.order + 1 : index + 1,
         })),
       }
 
@@ -348,7 +348,7 @@ export const ExamService = {
         updateExamPayload.questions = data.questions.map((q, index) => ({
           question_id: q.question_id,
           points: q.points,
-          order: q.order !== undefined ? q.order : index,
+          order: q.order !== undefined ? q.order + 1 : index + 1,
         }))
       }
 
