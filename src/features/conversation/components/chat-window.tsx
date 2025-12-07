@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Send, Paperclip, Smile, MoreVertical, X, File } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,14 +11,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/libs/utils/cn'
-import { useSocket } from '@/global/hooks'
-import { useRealtimeChat } from '../hooks/useRealtimeChat'
+import { useSocket, usePresence } from '@/global/hooks'
 import {
-  useUploadChatFile,
-  useDownloadChatFile,
-} from '../hooks/use-conversation'
+  useRealtimeChat,
+  useChatFile,
+  useChatMessages,
+  useMessageFormatter,
+} from '../hooks'
 import { MessageType } from '../types/socket-events'
-import { ConversationService } from '../api/conversation-service'
 import type { ConversationWithUser } from '../types'
 
 interface ChatWindowProps {
@@ -28,15 +28,11 @@ interface ChatWindowProps {
 
 export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
   const [message, setMessage] = useState('')
-  const [attachedFile, setAttachedFile] = useState<File | null>(null)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { socket, isConnected } = useSocket()
-  const uploadFileMutation = useUploadChatFile()
-  const downloadFileMutation = useDownloadChatFile()
+  const { isUserOnline, requestPresence } = usePresence()
+  const { formatTime, formatDate } = useMessageFormatter()
 
-  // Use real-time chat hook
   const { messages, sendMessage, markAsRead, isLoading } = useRealtimeChat({
     socket,
     conversationId: conversation?.id || 0,
@@ -44,60 +40,39 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
     enabled: !!conversation,
   })
 
-  // Auto scroll to bottom when new messages arrive
+  const {
+    attachedFile,
+    fileInputRef,
+    uploadFileMutation,
+    handleFileSelect,
+    handleRemoveFile,
+    handleAttachmentClick,
+    downloadFile,
+    uploadFile,
+    setAttachedFile,
+  } = useChatFile()
+
+  const { messagesEndRef } = useChatMessages({
+    conversationId: conversation?.id,
+    currentUserId,
+    messages,
+    markAsRead,
+  })
+
+  // Request presence for the receiver when conversation changes
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
-
-  // Mark messages as read when conversation is opened
-  useEffect(() => {
-    if (!conversation?.id) return
-
-    console.log('📖 [CHAT_WINDOW] Conversation opened, marking as read...')
-
-    // Call REST API to mark all unread messages as read in the database
-    ConversationService.markAsRead(conversation.id)
-      .then((response) => {
-        console.log('✅ Marked conversation as read via API:', response)
-      })
-      .catch((error) => {
-        console.error('❌ Failed to mark as read:', error)
-      })
-  }, [conversation?.id])
-
-  // Also mark as read when new messages arrive from others
-  useEffect(() => {
-    if (!conversation?.id || messages.length === 0) return
-
-    const lastMessage = messages[messages.length - 1]
-
-    // Only mark as read if the last message is from someone else
-    if (lastMessage && lastMessage.sender_id !== currentUserId) {
-      console.log(
-        '📖 [CHAT_WINDOW] New message from other user, marking as read...',
-      )
-
-      ConversationService.markAsRead(conversation.id)
-        .then(() => {
-          console.log('✅ Marked new messages as read')
-          // Also emit socket event for real-time update
-          markAsRead(lastMessage.id)
-        })
-        .catch((error) => {
-          console.error('❌ Failed to mark as read:', error)
-        })
+    if (conversation?.receiver_id) {
+      requestPresence([conversation.receiver_id])
     }
-  }, [messages.length, conversation?.id, currentUserId, markAsRead])
+  }, [conversation?.receiver_id, requestPresence])
 
   const handleSendMessage = async () => {
     if ((!message.trim() && !attachedFile) || !conversation) return
 
     try {
-      // If there's a file, upload it first
       if (attachedFile) {
-        const uploadResult = await uploadFileMutation.mutateAsync(attachedFile)
+        const uploadResult = await uploadFile(attachedFile)
 
-        // Send message with file attachment
         sendMessage(message.trim() || attachedFile.name, MessageType.FILE, {
           file_url: uploadResult.file_url,
           file_name: uploadResult.file_name,
@@ -106,7 +81,6 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
 
         setAttachedFile(null)
       } else {
-        // Send regular text message
         sendMessage(message.trim(), MessageType.TEXT)
       }
 
@@ -117,55 +91,10 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
     }
   }
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      // Check file size (50MB limit)
-      if (file.size > 50 * 1024 * 1024) {
-        alert('File size must be less than 50MB')
-        return
-      }
-      setAttachedFile(file)
-    }
-  }
-
-  const handleRemoveFile = () => {
-    setAttachedFile(null)
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
-  }
-
-  const handleAttachmentClick = () => {
-    fileInputRef.current?.click()
-  }
-
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSendMessage()
-    }
-  }
-
-  const formatTime = (timestamp: string) => {
-    return new Date(timestamp).toLocaleTimeString('vi-VN', {
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
-
-  const formatDate = (timestamp: string) => {
-    const date = new Date(timestamp)
-    const today = new Date()
-    const yesterday = new Date(today)
-    yesterday.setDate(yesterday.getDate() - 1)
-
-    if (date.toDateString() === today.toDateString()) {
-      return 'Hôm nay'
-    } else if (date.toDateString() === yesterday.toDateString()) {
-      return 'Hôm qua'
-    } else {
-      return date.toLocaleDateString('vi-VN')
     }
   }
 
@@ -186,21 +115,29 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
       {/* Header */}
       <div className="flex items-center justify-between border-b p-4 flex-shrink-0">
         <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={conversation.receiver_avatar} />
-            <AvatarFallback>
-              {conversation.receiver_name?.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={conversation.receiver_avatar} />
+              <AvatarFallback>
+                {conversation.receiver_name?.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            {/* Online/Offline status indicator */}
+            {isUserOnline(conversation.receiver_id) ? (
+              <div className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
+            ) : (
+              <div className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full bg-red-500 border-2 border-background" />
+            )}
+          </div>
           <div>
             <div className="font-semibold">
               {conversation.receiver_name || 'Người dùng'}
             </div>
             <div className="text-xs text-muted-foreground">
-              {isConnected ? (
-                <span className="text-green-600">● Online</span>
+              {isUserOnline(conversation.receiver_id) ? (
+                <span className="text-green-600">Online</span>
               ) : (
-                <span className="text-red-600">● Offline</span>
+                <span className="text-gray-500">Offline</span>
               )}
             </div>
           </div>
@@ -300,57 +237,13 @@ export function ChatWindow({ conversation, currentUserId }: ChatWindowProps) {
                       >
                         {msg.file_url ? (
                           <button
-                            onClick={async () => {
-                              try {
-                                console.log('📥 Download file:', {
-                                  file_url: msg.file_url,
-                                  file_name: msg.file_name,
-                                  file_size: msg.file_size,
-                                })
-
-                                // Extract filename from file_url (/chats/download/filename.ext)
-                                const urlParts = msg.file_url.split('/')
-                                const filenameFromUrl =
-                                  urlParts[urlParts.length - 1]
-
-                                console.log(
-                                  '📥 Extracted filename:',
-                                  filenameFromUrl,
-                                )
-
-                                // Use file_name if available, otherwise extract from URL
-                                const displayName =
-                                  msg.file_name || filenameFromUrl || 'download'
-
-                                console.log(
-                                  '📥 Downloading file:',
-                                  filenameFromUrl,
-                                )
-                                const blob =
-                                  await downloadFileMutation.mutateAsync(
-                                    filenameFromUrl,
-                                  )
-                                console.log(
-                                  '📥 Blob received:',
-                                  blob.size,
-                                  'bytes',
-                                )
-
-                                const url = window.URL.createObjectURL(blob)
-                                const a = document.createElement('a')
-                                a.href = url
-                                a.download = displayName
-                                a.click()
-                                window.URL.revokeObjectURL(url)
-                                console.log('✅ Download triggered')
-                              } catch (error) {
-                                console.error(
-                                  '❌ Failed to download file:',
-                                  error,
-                                )
-                                alert('Không thể tải file. Vui lòng thử lại!')
-                              }
-                            }}
+                            onClick={() =>
+                              downloadFile(
+                                msg.file_url,
+                                msg.file_name,
+                                msg.file_size,
+                              )
+                            }
                             className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
                           >
                             <File className="h-4 w-4 flex-shrink-0" />

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { Search, MessageCircle } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -8,10 +8,11 @@ import { cn } from '@/libs/utils/cn'
 import {
   useConversations,
   useUnreadByConversation,
-  conversationKeys,
+  useConversationRealtime,
+  useConversationSearch,
+  useMessageFormatter,
 } from '../hooks'
-import { useQueryClient } from '@tanstack/react-query'
-import { useSocket, useAllUsers, useSearchUsers } from '@/global/hooks'
+import { useSocket, useSearchUsers, usePresence } from '@/global/hooks'
 import { CreateConversationDialog } from './create-conversation-dialog'
 import type { ConversationWithUser } from '../types'
 
@@ -27,157 +28,57 @@ export function ConversationList({
   selectedConversationId,
   onSelectConversation,
 }: ConversationListProps) {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [openUserSearch, setOpenUserSearch] = useState(false)
-
   const {
     data: conversationsData,
     isLoading,
     refetch: refetchConversations,
   } = useConversations({ userId: currentUserId })
-  const queryClient = useQueryClient()
   const { unreadByConversation } = useUnreadByConversation(currentUserId)
   const { socket } = useSocket()
+  const { isUserOnline, requestPresence } = usePresence()
+  const { formatRelativeTime } = useMessageFormatter()
 
-  // Fetch users for search
-  const { users: allUsers, isLoading: isLoadingUsers } = useAllUsers()
-  const { users: userSearchResults } = useSearchUsers(
-    searchQuery,
-    currentUserId,
-  )
-
-  // Listen for new messages to update conversation list
-  useEffect(() => {
-    if (!socket) return
-
-    console.log('📋 [CONVERSATION_LIST] Setting up real-time listeners')
-
-    const handleMessageReceived = (message: any) => {
-      // Optimistically update conversations list preview so UI shows latest content immediately.
-      try {
-        const key = conversationKeys.list({ userId: currentUserId })
-        queryClient.setQueryData<any>(key, (old: any) => {
-          if (!old) {
-            // fallback to refetch if no cache
-            refetchConversations()
-            return old
-          }
-
-          // Normalize conversations array in different response shapes
-          const conversations =
-            old?.data?.conversations ||
-            old?.conversations ||
-            (Array.isArray(old) ? old : [])
-          const idx = conversations.findIndex(
-            (c: any) => c.id === message.conversation_id,
-          )
-          if (idx === -1) {
-            // conversation not present in list cache -> refetch to be safe
-            refetchConversations()
-            return old
-          }
-
-          const updated = [...conversations]
-          // Update last_message preview (optimistic). Use message.timestamp/content even if id is temporary.
-          updated[idx] = {
-            ...updated[idx],
-            last_message: {
-              id: message.id,
-              content: message.content,
-              timestamp: message.timestamp,
-            },
-          }
-
-          // Return in the same shape as `old`
-          if (old?.data?.conversations) {
-            return { ...old, data: { ...old.data, conversations: updated } }
-          } else if (old?.conversations) {
-            return { ...old, conversations: updated }
-          }
-          return updated
-        })
-      } catch (e) {
-        // fallback
-        refetchConversations()
-      }
-    }
-
-    const handleMessagesRead = (_data: any) => {
-      refetchConversations()
-    }
-
-    socket.on('message:received', handleMessageReceived)
-    socket.on('messages:read', handleMessagesRead)
-
-    return () => {
-      socket.off('message:received', handleMessageReceived)
-      socket.off('messages:read', handleMessagesRead)
-    }
-  }, [socket, refetchConversations])
-
-  // Backend returns nested structure: { success, data: { conversations } }
   const conversations =
     conversationsData?.data?.conversations ||
     conversationsData?.conversations ||
     (Array.isArray(conversationsData) ? conversationsData : [])
 
-  // Filter conversations by search query (search in receiver name/email)
-  const filteredConversations = conversations.filter((conv: any) => {
-    if (!searchQuery.trim()) return true
-    const query = searchQuery.toLowerCase()
-    const receiverName = conv.receiver_name?.toLowerCase() || ''
-    const receiverEmail = conv.receiver_email?.toLowerCase() || ''
-    return receiverName.includes(query) || receiverEmail.includes(query)
+  // Use custom hooks
+  useConversationRealtime({
+    socket,
+    currentUserId,
+    refetchConversations,
   })
 
-  const handleSelectUserFromSearch = async (userId: number) => {
-    // Check if conversation with this user already exists
-    const existingConv = conversations.find(
-      (conv: any) => conv.receiver_id === userId,
-    )
+  const {
+    searchQuery,
+    openUserSearch,
+    filteredConversations,
+    setOpenUserSearch,
+    handleSelectUserFromSearch,
+    handleSearchChange,
+    clearSearch,
+  } = useConversationSearch({
+    conversations,
+    onSelectConversation,
+  })
 
-    if (existingConv) {
-      // Open existing conversation
-      onSelectConversation(existingConv)
-    } else {
-      // Create new conversation will be handled by clicking on user in dropdown
-      // For now, just show the create conversation dialog
+  const { users: userSearchResults } = useSearchUsers(
+    searchQuery,
+    currentUserId,
+  )
+
+  // Request presence for all users in conversations
+  useEffect(() => {
+    if (conversations.length > 0) {
+      const userIds = conversations
+        .map((conv: any) => conv.receiver_id)
+        .filter(Boolean)
+      if (userIds.length > 0) {
+        requestPresence(userIds)
+      }
     }
-
-    setSearchQuery('')
-    setOpenUserSearch(false)
-  }
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setSearchQuery(value)
-
-    if (!value.trim()) {
-      setOpenUserSearch(false)
-    } else {
-      setOpenUserSearch(true)
-    }
-  }
-
-  const formatTime = (timestamp: string) => {
-    const date = new Date(timestamp)
-    const now = new Date()
-    const diff = now.getTime() - date.getTime()
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-
-    if (days === 0) {
-      return date.toLocaleTimeString('vi-VN', {
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-    } else if (days === 1) {
-      return 'Hôm qua'
-    } else if (days < 7) {
-      return `${days} ngày trước`
-    } else {
-      return date.toLocaleDateString('vi-VN')
-    }
-  }
+  }, [conversations, requestPresence])
 
   return (
     <div className="flex h-full flex-col border-r bg-background">
@@ -228,8 +129,7 @@ export function ConversationList({
                       onClick={() => {
                         if (existingConv) {
                           onSelectConversation(existingConv)
-                          setSearchQuery('')
-                          setOpenUserSearch(false)
+                          clearSearch()
                         } else {
                           handleSelectUserFromSearch(user.user_id)
                         }
@@ -295,6 +195,8 @@ export function ConversationList({
               // Get unread count for this conversation
               const unreadCount = unreadByConversation[conversation.id] || 0
               const hasUnread = unreadCount > 0
+              // Check online status
+              const isOnline = isUserOnline(conversation.receiver_id)
 
               return (
                 <div
@@ -312,6 +214,13 @@ export function ConversationList({
                         {receiverName.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
+                    {/* Online/Offline status indicator */}
+                    {isOnline ? (
+                      <div className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
+                    ) : (
+                      <div className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full bg-red-500 border-2 border-background" />
+                    )}
+                    {/* Unread indicator */}
                     {hasUnread && (
                       <div className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-destructive border-2 border-background" />
                     )}
@@ -336,7 +245,7 @@ export function ConversationList({
                               : 'text-muted-foreground',
                           )}
                         >
-                          {formatTime(lastMessage.timestamp)}
+                          {formatRelativeTime(lastMessage.timestamp)}
                         </div>
                       )}
                     </div>
