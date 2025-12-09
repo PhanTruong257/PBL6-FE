@@ -7,6 +7,8 @@ import { useMaterialsDetail } from '../hooks/use-class-detail'
 import type { Material_full_info } from '@/types/material'
 import type { ClassBasicInfo } from '@/types/class'
 import { MessageSquare } from 'lucide-react'
+import { useEffect, useRef } from 'react'
+import { useLocation } from '@tanstack/react-router'
 
 interface ClassMainContentProps {
   activeTab: string
@@ -27,6 +29,8 @@ export function ClassMainContent({
 }: ClassMainContentProps) {
   const { data: materials, refetch: refetchMaterials } =
     useMaterialsDetail(classId)
+  const location = useLocation()
+  const postsContainerRef = useRef<HTMLDivElement>(null)
 
   const handleTabChange = (value: string) => {
     setActiveTab(value)
@@ -35,6 +39,39 @@ export function ClassMainContent({
       refetchMaterials()
     }
   }
+
+  // Auto-scroll to bottom on initial load and when posts change
+  useEffect(() => {
+    if (
+      activeTab === 'posts' &&
+      postsContainerRef.current &&
+      postData.length > 0
+    ) {
+      // Small delay to ensure DOM is fully rendered
+      setTimeout(() => {
+        if (postsContainerRef.current) {
+          postsContainerRef.current.scrollTop =
+            postsContainerRef.current.scrollHeight
+        }
+      }, 100)
+    }
+  }, [activeTab, postData.length])
+
+  // Smooth scroll when coming from notification
+  useEffect(() => {
+    if (
+      location.hash === '#scroll-to-bottom' &&
+      activeTab === 'posts' &&
+      postsContainerRef.current
+    ) {
+      setTimeout(() => {
+        postsContainerRef.current?.scrollTo({
+          top: postsContainerRef.current.scrollHeight,
+          behavior: 'smooth',
+        })
+      }, 100)
+    }
+  }, [location.hash, activeTab])
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -68,7 +105,10 @@ export function ClassMainContent({
                 </p>
               </div>
             ) : (
-              <div className="space-y-6 overflow-y-auto">
+              <div
+                ref={postsContainerRef}
+                className="space-y-6 overflow-y-auto"
+              >
                 {postData.map((post) => (
                   <PostCard
                     key={post.id}

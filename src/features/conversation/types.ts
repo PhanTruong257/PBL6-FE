@@ -20,6 +20,7 @@ export interface Message {
   timestamp: string
   message_type: MessageType
   content?: string
+  is_read?: boolean
   conversation?: Conversation
   file_url?: string
   file_name?: string

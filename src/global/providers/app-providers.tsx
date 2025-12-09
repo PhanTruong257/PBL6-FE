@@ -18,13 +18,11 @@ export interface AppProvidersProps {
 export function AppProviders({ children }: AppProvidersProps) {
   return (
     <StrictMode>
-      <TanStackQueryProvider.Provider
-        {...TanStackQueryProvider.getContext()}
-      >
+      <TanStackQueryProvider.Provider {...TanStackQueryProvider.getContext()}>
         <GlobalSocketProvider>
           <ThemeProvider defaultTheme="light" storageKey="pbl6-ui-theme">
             {children}
-          <Toaster position="top-right" richColors closeButton />
+            <Toaster position="top-right" richColors closeButton />
           </ThemeProvider>
         </GlobalSocketProvider>
       </TanStackQueryProvider.Provider>

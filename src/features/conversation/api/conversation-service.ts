@@ -84,11 +84,6 @@ export class ConversationService {
     params: GetMessagesRequest,
   ): Promise<GetMessagesResponse> {
     const { conversation_id, ...queryParams } = params
-    console.log(
-      '📞 API: Fetching messages for conversation:',
-      conversation_id,
-      queryParams,
-    )
 
     const response = await httpClient.get(
       CONVERSATION_ENDPOINTS.conversationMessages(conversation_id),
@@ -148,9 +143,7 @@ export class ConversationService {
   /**
    * Get unread message count grouped by conversation
    */
-  static async getUnreadCountByConversation(
-    userId: number,
-  ): Promise<{
+  static async getUnreadCountByConversation(userId: number): Promise<{
     data: Array<{ conversation_id: number; unread_count: number }>
   }> {
     const response = await httpClient.get(
