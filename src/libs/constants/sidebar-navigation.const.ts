@@ -9,6 +9,7 @@ import {
   Library,
   Bot,
   Shield,
+  History,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -39,6 +40,11 @@ export const ADMIN_SIDEBAR_NAV: SidebarNavigation = {
       title: 'Phân quyền',
       href: '/admin/permissions',
       icon: Shield,
+    },
+    {
+      title: 'Nhật ký hoạt động',
+      href: '/admin/audit-logs',
+      icon: History,
     },
     {
       title: 'Tin nhắn',
