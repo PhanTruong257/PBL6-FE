@@ -1,6 +1,8 @@
 import type { ChatMessage } from '../types'
 import ReactMarkdown from 'react-markdown'
 import { MessageFileDisplay } from './message-file-display'
+import aiImg from '@/assets/images/ai.png';
+import userImg from '@/assets/images/user.png';
 
 interface ChatMessageProps {
   message: ChatMessage
@@ -23,7 +25,7 @@ export function ChatMessageComponent({ message, isLast = false, messageRef }: Ch
       <div className="flex items-center gap-2">
         {message.role === 'ai' && (
           <img 
-            src="src/assets/images/ai.png" 
+            src={aiImg} 
             alt="AI" 
             className="w-8 h-8 rounded-full object-cover flex-shrink-0"
           />
@@ -33,7 +35,7 @@ export function ChatMessageComponent({ message, isLast = false, messageRef }: Ch
         </span>
         {message.role === 'user' && (
           <img 
-            src="src/assets/images/user.png" 
+            src={userImg} 
             alt="User" 
             className="w-8 h-8 rounded-full object-cover flex-shrink-0"
           />
