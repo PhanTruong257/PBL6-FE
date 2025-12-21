@@ -246,9 +246,22 @@ export function useExamTaking({ examId, password }: UseExamTakingProps): UseExam
         throw new Error('Invalid submission or question')
       }
 
+      let answer: any = currentAnswer
+
+      if (typeof answer === 'string') {
+        const trimmed = answer.trim()
+
+        if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+          const parsed = JSON.parse(trimmed)
+          if (Array.isArray(parsed)) {
+            answer = parsed.map(Number)
+          }
+        }
+      }
+
       return SubmissionService.submitAnswer(submission.submission_id, {
         question_id: questionData.question.question_id,
-        answer_content: currentAnswer.toString(),
+        answer_content: JSON.stringify(answer), // <-- khuyến nghị
       })
     },
     onSuccess: (data, variables) => {
