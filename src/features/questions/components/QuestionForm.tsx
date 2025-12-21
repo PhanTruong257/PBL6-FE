@@ -39,7 +39,10 @@ import {
 } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { questionSchema, type QuestionFormValues } from '../schemas/question-schema'
+import {
+  questionSchema,
+  type QuestionFormValues,
+} from '../schemas/question-schema'
 import type { Question, QuestionCategory } from '@/types/question'
 import { toast } from '@/libs/toast'
 import { useQuestionsTranslation } from '@/features/questions/hooks'
@@ -66,8 +69,14 @@ export function SortableOption({
   onRemove,
   t,
 }: SortableOptionProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: id.toString() })
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: id.toString() })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -85,7 +94,11 @@ export function SortableOption({
       style={style}
       className="flex items-start gap-3 p-3 border rounded-lg bg-background"
     >
-      <div {...attributes} {...listeners} className="mt-2 cursor-move touch-none">
+      <div
+        {...attributes}
+        {...listeners}
+        className="mt-2 cursor-move touch-none"
+      >
         <GripVertical className="h-5 w-5 text-muted-foreground hover:text-foreground" />
       </div>
 
@@ -147,7 +160,7 @@ export function QuestionForm({
   isSubmitting,
 }: QuestionFormProps) {
   const { t } = useQuestionsTranslation()
-  
+
   const form = useForm({
     resolver: zodResolver(questionSchema),
     mode: 'onChange' as const,
@@ -187,17 +200,22 @@ export function QuestionForm({
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   )
 
+  // Handle options based on question type
   useEffect(() => {
     if (questionType === 'multiple_choice' && fields.length === 0) {
+      // Add default options for multiple choice
       append([
         { id: 1, text: '~' },
         { id: 2, text: '~' },
       ])
+    } else if (questionType === 'essay' && fields.length > 0) {
+      // Clear options for essay type
+      form.setValue('options', [])
     }
-  }, [questionType, fields.length, append])
+  }, [questionType, fields.length, append, form])
 
   // Ref for validation timeout cleanup
   const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -215,15 +233,24 @@ export function QuestionForm({
     const currentOptionsCount = fields.length
     const newId = currentOptionsCount + 1
     append({ id: newId, text: '~' })
-    toast.success(t('messages.optionAdded'), t('messages.optionAddedDesc', { number: newId }))
+    toast.success(
+      t('messages.optionAdded'),
+      t('messages.optionAddedDesc', { number: newId }),
+    )
   }
 
   const handleRemoveOption = (index: number) => {
     if (fields.length > 2) {
       remove(index)
-      toast.info(t('messages.optionRemoved'), t('messages.optionRemovedDesc', { number: index + 1 }))
+      toast.info(
+        t('messages.optionRemoved'),
+        t('messages.optionRemovedDesc', { number: index + 1 }),
+      )
     } else {
-      toast.warning(t('messages.cannotRemove'), t('messages.minOptionsRequired'))
+      toast.warning(
+        t('messages.cannotRemove'),
+        t('messages.minOptionsRequired'),
+      )
     }
   }
 
@@ -269,7 +296,8 @@ export function QuestionForm({
                 />
               </FormControl>
               <FormDescription>
-                {t('validation.contentMin', { count: 10 })} - {t('validation.contentMax', { count: 2000 })}
+                {t('validation.contentMin', { count: 10 })} -{' '}
+                {t('validation.contentMax', { count: 2000 })}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -290,7 +318,9 @@ export function QuestionForm({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="multiple_choice">{t('types.multipleChoice')}</SelectItem>
+                    <SelectItem value="multiple_choice">
+                      {t('types.multipleChoice')}
+                    </SelectItem>
                     <SelectItem value="essay">{t('types.essay')}</SelectItem>
                   </SelectContent>
                 </Select>
@@ -313,7 +343,9 @@ export function QuestionForm({
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="easy">{t('difficulty.easy')}</SelectItem>
-                    <SelectItem value="medium">{t('difficulty.medium')}</SelectItem>
+                    <SelectItem value="medium">
+                      {t('difficulty.medium')}
+                    </SelectItem>
                     <SelectItem value="hard">{t('difficulty.hard')}</SelectItem>
                   </SelectContent>
                 </Select>
@@ -330,7 +362,9 @@ export function QuestionForm({
                 <FormLabel>{t('form.category')}</FormLabel>
                 <Select
                   onValueChange={(value) => {
-                    field.onChange(value && value !== 'none' ? parseInt(value) : undefined)
+                    field.onChange(
+                      value && value !== 'none' ? parseInt(value) : undefined,
+                    )
                   }}
                   value={field.value?.toString() || 'none'}
                 >
@@ -342,7 +376,10 @@ export function QuestionForm({
                   <SelectContent>
                     <SelectItem value="none">{t('form.noCategory')}</SelectItem>
                     {categories.map((cat) => (
-                      <SelectItem key={cat.category_id} value={cat.category_id.toString()}>
+                      <SelectItem
+                        key={cat.category_id}
+                        value={cat.category_id.toString()}
+                      >
                         {cat.name}
                       </SelectItem>
                     ))}
@@ -371,20 +408,33 @@ export function QuestionForm({
                           if (!checked) {
                             // When switching to single answer, keep only first correct answer
                             const options = form.getValues('options') || []
-                            const firstCorrectIndex = options.findIndex((opt) => opt.text.startsWith('='))
+                            const firstCorrectIndex = options.findIndex((opt) =>
+                              opt.text.startsWith('='),
+                            )
                             if (firstCorrectIndex !== -1) {
                               options.forEach((_opt, idx) => {
-                                const currentText = form.getValues(`options.${idx}.text` as any) as string
-                                const displayText = currentText.length > 0 ? currentText.substring(1) : ''
-                                const prefix = idx === firstCorrectIndex ? '=' : '~'
-                                form.setValue(`options.${idx}.text` as any, `${prefix}${displayText}`)
+                                const currentText = form.getValues(
+                                  `options.${idx}.text` as any,
+                                ) as string
+                                const displayText =
+                                  currentText.length > 0
+                                    ? currentText.substring(1)
+                                    : ''
+                                const prefix =
+                                  idx === firstCorrectIndex ? '=' : '~'
+                                form.setValue(
+                                  `options.${idx}.text` as any,
+                                  `${prefix}${displayText}`,
+                                )
                               })
                             }
                           }
                         }}
                       />
                     </FormControl>
-                    <FormLabel className="!mt-0">{t('form.isMultipleAnswer')}</FormLabel>
+                    <FormLabel className="!mt-0">
+                      {t('form.isMultipleAnswer')}
+                    </FormLabel>
                   </FormItem>
                 )}
               />
@@ -395,28 +445,42 @@ export function QuestionForm({
                 <RadioGroup
                   value={(() => {
                     const correctIndex = fields.findIndex((_f, idx) => {
-                      const text = form.getValues(`options.${idx}.text` as any) as string
+                      const text = form.getValues(
+                        `options.${idx}.text` as any,
+                      ) as string
                       return text.startsWith('=')
                     })
-                    return correctIndex >= 0 ? correctIndex.toString() : undefined
+                    return correctIndex >= 0
+                      ? correctIndex.toString()
+                      : undefined
                   })()}
                   onValueChange={(value) => {
                     const selectedIndex = parseInt(value)
                     fields.forEach((_field, index) => {
-                      const currentText = form.getValues(`options.${index}.text` as any) as string
-                      const displayText = currentText.length > 0 ? currentText.substring(1) : ''
+                      const currentText = form.getValues(
+                        `options.${index}.text` as any,
+                      ) as string
+                      const displayText =
+                        currentText.length > 0 ? currentText.substring(1) : ''
                       const prefix = index === selectedIndex ? '=' : '~'
-                      form.setValue(`options.${index}.text` as any, `${prefix}${displayText}`, {
-                        shouldValidate: true,
-                        shouldDirty: true,
-                        shouldTouch: true
-                      })
+                      form.setValue(
+                        `options.${index}.text` as any,
+                        `${prefix}${displayText}`,
+                        {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                          shouldTouch: true,
+                        },
+                      )
                     })
                     // Force re-validation after state update
                     if (validationTimeoutRef.current) {
                       clearTimeout(validationTimeoutRef.current)
                     }
-                    validationTimeoutRef.current = setTimeout(() => form.trigger('options'), 100)
+                    validationTimeoutRef.current = setTimeout(
+                      () => form.trigger('options'),
+                      100,
+                    )
                   }}
                 >
                   <DndContext
@@ -424,24 +488,36 @@ export function QuestionForm({
                     collisionDetection={closestCenter}
                     onDragEnd={handleDragEnd}
                   >
-                    <SortableContext items={fields.map((f) => f.id)} strategy={verticalListSortingStrategy}>
+                    <SortableContext
+                      items={fields.map((f) => f.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
                       {fields.map((field, index) => (
                         <SortableOption
                           key={field.id}
                           id={field.id}
                           index={index}
                           isMultipleAnswer={false}
-                          text={form.watch(`options.${index}.text` as any) as string}
+                          text={
+                            form.watch(`options.${index}.text` as any) as string
+                          }
                           fieldsLength={fields.length}
                           onTextChange={(value: string) => {
-                            form.setValue(`options.${index}.text` as any, value, {
-                              shouldValidate: true,
-                            })
+                            form.setValue(
+                              `options.${index}.text` as any,
+                              value,
+                              {
+                                shouldValidate: true,
+                              },
+                            )
                             // Trigger validation after text change
                             if (validationTimeoutRef.current) {
                               clearTimeout(validationTimeoutRef.current)
                             }
-                            validationTimeoutRef.current = setTimeout(() => form.trigger('options'), 50)
+                            validationTimeoutRef.current = setTimeout(
+                              () => form.trigger('options'),
+                              50,
+                            )
                           }}
                           onRemove={() => handleRemoveOption(index)}
                           t={t}
@@ -456,14 +532,19 @@ export function QuestionForm({
                   collisionDetection={closestCenter}
                   onDragEnd={handleDragEnd}
                 >
-                  <SortableContext items={fields.map((f) => f.id)} strategy={verticalListSortingStrategy}>
+                  <SortableContext
+                    items={fields.map((f) => f.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
                     {fields.map((field, index) => (
                       <SortableOption
                         key={field.id}
                         id={field.id}
                         index={index}
                         isMultipleAnswer={true}
-                        text={form.watch(`options.${index}.text` as any) as string}
+                        text={
+                          form.watch(`options.${index}.text` as any) as string
+                        }
                         fieldsLength={fields.length}
                         onTextChange={(value: string) => {
                           form.setValue(`options.${index}.text` as any, value, {
@@ -473,7 +554,10 @@ export function QuestionForm({
                           if (validationTimeoutRef.current) {
                             clearTimeout(validationTimeoutRef.current)
                           }
-                          validationTimeoutRef.current = setTimeout(() => form.trigger('options'), 50)
+                          validationTimeoutRef.current = setTimeout(
+                            () => form.trigger('options'),
+                            50,
+                          )
                         }}
                         onRemove={() => handleRemoveOption(index)}
                         t={t}
@@ -484,9 +568,12 @@ export function QuestionForm({
               )}
             </div>
 
-            {form.formState.errors.options && typeof form.formState.errors.options.message === 'string' && (
-              <p className="text-sm font-medium text-destructive">{form.formState.errors.options.message}</p>
-            )}
+            {form.formState.errors.options &&
+              typeof form.formState.errors.options.message === 'string' && (
+                <p className="text-sm font-medium text-destructive">
+                  {form.formState.errors.options.message}
+                </p>
+              )}
 
             <Button
               type="button"
@@ -506,7 +593,10 @@ export function QuestionForm({
           render={({ field }) => (
             <FormItem className="flex items-center space-x-2">
               <FormControl>
-                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
               </FormControl>
               <div>
                 <FormLabel className="!mt-0">{t('form.isPublic')}</FormLabel>
@@ -523,7 +613,11 @@ export function QuestionForm({
             {t('actions.cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? t('actions.saving') : question ? t('actions.update') : t('actions.create')}
+            {isSubmitting
+              ? t('actions.saving')
+              : question
+                ? t('actions.update')
+                : t('actions.create')}
           </Button>
         </div>
       </form>
