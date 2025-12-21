@@ -117,16 +117,28 @@ export function ExamTakingPage() {
 
     const isMultipleAnswer = currentQuestion.is_multiple_answer
     
-    // Parse current answer safely - handle both string and JSON array formats
+    // Parse current answer based on question type
+    // Format from backend:
+    // - Single answer: "a" (plain string, no quotes)
+    // - Multiple answer: "[a,b,c]" (array format without quotes inside, NOT JSON)
+    // - Essay: "text content" (plain string)
     let currentAnswerArray: string[] = []
     if (currentAnswer) {
-      try {
-        // Try to parse as JSON first (for multiple answers: ["a", "b"])
-        const parsed = JSON.parse(currentAnswer)
-        currentAnswerArray = Array.isArray(parsed) ? parsed : [String(parsed)]
-      } catch {
-        // If not valid JSON, treat as a single string value (for single answer: "a")
-        currentAnswerArray = [String(currentAnswer)]
+      if (isMultipleAnswer) {
+        // Multiple answer - parse array format [a,b,c]
+        try {
+          // Remove brackets and split by comma
+          const stripped = currentAnswer.replace(/^\[|\]$/g, '').trim()
+          if (stripped) {
+            currentAnswerArray = stripped.split(',').map(item => item.trim())
+          }
+        } catch {
+          // If parse fails, treat as empty
+          currentAnswerArray = []
+        }
+      } else {
+        // Single answer - treat as plain string
+        currentAnswerArray = [currentAnswer]
       }
     }
 
@@ -174,7 +186,8 @@ export function ExamTakingPage() {
                 ? currentAnswerArray.filter((id: string) => id !== optionIdString)
                 : [...currentAnswerArray, optionIdString]
               
-              const newAnswer = JSON.stringify(newAnswerArray)
+              // Format: "[a,b,c]" - Array format without quotes inside
+              const newAnswer = `[${newAnswerArray.join(',')}]`
               setCurrentAnswer(newAnswer)
               
               // Auto-save immediately for multiple choice
@@ -239,7 +252,7 @@ export function ExamTakingPage() {
         <RadioGroup
           value={currentAnswer || ''}
           onValueChange={(value) => {
-            // Update answer immediately for instant UI feedback
+            // Format: "a" - plain string (no JSON)
             setCurrentAnswer(value)
             
             // Auto-save in background (silent)
@@ -264,7 +277,7 @@ export function ExamTakingPage() {
                     : 'bg-card border-border hover:border-primary/50 hover:shadow-sm'
                 )}
                 onClick={() => {
-                  // Trigger RadioGroup's onValueChange
+                  // Format: "a" - plain string (no JSON)
                   setCurrentAnswer(optionIdString)
                   
                   // Auto-save in background
