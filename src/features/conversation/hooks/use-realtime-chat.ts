@@ -304,13 +304,16 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
         return
       }
 
-      // Skip if this is our own message (already in cache via optimistic update)
-      if (
+      // If this is our own message from optimistic update, UPDATE it with server data
+      // Don't skip - we need server's timestamp and real ID
+      const isOwnMessage =
         data.sender_id === userId &&
         data.client_id &&
         pendingMessagesRef.current.has(data.client_id)
-      ) {
-        return
+
+      if (isOwnMessage) {
+        // Remove from pending
+        pendingMessagesRef.current.delete(data.client_id!)
       }
 
       // Update messages cache
@@ -322,14 +325,19 @@ export function useRealtimeChat(options: UseRealtimeChatOptions) {
           // Extract current messages from different possible structures
           const currentMessages = old?.data?.messages || old?.messages || []
 
-          // Check if message already exists (from optimistic update)
-          const existingIndex = currentMessages.findIndex(
-            (m: any) => m.id === data.id || m.client_id === data.client_id,
-          )
+          // For our own message: find by client_id and replace with server data
+          // For others: check if message already exists by id or client_id
+          const existingIndex = isOwnMessage
+            ? currentMessages.findIndex(
+                (m: any) => m.client_id === data.client_id,
+              )
+            : currentMessages.findIndex(
+                (m: any) => m.id === data.id || m.client_id === data.client_id,
+              )
 
           let newMessages: Message[]
           if (existingIndex !== -1) {
-            // Update existing message
+            // Update existing message with server data (important: replaces local timestamp!)
             newMessages = [...currentMessages]
             newMessages[existingIndex] = data as unknown as Message
           } else {
