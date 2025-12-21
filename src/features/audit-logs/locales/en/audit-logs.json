@@ -12,7 +12,8 @@
     "apply": "Apply Filters",
     "clear": "Clear Filters",
     "allActions": "All Actions",
-    "allResources": "All Resources"
+    "allResources": "All Resources",
+    "export": "Export to Excel"
   },
   "table": {
     "timestamp": "Timestamp",
@@ -23,7 +24,10 @@
     "ipAddress": "IP Address",
     "details": "Details",
     "noData": "No audit logs found",
-    "loading": "Loading logs..."
+    "loading": "Loading logs...",
+    "showing": "Showing",
+    "of": "of",
+    "records": "records"
   },
   "actions": {
     "USER_CREATED": "User Created",

@@ -1,23 +1,24 @@
-import { Search, RotateCcw, Download } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Search, RotateCcw, Download } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Card, CardContent } from '@/components/ui/card';
-import type { AuditLogFilters, AuditLogResource } from '../types';
-import { getActionOptions, getResourceOptions } from '../utils';
+} from '@/components/ui/select'
+import { Card, CardContent } from '@/components/ui/card'
+import type { AuditLogFilters, AuditLogResource } from '../types'
+import { getActionOptions, getResourceOptions } from '../utils'
+import { useAuditLogsTranslation } from '../hooks'
 
 interface AuditLogFiltersProps {
-  filters: AuditLogFilters;
-  onFiltersChange: (filters: Partial<AuditLogFilters>) => void;
-  onReset: () => void;
-  onExport?: () => void;
-  isExporting?: boolean;
+  filters: AuditLogFilters
+  onFiltersChange: (filters: Partial<AuditLogFilters>) => void
+  onReset: () => void
+  onExport?: () => void
+  isExporting?: boolean
 }
 
 export function AuditLogFiltersComponent({
@@ -27,8 +28,9 @@ export function AuditLogFiltersComponent({
   onExport,
   isExporting,
 }: AuditLogFiltersProps) {
-  const actionOptions = getActionOptions();
-  const resourceOptions = getResourceOptions();
+  const { t } = useAuditLogsTranslation()
+  const actionOptions = getActionOptions()
+  const resourceOptions = getResourceOptions()
 
   return (
     <Card>
@@ -38,7 +40,7 @@ export function AuditLogFiltersComponent({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Tìm kiếm theo tên, email..."
+              placeholder={t('filters.search')}
               value={filters.search || ''}
               onChange={(e) => onFiltersChange({ search: e.target.value })}
               className="pl-9"
@@ -48,14 +50,19 @@ export function AuditLogFiltersComponent({
           {/* Action Filter */}
           <Select
             value={filters.action || ''}
-            onValueChange={(value) => onFiltersChange({ action: value || undefined })}
+            onValueChange={(value) =>
+              onFiltersChange({ action: value || undefined })
+            }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Chọn hành động" />
+              <SelectValue placeholder={t('filters.action')} />
             </SelectTrigger>
             <SelectContent>
               {actionOptions.map((option) => (
-                <SelectItem key={option.value || 'all'} value={option.value || 'all'}>
+                <SelectItem
+                  key={option.value || 'all'}
+                  value={option.value || 'all'}
+                >
                   {option.label}
                 </SelectItem>
               ))}
@@ -66,15 +73,20 @@ export function AuditLogFiltersComponent({
           <Select
             value={filters.resource || ''}
             onValueChange={(value) =>
-              onFiltersChange({ resource: (value || undefined) as AuditLogResource | undefined })
+              onFiltersChange({
+                resource: (value || undefined) as AuditLogResource | undefined,
+              })
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Chọn tài nguyên" />
+              <SelectValue placeholder={t('filters.resource')} />
             </SelectTrigger>
             <SelectContent>
               {resourceOptions.map((option) => (
-                <SelectItem key={option.value || 'all'} value={option.value || 'all'}>
+                <SelectItem
+                  key={option.value || 'all'}
+                  value={option.value || 'all'}
+                >
                   {option.label}
                 </SelectItem>
               ))}
@@ -84,9 +96,11 @@ export function AuditLogFiltersComponent({
           {/* Start Date */}
           <Input
             type="date"
-            placeholder="Từ ngày"
+            placeholder={t('filters.startDate')}
             value={filters.startDate || ''}
-            onChange={(e) => onFiltersChange({ startDate: e.target.value || undefined })}
+            onChange={(e) =>
+              onFiltersChange({ startDate: e.target.value || undefined })
+            }
           />
         </div>
 
@@ -95,17 +109,23 @@ export function AuditLogFiltersComponent({
             {/* End Date */}
             <Input
               type="date"
-              placeholder="Đến ngày"
+              placeholder={t('filters.endDate')}
               value={filters.endDate || ''}
-              onChange={(e) => onFiltersChange({ endDate: e.target.value || undefined })}
+              onChange={(e) =>
+                onFiltersChange({ endDate: e.target.value || undefined })
+              }
               className="w-[180px]"
             />
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={onReset} className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={onReset}
+              className="flex items-center gap-2"
+            >
               <RotateCcw className="h-4 w-4" />
-              Đặt lại
+              {t('filters.clear')}
             </Button>
             {onExport && (
               <Button
@@ -115,12 +135,12 @@ export function AuditLogFiltersComponent({
                 className="flex items-center gap-2"
               >
                 <Download className="h-4 w-4" />
-                {isExporting ? 'Đang xuất...' : 'Xuất Excel'}
+                {isExporting ? t('table.loading') : t('filters.export')}
               </Button>
             )}
           </div>
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

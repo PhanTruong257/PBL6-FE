@@ -1,4 +1,13 @@
-import { Plus, Grid3x3, List, Download, Upload, FileText, FileSpreadsheet, FileType } from 'lucide-react'
+import {
+  Plus,
+  Grid3x3,
+  List,
+  Download,
+  Upload,
+  FileText,
+  FileSpreadsheet,
+  FileType,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -122,8 +131,12 @@ export function QuestionsPage() {
           <div className="text-center">
             <div className="text-4xl mb-4">🚫</div>
             <h2 className="text-xl font-semibold mb-2">{t('page.noAccess')}</h2>
-            <p className="text-muted-foreground mb-4">{t('page.noAccessMessage')}</p>
-            <Button onClick={navigateToDashboard}>{t('actions.backToDashboard')}</Button>
+            <p className="text-muted-foreground mb-4">
+              {t('page.noAccessMessage')}
+            </p>
+            <Button onClick={navigateToDashboard}>
+              {t('actions.backToDashboard')}
+            </Button>
           </div>
         </div>
       </div>
@@ -168,7 +181,9 @@ export function QuestionsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">{t('title')}</h1>
+          <h1 className="text-3xl font-bold flex items-center gap-2">
+            {t('title')}
+          </h1>
           <p className="text-muted-foreground mt-1">{t('subtitle')}</p>
         </div>
 
@@ -226,14 +241,19 @@ export function QuestionsPage() {
         <div className="space-y-4 w-full lg:w-[280px]">
           <div className="sticky top-6 space-y-4">
             <div className="bg-card border rounded-lg p-4">
-              <h3 className="text-sm font-medium text-muted-foreground mb-3">{t('category.title')}</h3>
+              <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                {t('category.title')}
+              </h3>
               <CategoryFilter
                 categories={categories}
                 selectedCategoryIds={selectedCategoryIds}
                 onSelectionChange={setSelectedCategoryIds}
               />
             </div>
-            <QuestionStats questions={questions} />
+            <QuestionStats
+              questions={questions}
+              totalQuestions={totalQuestions}
+            />
           </div>
         </div>
 
@@ -241,7 +261,11 @@ export function QuestionsPage() {
         <div className="space-y-4 min-w-0 flex-1">
           {/* Search Bar */}
           <div className="bg-card rounded-lg border p-4">
-            <SearchBar categories={categories} onSearch={handleSearch} defaultValues={filters} />
+            <SearchBar
+              categories={categories}
+              onSearch={handleSearch}
+              defaultValues={filters}
+            />
           </div>
 
           {/* Content Header with View Toggle */}
@@ -251,7 +275,8 @@ export function QuestionsPage() {
                 <h2 className="text-xl font-bold">{t('page.questionList')}</h2>
                 <p className="text-sm text-muted-foreground mt-1">
                   {t('view.showing', {
-                    from: questions.length > 0 ? (currentPage - 1) * limit + 1 : 0,
+                    from:
+                      questions.length > 0 ? (currentPage - 1) * limit + 1 : 0,
                     to: Math.min(currentPage * limit, totalQuestions),
                     total: totalQuestions,
                   })}
@@ -310,9 +335,13 @@ export function QuestionsPage() {
                 <PaginationContent>
                   <PaginationItem>
                     <PaginationPrevious
-                      onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                      onClick={() =>
+                        handlePageChange(Math.max(1, currentPage - 1))
+                      }
                       className={
-                        currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'
+                        currentPage === 1
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer'
                       }
                     />
                   </PaginationItem>
@@ -321,7 +350,9 @@ export function QuestionsPage() {
 
                   <PaginationItem>
                     <PaginationNext
-                      onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                      onClick={() =>
+                        handlePageChange(Math.min(totalPages, currentPage + 1))
+                      }
                       className={
                         currentPage === totalPages
                           ? 'pointer-events-none opacity-50'
@@ -341,7 +372,9 @@ export function QuestionsPage() {
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingQuestion ? t('dialog.editTitle') : t('dialog.createTitle')}
+              {editingQuestion
+                ? t('dialog.editTitle')
+                : t('dialog.createTitle')}
             </DialogTitle>
           </DialogHeader>
           {categories.length === 0 ? (
@@ -368,7 +401,10 @@ export function QuestionsPage() {
       />
 
       {/* Import Excel Dialog */}
-      <ImportExcelDialog open={isImportDialogOpen} onOpenChange={closeImportDialog} />
+      <ImportExcelDialog
+        open={isImportDialogOpen}
+        onOpenChange={closeImportDialog}
+      />
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

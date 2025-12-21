@@ -19,8 +19,15 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { createUserSchema, type CreateUserFormData } from '../schemas'
+import { useRoles } from '@/features/permissions/hooks'
 
 interface CreateUserDialogProps {
   open: boolean
@@ -35,6 +42,9 @@ export function CreateUserDialog({
   onSubmit,
   loading,
 }: CreateUserDialogProps) {
+  // Load roles from API
+  const { data: rolesData } = useRoles()
+
   const form = useForm<CreateUserFormData>({
     resolver: zodResolver(createUserSchema),
     defaultValues: {
@@ -66,7 +76,11 @@ export function CreateUserDialog({
     { value: 'other', label: 'Khác' },
   ]
 
-  const roleOptions = [
+  // Dynamic role options from API, fallback to hardcoded if not loaded
+  const roleOptions = rolesData?.map((role) => ({
+    value: role.name,
+    label: role.displayText || role.name,
+  })) || [
     { value: 'user', label: 'Học viên' },
     { value: 'teacher', label: 'Giảng viên' },
     { value: 'admin', label: 'Quản trị viên' },
@@ -83,7 +97,10 @@ export function CreateUserDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -131,7 +148,7 @@ export function CreateUserDialog({
                 control={form.control}
                 name="gender"
                 render={({ field }) => (
-                  <FormItem >
+                  <FormItem>
                     <FormLabel>Giới tính</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
@@ -139,9 +156,9 @@ export function CreateUserDialog({
                           <SelectValue placeholder="Chọn giới tính" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent >
+                      <SelectContent>
                         {genderOptions.map((gender) => (
-                          <SelectItem  key={gender.value} value={gender.value}>
+                          <SelectItem key={gender.value} value={gender.value}>
                             {gender.label}
                           </SelectItem>
                         ))}
@@ -198,7 +215,11 @@ export function CreateUserDialog({
                   <FormItem>
                     <FormLabel>Mật khẩu *</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nhập mật khẩu" type="password" {...field} />
+                      <Input
+                        placeholder="Nhập mật khẩu"
+                        type="password"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -212,7 +233,11 @@ export function CreateUserDialog({
                   <FormItem>
                     <FormLabel>Xác nhận mật khẩu *</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nhập lại mật khẩu" type="password" {...field} />
+                      <Input
+                        placeholder="Nhập lại mật khẩu"
+                        type="password"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

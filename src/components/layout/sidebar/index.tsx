@@ -64,7 +64,10 @@ export function Sidebar({
         </div>
       )}
 
-      <ScrollArea className="flex-1 px-3 py-4">
+      {/* Add top padding when collapsed to prevent header from covering content */}
+      {isCollapsed && <div className="h-14 lg:h-[60px]" />}
+
+      <ScrollArea className={cn('flex-1 py-4', isCollapsed ? 'px-1' : 'px-3')}>
         <nav className="grid gap-1">
           {mainMenuItems.map((item, index) => {
             const Icon = item.icon
@@ -77,10 +80,10 @@ export function Sidebar({
                 key={`main-${index}-${item.title}`}
                 variant="ghost"
                 className={cn(
-                  'justify-start gap-2 hover:bg-gray-200',
-                  isCollapsed && 'justify-center px-2',
+                  'justify-start gap-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                  isCollapsed && 'justify-center px-0 mx-auto w-10',
                   currentRoute.startsWith(item.href) &&
-                    'bg-gray-300 text-sidebar-accent-foreground font-bold',
+                    'bg-sidebar-accent text-sidebar-accent-foreground font-bold',
                 )}
                 asChild
               >
@@ -120,7 +123,7 @@ export function Sidebar({
 
       <div className="mt-auto">
         <Separator className="my-2" />
-        <nav className="grid gap-1 px-3 pb-4">
+        <nav className={cn('grid gap-1 pb-4', isCollapsed ? 'px-1' : 'px-3')}>
           {bottomItems.map((item, index) => {
             const Icon = item.icon
 
@@ -143,13 +146,13 @@ export function Sidebar({
           })}
         </nav>
 
-        <div className="border-t p-3">
+        <div className={cn('border-t', isCollapsed ? 'p-1' : 'p-3')}>
           <Button
             variant="ghost"
             size="sm"
             className={cn(
               'w-full justify-start gap-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-              isCollapsed && 'justify-center px-2',
+              isCollapsed && 'justify-center px-0',
             )}
             onClick={onToggleCollapse}
           >

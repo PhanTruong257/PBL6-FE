@@ -1,5 +1,5 @@
 {
-  "title": "Nhật ký Kiểm toán",
+  "title": "Nhật ký hoạt động",
   "subtitle": "Xem hoạt động hệ thống và nhật ký bảo mật",
   "filters": {
     "search": "Tìm kiếm nhật ký...",
@@ -12,7 +12,8 @@
     "apply": "Áp dụng",
     "clear": "Xóa bộ lọc",
     "allActions": "Tất cả hành động",
-    "allResources": "Tất cả tài nguyên"
+    "allResources": "Tất cả tài nguyên",
+    "export": "Xuất Excel"
   },
   "table": {
     "timestamp": "Thời gian",
@@ -23,7 +24,10 @@
     "ipAddress": "Địa chỉ IP",
     "details": "Chi tiết",
     "noData": "Không tìm thấy nhật ký",
-    "loading": "Đang tải..."
+    "loading": "Đang tải...",
+    "showing": "Hiển thị",
+    "of": "trong tổng số",
+    "records": "bản ghi"
   },
   "actions": {
     "USER_CREATED": "Tạo người dùng",
