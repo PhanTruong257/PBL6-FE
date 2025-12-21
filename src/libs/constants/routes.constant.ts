@@ -35,6 +35,9 @@ export const ROUTES = {
   NOT_FOUND: '/404',
   UNAUTHORIZED: '/401',
   SERVER_ERROR: '/500',
+
+  // Admin routes
+  ADMIN_MANAGE_USERS: '/admin/manage-users',
 } as const
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES]
@@ -44,7 +47,7 @@ export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES]
  * All roles default to Classes page
  */
 export const DEFAULT_ROUTES_BY_ROLE: Record<UserRole, RoutePath> = {
-  admin: ROUTES.CLASSES,
+  admin: ROUTES.ADMIN_MANAGE_USERS,
   teacher: ROUTES.CLASSES,
   student: ROUTES.CLASSES,
   user: ROUTES.CLASSES,
