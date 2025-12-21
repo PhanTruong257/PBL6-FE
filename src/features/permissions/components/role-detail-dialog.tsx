@@ -64,7 +64,7 @@ export function RoleDetailDialog({ open, onOpenChange, role }: RoleDetailDialogP
           <div className="space-y-3">
             <div>
               <label className="text-sm font-semibold text-muted-foreground">Tên vai trò</label>
-              <p className="text-lg font-semibold mt-1">{role.name}</p>
+              <p className="text-lg font-semibold mt-1">{role.displayText || role.name}</p>
             </div>
             
             {role.description && (

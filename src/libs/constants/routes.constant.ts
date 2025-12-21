@@ -1,3 +1,5 @@
+import type { UserRole } from '@/types/user'
+
 /**
  * Application route paths
  * Unified routing structure with role-based rendering
@@ -39,13 +41,13 @@ export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES]
 
 /**
  * Default routes by role
- * Admin or Teacher -> Classes page
- * Student/User -> Dashboard
+ * All roles default to Classes page
  */
-export const DEFAULT_ROUTES_BY_ROLE = {
+export const DEFAULT_ROUTES_BY_ROLE: Record<UserRole, RoutePath> = {
   admin: ROUTES.CLASSES,
   teacher: ROUTES.CLASSES,
-  user: ROUTES.DASHBOARD,
+  student: ROUTES.CLASSES,
+  user: ROUTES.CLASSES,
 } as const
 
 export type DefaultRouteByRole = (typeof DEFAULT_ROUTES_BY_ROLE)[keyof typeof DEFAULT_ROUTES_BY_ROLE]

@@ -42,7 +42,7 @@ export function DeleteRoleDialog({
             {hasUsers ? (
               <div className="space-y-3">
                 <p className="text-destructive font-medium">
-                  Không thể xóa vai trò "{role.name}"
+                  Không thể xóa vai trò "{role.displayText || role.name}"
                 </p>
                 <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3">
                   <p className="font-medium text-destructive mb-2">
@@ -68,7 +68,7 @@ export function DeleteRoleDialog({
             ) : (
               <div className="space-y-3">
                 <p>
-                  Bạn có chắc chắn muốn xóa vai trò <strong>"{role.name}"</strong>?
+                  Bạn có chắc chắn muốn xóa vai trò <strong>"{role.displayText || role.name}"</strong>?
                 </p>
                 {permissionsCount > 0 && (
                   <div className="bg-amber-50 border border-amber-200 rounded-md p-3">

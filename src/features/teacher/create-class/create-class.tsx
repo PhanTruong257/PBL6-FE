@@ -3,14 +3,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, BookOpen } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useEffect } from 'react'
+import { useRecoilValue } from 'recoil'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { createClassSchema, type CreateClassForm } from '../schemas/create-class.schema';
-import { cookieStorage } from '@/libs/utils/cookie';
-
+import { createClassSchema, type CreateClassForm } from '../schemas/create-class.schema'
+import { currentUserState } from '@/global/recoil/user'
 
 import { useClass } from './hook'
 
@@ -25,6 +25,8 @@ export function CreateClassPage() {
     })
 
     const classMutation = useClass()
+    const currentUser = useRecoilValue(currentUserState)
+
     const onSubmit = (data: CreateClassForm) => {
         console.log('✅ onSubmit called!');
         console.log('Creating class with data:', data);
@@ -36,14 +38,10 @@ export function CreateClassPage() {
     }
 
     useEffect(() => {
-        const storedUser = cookieStorage.getUser()
-        console.log(storedUser);
-        if (storedUser && typeof storedUser === 'object' && 'user_id' in storedUser) {
-            setValue('teacher_id', storedUser.user_id as number);
-        } else {
-            console.log('User not found in cookies')
+        if (currentUser?.user_id) {
+            setValue('teacher_id', currentUser.user_id)
         }
-    }, [setValue])
+    }, [currentUser, setValue])
 
     return (
         <div className="min-h-screen bg-gray-50">

@@ -184,7 +184,7 @@ export function EditRolePermissionsDialog({
         <DialogContent className="sm:max-w-[800px]">
           <DialogHeader>
             <DialogTitle className="text-2xl">
-              Chỉnh sửa quyền: <span className="text-primary">{role.name}</span>
+              Chỉnh sửa quyền: <span className="text-primary">{role.displayText || role.name}</span>
             </DialogTitle>
             <DialogDescription>
               Chọn các quyền hạn muốn gán cho vai trò này. Các thay đổi sẽ được lưu sau khi bạn
@@ -350,7 +350,7 @@ export function EditRolePermissionsDialog({
             <AlertDialogTitle>Xác nhận lưu thay đổi</AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div>
-                Bạn đang thay đổi quyền hạn cho vai trò <strong>{role.name}</strong>.
+                Bạn đang thay đổi quyền hạn cho vai trò <strong>{role.displayText || role.name}</strong>.
                 <div className="mt-3 space-y-1">
                   {addedCount > 0 && (
                     <div className="text-green-600">

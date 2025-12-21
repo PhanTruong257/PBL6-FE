@@ -45,19 +45,12 @@ httpClient.interceptors.response.use(
   },
   (error: AxiosError<IApiResponse<any>>) => {
     if (error.response?.status === 401) {
-      console.log('401 Error intercepted:', {
-        url: error.config?.url,
-        currentPath: window.location.pathname
-      })
-
       // Don't redirect if already on auth pages
       const currentPath = window.location.pathname
       if (!currentPath.startsWith('/auth/')) {
-        console.log('Redirecting to login from 401 error')
         cookieStorage.clearTokens()
         window.location.href = '/auth/login'
       } else {
-        console.log('Already on auth page, skipping redirect')
         cookieStorage.clearTokens()
       }
     }

@@ -23,6 +23,7 @@ export interface UserRoleInfo {
 export interface Role {
   role_id: number
   name: string
+  displayText?: string
   description?: string
   created_at?: string
   updated_at?: string
@@ -37,6 +38,7 @@ export interface RolePermissionDto {
 
 export interface CreateRoleDto {
   name: string
+  displayText: string
   description?: string
 }
 
@@ -49,6 +51,6 @@ export interface CreatePermissionDto {
 }
 
 export interface UpdateRoleDto {
-  name?: string
+  displayText?: string
   description?: string
 }

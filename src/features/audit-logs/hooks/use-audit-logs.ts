@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { AuditLogsService } from '../api';
+import { AuditLogsService } from '../apis';
 import type { AuditLogFilters } from '../types';
 
 export function useAuditLogs(filters: AuditLogFilters) {

@@ -1,0 +1,69 @@
+{
+  "title": "Nhật ký Kiểm toán",
+  "subtitle": "Xem hoạt động hệ thống và nhật ký bảo mật",
+  "filters": {
+    "search": "Tìm kiếm nhật ký...",
+    "action": "Hành động",
+    "resource": "Tài nguyên",
+    "actor": "Người thực hiện",
+    "dateRange": "Khoảng thời gian",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "apply": "Áp dụng",
+    "clear": "Xóa bộ lọc",
+    "allActions": "Tất cả hành động",
+    "allResources": "Tất cả tài nguyên"
+  },
+  "table": {
+    "timestamp": "Thời gian",
+    "actor": "Người thực hiện",
+    "action": "Hành động",
+    "resource": "Tài nguyên",
+    "target": "Đối tượng",
+    "ipAddress": "Địa chỉ IP",
+    "details": "Chi tiết",
+    "noData": "Không tìm thấy nhật ký",
+    "loading": "Đang tải..."
+  },
+  "actions": {
+    "USER_CREATED": "Tạo người dùng",
+    "USER_UPDATED": "Cập nhật người dùng",
+    "USER_DELETED": "Xóa người dùng",
+    "USER_BLOCKED": "Khóa người dùng",
+    "USER_UNBLOCKED": "Mở khóa người dùng",
+    "USER_STATUS_CHANGED": "Thay đổi trạng thái người dùng",
+    "USER_PROFILE_UPDATED": "Cập nhật hồ sơ người dùng",
+    "USER_PASSWORD_CHANGED": "Đổi mật khẩu người dùng",
+    "ROLE_CREATED": "Tạo vai trò",
+    "ROLE_UPDATED": "Cập nhật vai trò",
+    "ROLE_DELETED": "Xóa vai trò",
+    "ROLE_ASSIGNED_TO_USER": "Gán vai trò",
+    "ROLE_REMOVED_FROM_USER": "Gỡ vai trò",
+    "PERMISSION_CREATED": "Tạo quyền",
+    "PERMISSION_UPDATED": "Cập nhật quyền",
+    "PERMISSION_DELETED": "Xóa quyền",
+    "PERMISSION_ASSIGNED_TO_ROLE": "Gán quyền",
+    "PERMISSION_REMOVED_FROM_ROLE": "Gỡ quyền",
+    "PERMISSIONS_SYNCED": "Đồng bộ quyền"
+  },
+  "resources": {
+    "USER": "Người dùng",
+    "ROLE": "Vai trò",
+    "PERMISSION": "Quyền",
+    "USER_ROLE": "Vai trò người dùng",
+    "ROLE_PERMISSION": "Quyền vai trò"
+  },
+  "details": {
+    "title": "Chi tiết nhật ký",
+    "close": "Đóng",
+    "changes": "Thay đổi",
+    "oldValue": "Giá trị cũ",
+    "newValue": "Giá trị mới",
+    "metadata": "Metadata",
+    "requestInfo": "Thông tin yêu cầu",
+    "method": "Phương thức",
+    "path": "Đường dẫn",
+    "userAgent": "User Agent",
+    "description": "Mô tả"
+  }
+}

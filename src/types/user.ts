@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'teacher' | 'user'
+export type UserRole = 'admin' | 'teacher' | 'student' | 'user'
 
 export type UserStatus = 'active' | 'block'
 

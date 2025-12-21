@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -10,7 +16,16 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, Plus, Shield, Key, Settings, Edit, Eye, Trash2 } from 'lucide-react'
+import {
+  Loader2,
+  Plus,
+  Shield,
+  Key,
+  Settings,
+  Edit,
+  Eye,
+  Trash2,
+} from 'lucide-react'
 import { useRoles, usePermissions, useDeleteRole } from '../hooks'
 import {
   CreateRoleDialog,
@@ -95,7 +110,9 @@ export function RolePermissionsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tổng số vai trò</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Tổng số vai trò
+            </CardTitle>
             <Shield className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -113,12 +130,17 @@ export function RolePermissionsPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Quyền được gán</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Quyền được gán
+            </CardTitle>
             <Settings className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {roles?.reduce((sum, role) => sum + (role.permissions?.length || 0), 0) || 0}
+              {roles?.reduce(
+                (sum, role) => sum + (role.permissions?.length || 0),
+                0,
+              ) || 0}
             </div>
           </CardContent>
         </Card>
@@ -130,7 +152,9 @@ export function RolePermissionsPage() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Vai trò trong hệ thống</CardTitle>
-              <CardDescription>Danh sách các vai trò và quyền hạn của từng vai trò</CardDescription>
+              <CardDescription>
+                Danh sách các vai trò và quyền hạn của từng vai trò
+              </CardDescription>
             </div>
             <Button onClick={() => setCreateRoleOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
@@ -152,15 +176,25 @@ export function RolePermissionsPage() {
             <TableBody>
               {roles?.map((role) => (
                 <TableRow key={role.role_id}>
-                  <TableCell className="font-medium">{role.name}</TableCell>
+                  <TableCell className="font-medium">
+                    {role.displayText || role.name}
+                  </TableCell>
                   <TableCell className="max-w-md truncate">
                     {role.description || '—'}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{role.permissions?.length || 0} quyền</Badge>
+                    <Badge variant="secondary">
+                      {role.permissions?.length || 0} quyền
+                    </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={(role.userRoles?.length || 0) > 0 ? "default" : "outline"}>
+                    <Badge
+                      variant={
+                        (role.userRoles?.length || 0) > 0
+                          ? 'default'
+                          : 'outline'
+                      }
+                    >
                       {role.userRoles?.length || 0} người
                     </Badge>
                   </TableCell>
@@ -195,7 +229,11 @@ export function RolePermissionsPage() {
                         size="sm"
                         onClick={() => handleDeleteRole(role)}
                         disabled={(role.userRoles?.length || 0) > 0}
-                        title={(role.userRoles?.length || 0) > 0 ? "Không thể xóa role đang có người dùng" : ""}
+                        title={
+                          (role.userRoles?.length || 0) > 0
+                            ? 'Không thể xóa role đang có người dùng'
+                            : ''
+                        }
                       >
                         <Trash2 className="w-4 h-4 mr-2" />
                         Xóa
@@ -215,7 +253,9 @@ export function RolePermissionsPage() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Danh sách quyền hạn</CardTitle>
-              <CardDescription>Tất cả các quyền hạn có sẵn trong hệ thống</CardDescription>
+              <CardDescription>
+                Tất cả các quyền hạn có sẵn trong hệ thống
+              </CardDescription>
             </div>
             <Button onClick={() => setCreatePermissionOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
@@ -240,7 +280,9 @@ export function RolePermissionsPage() {
                   <TableCell className="font-mono text-xs bg-muted/50 rounded">
                     {permission.key}
                   </TableCell>
-                  <TableCell className="font-medium">{permission.name}</TableCell>
+                  <TableCell className="font-medium">
+                    {permission.name}
+                  </TableCell>
                   <TableCell>
                     <Badge variant="outline">{permission.resource}</Badge>
                   </TableCell>
@@ -258,7 +300,10 @@ export function RolePermissionsPage() {
       </Card>
 
       {/* Dialogs */}
-      <CreateRoleDialog open={createRoleOpen} onOpenChange={setCreateRoleOpen} />
+      <CreateRoleDialog
+        open={createRoleOpen}
+        onOpenChange={setCreateRoleOpen}
+      />
       <CreatePermissionDialog
         open={createPermissionOpen}
         onOpenChange={setCreatePermissionOpen}

@@ -23,7 +23,8 @@ import { Button } from '@/components/ui/button'
 import { useCreateRole } from '../hooks'
 
 const createRoleSchema = z.object({
-  name: z.string().min(1, 'Tên vai trò không được để trống'),
+  name: z.string().min(1, 'Code vai trò không được để trống'),
+  displayText: z.string().min(1, 'Tên hiển thị không được để trống'),
   description: z.string().optional(),
 })
 
@@ -41,6 +42,7 @@ export function CreateRoleDialog({ open, onOpenChange }: CreateRoleDialogProps) 
     resolver: zodResolver(createRoleSchema),
     defaultValues: {
       name: '',
+      displayText: '',
       description: '',
     },
   })
@@ -69,7 +71,20 @@ export function CreateRoleDialog({ open, onOpenChange }: CreateRoleDialogProps) 
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tên vai trò</FormLabel>
+                  <FormLabel>Code vai trò (Không thể thay đổi sau khi tạo)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="VD: content_manager" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="displayText"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tên hiển thị</FormLabel>
                   <FormControl>
                     <Input placeholder="VD: Content Manager" {...field} />
                   </FormControl>

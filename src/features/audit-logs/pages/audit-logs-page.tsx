@@ -7,7 +7,7 @@ import {
 } from '../components';
 import { useAuditLogs, useAuditLogFilters } from '../hooks';
 import type { AuditLog } from '../types';
-import { AuditLogsService } from '../api';
+import { AuditLogsService } from '../apis';
 import * as XLSX from 'xlsx';
 
 export function AuditLogsPage() {
@@ -35,7 +35,7 @@ export function AuditLogsPage() {
     setIsExporting(true);
     try {
       const response = await AuditLogsService.exportLogs(filters);
-      const exportData = response.data || [];
+      const exportData = response.data;
 
       // Transform data for export
       const exportRows = exportData.map((log) => ({

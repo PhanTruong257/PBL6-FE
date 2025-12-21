@@ -1,4 +1,3 @@
-import { useTheme } from "@/hooks"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -8,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useTheme } from "@/global/hooks"
 import { Palette, Check } from "lucide-react"
 
 export function ThemeToggle() {

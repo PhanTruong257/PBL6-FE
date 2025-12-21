@@ -1,11 +1,10 @@
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { useSetRecoilState } from 'recoil'
+import { useAuth as useAuthState } from '@/global/hooks/use-auth'
 
 import { AuthService } from '../apis/auth-service'
 import { cookieStorage } from '@/libs/utils/cookie'
 import { sessionStorage } from '@/libs/utils/session-storage'
-import { currentUserState } from '@/global/recoil/user'
 
 import type {
   LoginRequest,
@@ -13,7 +12,6 @@ import type {
   ForgotPasswordRequest,
   VerifyCodeRequest,
   ResetPasswordRequest,
-  User,
 } from '../types'
 
 /**
@@ -30,7 +28,7 @@ export const authKeys = {
 export function useLogin() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const setUser = useSetRecoilState(currentUserState)
+  const { setUser } = useAuthState()
 
   return useMutation({
     mutationFn: (data: LoginRequest) => {
@@ -51,22 +49,16 @@ export function useLogin() {
         const userDataResponse = await AuthService.getCurrentUser()
         const userData = userDataResponse.data
 
-        // Update Recoil state with complete user data
+        // Update auth state with complete user data
         setUser(userData)
-        console.log(`✅ Fetched user data:  `, userData)
 
         // Update React Query cache
         queryClient.setQueryData(authKeys.user(), userData)
 
-        console.log(`✅ Login successful: ${userData.email}`)
-        console.log(
-          `✅ Loaded ${userData.roles?.length || 0} roles and ${userData.permissions?.length || 0} permissions`,
-        )
-
         const redirectPath = userData.role === 'admin' ? '/admin/manage-users' : '/classes'
         navigate({ to: redirectPath as any })
       } catch (error) {
-        console.error('❌ Failed to fetch user data from /users/me:', error)
+        console.error('Failed to fetch user data:', error)
         // Fallback: Set basic user info from login response
         setUser(user)
         queryClient.setQueryData(authKeys.user(), user)
@@ -74,7 +66,7 @@ export function useLogin() {
 
     },
     onError: (error) => {
-      console.log('🚨 Login failed:', error)
+      console.log('Login failed:', error)
     },
   })
 }
@@ -167,7 +159,7 @@ export function useResendCode() {
 export function useLogout() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const setUser = useSetRecoilState(currentUserState)
+  const { clearAuth } = useAuthState()
 
   return useMutation({
     mutationFn: () => AuthService.logout(),
@@ -176,11 +168,8 @@ export function useLogout() {
       // Clear React Query cache
       queryClient.clear()
 
-      // Clear cookies (access token & refresh token)
-      cookieStorage.clearTokens()
-
-      // Clear Recoil state
-      setUser(null)
+      // Clear auth state and tokens
+      clearAuth()
 
       // Clear session storage
       sessionStorage.clear()
@@ -189,49 +178,4 @@ export function useLogout() {
       navigate({ to: '/auth/login' })
     },
   })
-}
-
-/**
- * Hook to get current user from API
- */
-export function useCurrentUser() {
-  const hasToken = !!cookieStorage.getAccessToken()
-
-  return useQuery({
-    queryKey: authKeys.user(),
-    queryFn: () => AuthService.getCurrentUser().then((res) => res.data),
-    enabled: hasToken, // Only run if user has token
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    retry: (failureCount, error: any) => {
-      // Don't retry on 401 (unauthorized)
-      if (error?.response?.status === 401) {
-        return false
-      }
-      return failureCount < 2
-    },
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  })
-}
-
-/**
- * Hook to check authentication status
- */
-export function useIsAuthenticated() {
-  const { data: user, isLoading, isFetching } = useCurrentUser()
-  const token = cookieStorage.getAccessToken()
-  const isAuthenticated = !!(user && token)
-
-  return {
-    isAuthenticated,
-    isLoading: isLoading || isFetching,
-    user,
-  }
-}
-
-/**
- * Hook to get user from cookie storage (without API call)
- */
-export function useUserFromStorage() {
-  return cookieStorage.getUser<User>()
 }

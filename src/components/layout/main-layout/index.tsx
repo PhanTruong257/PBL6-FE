@@ -49,7 +49,7 @@ export function MainLayout({ children }: MainLayoutProps) {
 
         {/* Page Content */}
         <main className={cn('flex-1 overflow-auto', 'bg-muted/40')}>
-          <div className="h-full w-full">{children}</div>
+          <div className="h-full w-full mx-auto px-4 md:px-6 py-4 md:py-6">{children}</div>
         </main>
       </div>
     </div>

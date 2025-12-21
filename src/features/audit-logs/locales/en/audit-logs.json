@@ -1,0 +1,69 @@
+{
+  "title": "Audit Logs",
+  "subtitle": "View system activity and security logs",
+  "filters": {
+    "search": "Search logs...",
+    "action": "Action",
+    "resource": "Resource",
+    "actor": "Actor",
+    "dateRange": "Date Range",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "apply": "Apply Filters",
+    "clear": "Clear Filters",
+    "allActions": "All Actions",
+    "allResources": "All Resources"
+  },
+  "table": {
+    "timestamp": "Timestamp",
+    "actor": "Actor",
+    "action": "Action",
+    "resource": "Resource",
+    "target": "Target",
+    "ipAddress": "IP Address",
+    "details": "Details",
+    "noData": "No audit logs found",
+    "loading": "Loading logs..."
+  },
+  "actions": {
+    "USER_CREATED": "User Created",
+    "USER_UPDATED": "User Updated",
+    "USER_DELETED": "User Deleted",
+    "USER_BLOCKED": "User Blocked",
+    "USER_UNBLOCKED": "User Unblocked",
+    "USER_STATUS_CHANGED": "User Status Changed",
+    "USER_PROFILE_UPDATED": "User Profile Updated",
+    "USER_PASSWORD_CHANGED": "User Password Changed",
+    "ROLE_CREATED": "Role Created",
+    "ROLE_UPDATED": "Role Updated",
+    "ROLE_DELETED": "Role Deleted",
+    "ROLE_ASSIGNED_TO_USER": "Role Assigned",
+    "ROLE_REMOVED_FROM_USER": "Role Removed",
+    "PERMISSION_CREATED": "Permission Created",
+    "PERMISSION_UPDATED": "Permission Updated",
+    "PERMISSION_DELETED": "Permission Deleted",
+    "PERMISSION_ASSIGNED_TO_ROLE": "Permission Assigned",
+    "PERMISSION_REMOVED_FROM_ROLE": "Permission Removed",
+    "PERMISSIONS_SYNCED": "Permissions Synced"
+  },
+  "resources": {
+    "USER": "User",
+    "ROLE": "Role",
+    "PERMISSION": "Permission",
+    "USER_ROLE": "User Role",
+    "ROLE_PERMISSION": "Role Permission"
+  },
+  "details": {
+    "title": "Audit Log Details",
+    "close": "Close",
+    "changes": "Changes",
+    "oldValue": "Old Value",
+    "newValue": "New Value",
+    "metadata": "Metadata",
+    "requestInfo": "Request Information",
+    "method": "Method",
+    "path": "Path",
+    "userAgent": "User Agent",
+    "description": "Description"
+  }
+}

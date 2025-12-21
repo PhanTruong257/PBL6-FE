@@ -7,9 +7,12 @@ import { ChevronLeft } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useRecoilValue } from 'recoil'
 import { currentUserState } from '@/global/recoil/user'
-import { getNavigationByRole } from '@/libs/constants/sidebar-navigation.const'
+import {
+  getNavigationForUser,
+  type NavigationConfig,
+  type NavigationItem,
+} from '@/libs/constants/sidebar-navigation.constant'
 import { useUnreadCounts } from '@/features/conversation/hooks'
-import type { MenuItem } from '@/libs/constants/sidebar-navigation.const'
 
 export interface BaseMenuItem {
   title: string
@@ -20,8 +23,8 @@ export interface SidebarProps {
   className?: string
   isCollapsed?: boolean
   onToggleCollapse?: () => void
-  menuItems?: MenuItem[]
-  bottomMenuItems?: MenuItem[]
+  menuItems?: NavigationItem[]
+  bottomMenuItems?: NavigationItem[]
   logoUrl?: string
   appName?: string
 }
@@ -33,31 +36,14 @@ export function Sidebar({
 }: SidebarProps) {
   const user = useRecoilValue(currentUserState)
 
-  // Map 'user' role to 'student' for navigation
-  const userRole: 'admin' | 'teacher' | 'student' =
-    user?.role === 'user'
-      ? 'student'
-      : user?.role === 'admin'
-        ? 'admin'
-        : user?.role === 'teacher'
-          ? 'teacher'
-          : 'student'
-
-  const navigation = getNavigationByRole(userRole)
+  // Get navigation filtered by user's role and permissions
+  const navigation: NavigationConfig = getNavigationForUser(user)
 
   // Get unread CONVERSATIONS count for badge (not total messages)
   const { unreadConversationsCount } = useUnreadCounts(user?.user_id)
 
-  const filterByPermission = (items: MenuItem[]) => {
-    if (!user?.permissions?.length) return items
-    return items.filter((item) => {
-      if (!item.permission) return true
-      return user.permissions!.some((p) => p.key === item.permission)
-    })
-  }
-
-  const mainMenuItems = filterByPermission(navigation.main)
-  const bottomItems = filterByPermission(navigation.bottom)
+  const mainMenuItems = navigation.main
+  const bottomItems = navigation.bottom
   const currentRoute = window.location.pathname
 
   return (

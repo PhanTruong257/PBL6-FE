@@ -1,15 +1,16 @@
+import { useRecoilValue } from 'recoil'
 import { useChatbot } from '../hooks'
-import { 
-  ChatMessageComponent, 
-  ChatInput, 
-  LoadingSpinner, 
-  WelcomeScreen, 
+import {
+  ChatMessageComponent,
+  ChatInput,
+  LoadingSpinner,
+  WelcomeScreen,
   StreamingResponse,
   FileDisplay
 } from '../components'
-import { cookieStorage } from '@/libs/utils'
+import { currentUserState } from '@/global/recoil/user'
 import '../styles/chat.css'
-import type { User } from '@/types'
+
 export function ChatbotPage() {
   const {
     messages,
@@ -29,7 +30,7 @@ export function ChatbotPage() {
     removeFile,
     handleFilesSelected,
   } = useChatbot()
-  const userData = cookieStorage.getUser() as User
+  const userData = useRecoilValue(currentUserState)
   
   return (
     <div className="chatbot-container flex flex-col">
@@ -75,7 +76,7 @@ export function ChatbotPage() {
         <ChatInput
           value={currentMessage}
           onChange={handleInputChange}
-          onSend={()=>sendMessage(userData.user_id, userData.role)}
+          onSend={()=>sendMessage(userData?.user_id, userData?.role)}
           onKeyDown={handleKeyDown}
           disabled={isProcessing}
           onFilesSelected={handleFilesSelected}

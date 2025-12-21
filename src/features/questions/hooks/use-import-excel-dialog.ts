@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from '@/libs/toast'
 import { useQuestionsTranslation } from './use-questions-translation'
 import { questionsApi } from '../apis/questions-service'
+import { parseExcelFile, isValidExcelFile } from '../utils/excel-parser'
 import type { PreviewExcelResult, ImportQuestionResult, ExcelQuestionRow } from '@/types/question'
 
 export interface UseImportExcelDialogProps {
@@ -54,9 +55,24 @@ export function useImportExcelDialog({ onOpenChange }: UseImportExcelDialogProps
   // ============================================
   // MUTATIONS
   // ============================================
+  
+  /**
+   * NEW: Preview mutation - parse Excel on FE
+   */
   const previewMutation = useMutation({
-    mutationFn: ({ fileToPreview, limit }: { fileToPreview: File; limit: number }) =>
-      questionsApi.previewImport(fileToPreview, limit),
+    mutationFn: async ({ fileToPreview, limit }: { fileToPreview: File; limit: number }) => {
+      // Parse Excel file on frontend
+      const allQuestions = await parseExcelFile(fileToPreview)
+      
+      // Create preview result
+      const previewResult: PreviewExcelResult = {
+        total: allQuestions.length,
+        preview: allQuestions.slice(0, limit),
+        headers: ['Content', 'Type', 'Category', 'Difficulty', 'Multiple Answer', 'Option A', 'A Correct', 'Option B', 'B Correct', 'Option C', 'C Correct', 'Option D', 'D Correct', 'Option E', 'E Correct', 'Option F', 'F Correct', 'Option G', 'G Correct', 'Option H', 'H Correct', 'Public'],
+      }
+      
+      return { data: previewResult }
+    },
     onSuccess: (response) => {
       setPreview(response.data)
       setActiveTab('preview')
@@ -64,12 +80,22 @@ export function useImportExcelDialog({ onOpenChange }: UseImportExcelDialogProps
       toast.success(t('import.toastPreviewSuccess'))
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || t('import.toastPreviewError'))
+      console.error('Preview error:', error)
+      toast.error(error.message || t('import.toastPreviewError'))
     },
   })
 
+  /**
+   * NEW: Import mutation - send parsed JSON to BE
+   */
   const importMutation = useMutation({
-    mutationFn: (fileToImport: File) => questionsApi.importExcel(fileToImport),
+    mutationFn: async (fileToImport: File) => {
+      // Parse Excel file on frontend
+      const questions = await parseExcelFile(fileToImport)
+      
+      // Send JSON array to backend
+      return questionsApi.importFromArray(questions)
+    },
     onSuccess: (response) => {
       const data = response.data
       setImportResult(data)
@@ -85,7 +111,8 @@ export function useImportExcelDialog({ onOpenChange }: UseImportExcelDialogProps
       }
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || t('import.toastImportError'))
+      console.error('Import error:', error)
+      toast.error(error.response?.data?.message || error.message || t('import.toastImportError'))
     },
   })
 
@@ -96,13 +123,8 @@ export function useImportExcelDialog({ onOpenChange }: UseImportExcelDialogProps
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const uploadedFile = e.target.files?.[0]
       if (uploadedFile) {
-        // Validate file type
-        const validTypes = [
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          'application/vnd.ms-excel',
-        ]
-
-        if (!validTypes.includes(uploadedFile.type)) {
+        // Validate file type using utility
+        if (!isValidExcelFile(uploadedFile)) {
           toast.error(t('import.toastInvalidFile'))
           return
         }
