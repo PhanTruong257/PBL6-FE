@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from '@tanstack/react-router'
+  import { useParams, useNavigate } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
 import { useExamTaking } from '../hooks'
 import { ExamPasswordDialog } from '../components/exam-password-dialog'
@@ -123,10 +123,10 @@ export function ExamTakingPage() {
       try {
         // Try to parse as JSON first (for multiple answers: ["a", "b"])
         const parsed = JSON.parse(currentAnswer)
-        currentAnswerArray = Array.isArray(parsed) ? parsed : [parsed]
+        currentAnswerArray = Array.isArray(parsed) ? parsed : [String(parsed)]
       } catch {
         // If not valid JSON, treat as a single string value (for single answer: "a")
-        currentAnswerArray = [currentAnswer]
+        currentAnswerArray = [String(currentAnswer)]
       }
     }
 
@@ -165,8 +165,23 @@ export function ExamTakingPage() {
       return (
         <div className="space-y-3">
           {optionsArray.map((option, index) => {
-            const isChecked = currentAnswerArray.includes(option.id)
+            const optionIdString = String(option.id)
+            const isChecked = currentAnswerArray.includes(optionIdString)
             const optionLabel = String.fromCharCode(65 + index) // A, B, C, D...
+            
+            const handleToggle = () => {
+              const newAnswerArray = isChecked
+                ? currentAnswerArray.filter((id: string) => id !== optionIdString)
+                : [...currentAnswerArray, optionIdString]
+              
+              const newAnswer = JSON.stringify(newAnswerArray)
+              setCurrentAnswer(newAnswer)
+              
+              // Auto-save immediately for multiple choice
+              setTimeout(() => {
+                saveAnswer(true) // silent save
+              }, 100)
+            }
             
             return (
               <div
@@ -177,19 +192,7 @@ export function ExamTakingPage() {
                     ? 'bg-primary/10 border-primary shadow-md'
                     : 'bg-card border-border hover:border-primary/50 hover:shadow-sm'
                 )}
-                onClick={() => {
-                  const checked = !isChecked
-                  const newAnswer = checked
-                    ? JSON.stringify([...currentAnswerArray, option.id])
-                    : JSON.stringify(currentAnswerArray.filter((id: string) => id !== option.id))
-                  
-                  setCurrentAnswer(newAnswer)
-                  
-                  // Auto-save immediately for multiple choice
-                  setTimeout(() => {
-                    saveAnswer(true) // silent save
-                  }, 100)
-                }}
+                onClick={handleToggle}
               >
                 {/* Option Label */}
                 <div className={cn(
@@ -206,7 +209,9 @@ export function ExamTakingPage() {
                   <Checkbox
                     id={option.id}
                     checked={isChecked}
+                    onCheckedChange={handleToggle}
                     className="w-5 h-5 border-2"
+                    onClick={(e) => e.stopPropagation()} // Prevent double trigger
                   />
                 </div>
                 
@@ -233,13 +238,20 @@ export function ExamTakingPage() {
       return (
         <RadioGroup
           value={currentAnswer || ''}
+          onValueChange={(value) => {
+            // Update answer immediately for instant UI feedback
+            setCurrentAnswer(value)
+            
+            // Auto-save in background (silent)
+            setTimeout(() => {
+              saveAnswer(true)
+            }, 100)
+          }}
           className="space-y-3"
         >
           {optionsArray.map((option, index) => {
-            const isSelected = currentAnswer === (option.id.toString())
-            console.log('current answer:', currentAnswer)
-            console.log('option id', option.id)
-            console.log('isSelected', isSelected)
+            const optionIdString = String(option.id)
+            const isSelected = currentAnswer === optionIdString
             const optionLabel = String.fromCharCode(65 + index) // A, B, C, D...
             
             return (
@@ -252,11 +264,12 @@ export function ExamTakingPage() {
                     : 'bg-card border-border hover:border-primary/50 hover:shadow-sm'
                 )}
                 onClick={() => {
-                  setCurrentAnswer(option.id)
+                  // Trigger RadioGroup's onValueChange
+                  setCurrentAnswer(optionIdString)
                   
-                  // Auto-save immediately for multiple choice
+                  // Auto-save in background
                   setTimeout(() => {
-                    saveAnswer(true) // silent save
+                    saveAnswer(true)
                   }, 100)
                 }}
               >
@@ -273,7 +286,7 @@ export function ExamTakingPage() {
                 {/* Radio Button */}
                 <div className="pt-0.5">
                   <RadioGroupItem 
-                    value={option.id.toString()} 
+                    value={optionIdString} 
                     id={option.id}
                     className="w-5 h-5 border-2"
                   />
