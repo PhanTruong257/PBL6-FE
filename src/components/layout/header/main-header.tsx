@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,20 +7,24 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { ThemeToggle } from "@/components/theme-toggler"
-import { Menu, Search, Bell, Settings, LogOut, User } from "lucide-react"
-import { Link } from "@tanstack/react-router"
-import { useLogout } from "@/features/auth/hooks/use-auth"
-import { toast } from "sonner"
+} from '@/components/ui/dropdown-menu'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { ThemeToggle } from '@/components/theme-toggler'
+import { LanguageToggle } from '@/components/language-toggle'
+import { Menu, Search, Bell, Settings, LogOut, User } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { useLogout } from '@/features/auth/hooks/use-auth'
+import { toast } from 'sonner'
 
 interface MainHeaderProps {
   onToggleSidebar?: () => void
   sidebarContent?: React.ReactNode
 }
 
-export function MainHeader({ onToggleSidebar, sidebarContent }: MainHeaderProps) {
+export function MainHeader({
+  onToggleSidebar,
+  sidebarContent,
+}: MainHeaderProps) {
   const { mutate: logout, isPending: isLoggingOut } = useLogout()
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
@@ -55,11 +59,7 @@ export function MainHeader({ onToggleSidebar, sidebarContent }: MainHeaderProps)
 
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 font-semibold">
-          <img 
-            src="/logo.png" 
-            alt="Logo" 
-            className="h-6 w-6"
-          />
+          <img src="/logo.png" alt="Logo" className="h-6 w-6" />
           <span className="hidden lg:block">PBL6 Learning Platform</span>
         </Link>
       </div>
@@ -83,6 +83,9 @@ export function MainHeader({ onToggleSidebar, sidebarContent }: MainHeaderProps)
           <Bell className="h-4 w-4" />
           <span className="sr-only">Toggle notifications</span>
         </Button>
+
+        {/* Language Toggle */}
+        <LanguageToggle />
 
         {/* Theme Toggle */}
         <ThemeToggle />
@@ -109,7 +112,7 @@ export function MainHeader({ onToggleSidebar, sidebarContent }: MainHeaderProps)
               <span>Cài đặt</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={() => {
                 logout(undefined, {
                   onSuccess: () => {

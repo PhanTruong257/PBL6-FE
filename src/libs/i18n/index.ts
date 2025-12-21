@@ -20,19 +20,25 @@ import authVI from '../../features/auth/locales/vi/auth.json'
 import questionsEN from '../../features/questions/locales/en/questions.json'
 import questionsVI from '../../features/questions/locales/vi/questions.json'
 
-// Create resources object with preloaded auth namespace
+// Import audit-logs translations (preload)
+import auditLogsEN from '../../features/audit-logs/locales/en/audit-logs.json'
+import auditLogsVI from '../../features/audit-logs/locales/vi/audit-logs.json'
+
+// Create resources object with preloaded namespaces
 const resources = {
   en: {
     common: commonEN,
     zod: zodEN,
     auth: authEN, // Preload auth
     questions: questionsEN, // Preload questions
+    'audit-logs': auditLogsEN, // Preload audit-logs
   },
   vi: {
     common: commonVI,
     zod: zodVI,
     auth: authVI, // Preload auth
     questions: questionsVI, // Preload questions
+    'audit-logs': auditLogsVI, // Preload audit-logs
   },
 }
 
