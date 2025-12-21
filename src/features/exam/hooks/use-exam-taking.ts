@@ -4,6 +4,7 @@ import { SubmissionService } from '../api'
 import type {
   StartExamResponse,
   ExamQuestion,
+  GetQuestionByOrderResponse,
 } from '@/types/submission'
 import { toast } from 'sonner'
 import { useNavigate } from '@tanstack/react-router'
@@ -247,18 +248,29 @@ export function useExamTaking({ examId, password }: UseExamTakingProps): UseExam
 
       return SubmissionService.submitAnswer(submission.submission_id, {
         question_id: questionData.question.question_id,
-        answer_content: currentAnswer.toString(),
+        answer_content: currentAnswer, // Send as-is (already formatted correctly)
       })
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
       // Only show toast if not silent save
       if (!variables?.silent) {
         toast.success('Câu trả lời đã được lưu')
       }
-      // Invalidate the current question to refresh existing_answer
-      queryClient.invalidateQueries({
-        queryKey: ['exam-question', submission?.submission_id, currentQuestionOrder],
-      })
+      
+      // Update cache immediately instead of invalidating to avoid refetch delay
+      queryClient.setQueryData(
+        ['exam-question', submission?.submission_id, currentQuestionOrder],
+        (oldData: GetQuestionByOrderResponse | undefined) => {
+          if (!oldData) return oldData
+          return {
+            ...oldData,
+            existing_answer: {
+              answer_id: data.answer_id,
+              answer_content: currentAnswer, // Keep same format
+            }
+          }
+        }
+      )
     },
     onError: (error: any, variables) => {
       // Only show toast if not silent save

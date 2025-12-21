@@ -1,4 +1,5 @@
 import Markdown from "react-markdown"
+import aiImg from '@/assets/images/ai.png';
 interface StreamingResponseProps {
   content: string
   aiRef?: React.RefObject<HTMLDivElement>
@@ -11,7 +12,7 @@ export function StreamingResponse({ content, aiRef }: StreamingResponseProps) {
     <div className="flex flex-col gap-2 mb-3 w-full items-start">
       <div className="flex items-center gap-2">
         <img 
-          src="src/assets/images/ai.png" 
+          src={aiImg} 
           alt="AI" 
           className="w-8 h-8 rounded-full object-cover flex-shrink-0"
         />
