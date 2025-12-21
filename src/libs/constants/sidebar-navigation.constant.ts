@@ -121,14 +121,14 @@ export const SIDEBAR_NAVIGATION: NavigationConfig = {
       title: 'Lớp học của tôi',
       href: '/classes',
       icon: BookMarked,
-      roles: ['teacher', 'student'],
+      roles: ['teacher', 'student', 'user'],
       permissions: [PERMISSIONS.CLASSES_LIST], // GET.classes
     },
     {
       title: 'Lịch kiểm tra',
       href: '/calendar',
       icon: Calendar,
-      roles: ['teacher', 'student'],
+      roles: ['teacher', 'student', 'user'],
       // No specific permission required - calendar is accessible if user has class access
     },
 
@@ -137,7 +137,7 @@ export const SIDEBAR_NAVIGATION: NavigationConfig = {
       title: 'Làm bài kiểm tra',
       href: '/exam/student',
       icon: ClipboardList,
-      roles: ['student'],
+      roles: ['student', 'user'],
       permissions: [
         PERMISSIONS.STUDENTS_EXAMS, // GET.students.exams
         PERMISSIONS.EXAMS_START, // POST.exams.:exam_id.start
@@ -167,15 +167,6 @@ export const SIDEBAR_NAVIGATION: NavigationConfig = {
   ],
 
   bottom: [
-    // ==================== ADMIN-SPECIFIC SETTINGS ====================
-    {
-      title: 'Cài đặt hệ thống',
-      href: '/admin/settings',
-      icon: Settings,
-      roles: ['admin'],
-      // No specific permission required - general admin settings
-    },
-
     // ==================== GENERAL USER SETTINGS ====================
     {
       title: 'Cài đặt',
@@ -190,13 +181,13 @@ export const SIDEBAR_NAVIGATION: NavigationConfig = {
     },
 
     // ==================== HELP - ALL ROLES ====================
-    {
-      title: 'Trợ giúp',
-      href: '/dashboard',
-      icon: HelpCircle,
-      roles: [], // All roles can access help
-      // No specific permission required
-    },
+    // {
+    //   title: 'Trợ giúp',
+    //   href: '/dashboard',
+    //   icon: HelpCircle,
+    //   roles: [], // All roles can access help
+    //   // No specific permission required
+    // },
   ],
 }
 
