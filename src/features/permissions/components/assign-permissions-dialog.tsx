@@ -80,7 +80,7 @@ export function AssignPermissionsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Phân quyền cho vai trò: {role.name}</DialogTitle>
+          <DialogTitle>Phân quyền cho vai trò: {role.displayText || role.name}</DialogTitle>
           <DialogDescription>
             Chọn các quyền hạn muốn gán cho vai trò này
           </DialogDescription>

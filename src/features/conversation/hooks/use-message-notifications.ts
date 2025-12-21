@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react'
-import { useNavigate } from '@tanstack/react-router'
+import { useRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
 import { useSocket } from '@/global/hooks'
@@ -21,7 +21,7 @@ export function useMessageNotifications({
   enabled = true,
 }: MessageNotificationOptions) {
   const { socket } = useSocket()
-  const navigate = useNavigate()
+  const router = useRouter()
   const queryClient = useQueryClient()
 
   // Request notification permission on mount
@@ -79,7 +79,7 @@ export function useMessageNotifications({
         action: {
           label: 'Xem',
           onClick: () => {
-            navigate({
+            router.navigate({
               to: '/conversation',
               search: { conversationId: message.conversation_id },
             })
@@ -103,7 +103,7 @@ export function useMessageNotifications({
 
         notification.onclick = () => {
           window.focus()
-          navigate({
+          router.navigate({
             to: '/conversation',
             search: { conversationId: message.conversation_id },
           })
@@ -111,7 +111,7 @@ export function useMessageNotifications({
         }
       }
     },
-    [userId, navigate],
+    [userId, router],
   )
 
   useEffect(() => {

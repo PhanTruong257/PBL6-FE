@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react'
 import { Navigate } from '@tanstack/react-router'
-import { useAuthGuard } from '@/hooks/use-auth-guard'
+import { useAuthGuard } from '@/global/hooks/use-auth-guard'
 import { Loader2 } from 'lucide-react'
 
 interface RequireAuthProps {

@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useRef } from 'react'
-import { useNavigate } from '@tanstack/react-router'
+import { useRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
 import { useSocket, useAllUsers } from '@/global/hooks'
@@ -31,7 +31,7 @@ export function useClassNotifications({
   enabled = true,
 }: ClassNotificationOptions) {
   const { socket, isConnected } = useSocket()
-  const navigate = useNavigate()
+  const router = useRouter()
   const { users: allUsers } = useAllUsers()
   const joinedClassesRef = useRef<Set<number>>(new Set())
   const classNamesRef = useRef<Map<number, string>>(new Map())
@@ -85,7 +85,7 @@ export function useClassNotifications({
       return
     }
 
-    const classes = classesData.data || []
+    const classes = classesData.data
 
     // Join each class room and store class names
     classes.forEach((classItem: any) => {
@@ -164,7 +164,7 @@ export function useClassNotifications({
         action: {
           label: 'Xem',
           onClick: () => {
-            navigate({
+            router.navigate({
               to: '/classes/detail-class',
               search: { id: post.class_id },
               hash: 'scroll-to-bottom',
@@ -189,7 +189,7 @@ export function useClassNotifications({
 
         notification.onclick = () => {
           window.focus()
-          navigate({
+          router.navigate({
             to: '/classes/detail-class',
             search: { id: post.class_id },
             hash: 'scroll-to-bottom',
@@ -198,7 +198,7 @@ export function useClassNotifications({
         }
       }
     },
-    [userId, navigate, getUserInfo],
+    [userId, router, getUserInfo],
   )
 
   const showReplyNotification = useCallback(
@@ -232,7 +232,7 @@ export function useClassNotifications({
         action: {
           label: 'Xem',
           onClick: () => {
-            navigate({
+            router.navigate({
               to: '/classes/detail-class',
               search: { id: reply.class_id },
               hash: 'scroll-to-bottom',
@@ -257,7 +257,7 @@ export function useClassNotifications({
 
         notification.onclick = () => {
           window.focus()
-          navigate({
+          router.navigate({
             to: '/classes/detail-class',
             search: { id: reply.class_id },
             hash: 'scroll-to-bottom',
@@ -266,7 +266,7 @@ export function useClassNotifications({
         }
       }
     },
-    [userId, navigate, getUserInfo],
+    [userId, router, getUserInfo],
   )
 
   useEffect(() => {

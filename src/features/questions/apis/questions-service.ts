@@ -11,6 +11,7 @@ import type {
   UpdateQuestionCategoryRequest,
   ImportQuestionResult,
   PreviewExcelResult,
+  ExcelQuestionRow,
 } from '@/types/question'
 
 // ============================================================
@@ -113,7 +114,7 @@ export const questionsApi = {
   },
 
   /**
-   * Preview Excel import
+   * Preview Excel import (DEPRECATED - use parseExcelFile utility instead)
    */
   previewImport: async (file: File, limit?: number): Promise<IApiResponse<PreviewExcelResult>> => {
     const formData = new FormData()
@@ -135,7 +136,7 @@ export const questionsApi = {
   },
 
   /**
-   * Import questions from Excel
+   * Import questions from Excel (DEPRECATED - use importFromArray instead)
    */
   importExcel: async (file: File): Promise<IApiResponse<ImportQuestionResult>> => {
     const formData = new FormData()
@@ -147,6 +148,22 @@ export const questionsApi = {
       {
         headers: {
           'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
+    return response.data
+  },
+
+  /**
+   * Import questions from JSON array.
+   */
+  importFromArray: async (questions: ExcelQuestionRow[]): Promise<IApiResponse<ImportQuestionResult>> => {
+    const response = await httpClient.post<IApiResponse<ImportQuestionResult>>(
+      '/questions/import/json',
+      { questions },
+      {
+        headers: {
+          'Content-Type': 'application/json',
         },
       }
     )

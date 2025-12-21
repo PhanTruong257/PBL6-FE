@@ -28,15 +28,15 @@ interface CookieOptions {
 function setCookie(name: string, value: string, options: CookieOptions = {}) {
   const {
     days = 7,
-    secure = false, // Set to true in production with HTTPS
-    sameSite = 'Lax',
+    secure = false,
+    sameSite = 'Strict',
     path = '/'
   } = options
 
   const expires = new Date(Date.now() + days * 864e5).toUTCString()
   const secureFlag = secure ? '; Secure' : ''
   const sameSiteFlag = `; SameSite=${sameSite}`
-  
+
   document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=${path}${secureFlag}${sameSiteFlag}`
 }
 
@@ -111,15 +111,15 @@ export const cookieStorage = {
     // Access token: 7 days
     setCookie(STORAGE_KEYS.ACCESS_TOKEN, accessToken, {
       days: 7,
-      secure: false, // TODO: Set to true in production
-      sameSite: 'Lax',
+      secure: false,
+      sameSite: 'Strict',
     })
 
     // Refresh token: 30 days
     setCookie(STORAGE_KEYS.REFRESH_TOKEN, refreshToken, {
       days: 30,
-      secure: false, // TODO: Set to true in production
-      sameSite: 'Lax',
+      secure: false,
+      sameSite: 'Strict',
     })
   },
 
@@ -137,39 +137,6 @@ export const cookieStorage = {
    */
   isAuthenticated: (): boolean => {
     return hasCookie(STORAGE_KEYS.ACCESS_TOKEN)
-  },
-
-  /**
-   * Store user data in cookie.
-   * Better approach: Store user ID only and fetch from API
-   */
-  setUser: <T>(user: T) => {
-    setCookie(STORAGE_KEYS.USER, JSON.stringify(user), {
-      days: 7,
-      secure: false,
-      sameSite: 'Lax',
-    })
-  },
-
-  /**
-   * Get user data from cookie
-   */
-  getUser: <T>(): T | null => {
-    const userStr = getCookie(STORAGE_KEYS.USER)
-    if (!userStr) return null
-    
-    try {
-      return JSON.parse(userStr) as T
-    } catch {
-      return null
-    }
-  },
-
-  /**
-   * Remove user data from cookie
-   */
-  removeUser: () => {
-    deleteCookie(STORAGE_KEYS.USER)
   },
 }
 

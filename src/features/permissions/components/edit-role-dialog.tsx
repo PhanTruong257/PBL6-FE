@@ -26,7 +26,7 @@ import { useUpdateRole } from '../hooks'
 import type { Role } from '../types'
 
 const editRoleSchema = z.object({
-  name: z.string().min(1, 'Tên vai trò không được để trống'),
+  displayText: z.string().min(1, 'Tên hiển thị không được để trống'),
   description: z.string().optional(),
 })
 
@@ -44,7 +44,7 @@ export function EditRoleDialog({ open, onOpenChange, role }: EditRoleDialogProps
   const form = useForm<EditRoleForm>({
     resolver: zodResolver(editRoleSchema),
     defaultValues: {
-      name: '',
+      displayText: '',
       description: '',
     },
   })
@@ -53,7 +53,7 @@ export function EditRoleDialog({ open, onOpenChange, role }: EditRoleDialogProps
   useEffect(() => {
     if (role) {
       form.reset({
-        name: role.name,
+        displayText: role.displayText || '',
         description: role.description || '',
       })
     }
@@ -84,14 +84,20 @@ export function EditRoleDialog({ open, onOpenChange, role }: EditRoleDialogProps
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                Code vai trò (Không thể thay đổi)
+              </label>
+              <Input value={role?.name || ''} disabled className="bg-muted" />
+            </div>
             <FormField
               control={form.control}
-              name="name"
+              name="displayText"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tên vai trò *</FormLabel>
+                  <FormLabel>Tên hiển thị *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ví dụ: manager" {...field} />
+                    <Input placeholder="Ví dụ: Manager" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
